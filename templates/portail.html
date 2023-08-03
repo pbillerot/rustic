@@ -1,0 +1,6 @@
+<h1>{{title}}</h1>
+<ul>
+{% for app in applications %}
+  <li>{{ app|e }}</li>
+{% endfor %}
+</ul>

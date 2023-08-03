@@ -6,10 +6,14 @@
 - x installer actix-web
 - x router
 - x template askama
-- dictionnaire partagé global au serveur actix
+- x item dans template
+- x dictionnaire partagé global au serveur actix
 - rechargement du dictionnaire en live
 - verrouillage accès pendant le rechargement
 
+
+0.1.2 - 3 août 2023
+- `added` item dans template - dictionnaire accessible par l'application
 
 0.1.1 - 3 août 2023
 - `added` actix-web, template askama

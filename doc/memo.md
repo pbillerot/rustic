@@ -15,6 +15,7 @@
 - https://github.com/Ghostff/actix-web-mvc-boilerplate/tree/master
 - https://lib.rs/crates/askama
 - https://github.com/actix/examples/blob/master/templating/askama/src/main.rs
+- https://djc.github.io/askama/askama.html
 
 ## SQLX
 - https://betterprogramming.pub/how-to-interact-with-postgresql-from-rust-using-sqlx-cfa2a7c758e7

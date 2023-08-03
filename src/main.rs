@@ -2,7 +2,12 @@ use actix_web::{get, post, web, HttpRequest, Result, Responder};
 use serde::Deserialize;
 use askama::Template;
 use actix_web_lab::respond::Html;
-use std::collections::HashMap;
+use std::{
+    collections::HashMap,
+    // sync::atomic::AtomicPtr,
+    // sync::Arc,
+};
+mod dico;
 
 #[derive(Deserialize)]
 struct Info {
@@ -81,17 +86,52 @@ async fn hello(query: web::Query<HashMap<String, String>>) -> Result<impl Respon
     Ok(Html(html))
 }
 
+#[derive(Template)]
+#[template(path = "portail.html")]
+#[allow(dead_code)]
+struct PortailTemplate {
+    title: String,
+    applications: Vec<String>,
+}
+
+// http://127.0.0.1:8080/portail
+#[get("/portail")]
+async fn portail(ctx: web::Data<RustixContext>) -> Result<impl Responder> {
+    let html = PortailTemplate {
+        title: ctx.title.clone(),
+        applications: ctx.applications.clone(),
+    }
+    .render()
+    .expect("template should be valid");
+
+    Ok(Html(html))
+}
+
+// #[derive(Clone)]
+// #[allow(dead_code)]
+struct RustixContext {
+    title: String,
+    applications: Vec<String>,
+}
+
 #[actix_web::main]
 async fn main() -> std::io::Result<()> {
     use actix_web::{App, HttpServer};
 
+    let pp = dico::Portail::new();
+
     println!("starting HTTP server at http://localhost:8080");
 
-    HttpServer::new(|| App::new()
+    HttpServer::new(move|| App::new()
+        .app_data(web::Data::new(RustixContext {
+            title: pp.title.clone(),
+            applications: pp.applications.clone(),
+        }))
         .service(index)
         .service(useri)
         .service(users)
         .service(groups)
+        .service(portail)
         .service(hello))
         .bind(("127.0.0.1", 8080))?
         .run()

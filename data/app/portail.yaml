@@ -1,0 +1,8 @@
+title: "Rustix"
+info: "Cadriciel de développement WEB en Yaml et Sql"
+icon_file: "rustix.svg"
+
+# Liste des applications gérées par le portail
+applications:
+- admin
+- books
