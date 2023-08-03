@@ -11,6 +11,10 @@
 - https://actix.rs/docs
 - https://github.com/TechEmpower/FrameworkBenchmarks/tree/master/frameworks/Rust/actix
 
+## Templates
+- https://github.com/Ghostff/actix-web-mvc-boilerplate/tree/master
+- https://lib.rs/crates/askama
+- https://github.com/actix/examples/blob/master/templating/askama/src/main.rs
 
 ## SQLX
 - https://betterprogramming.pub/how-to-interact-with-postgresql-from-rust-using-sqlx-cfa2a7c758e7
@@ -53,8 +57,8 @@ sqlx = { version = "0.6", features = [ "runtime-tokio-rustls", "postgres", "macr
 - sudo apt-get install pkg-config libssl-dev
 
 # Nom de baptème du framework
-- rustine rustique **rustic** rusticage rustaud.e rustiquer rustre
-- TIC: **T**echnologie de l'**I**nformation et de la **C**ommunication
+
+    RUSTIX = `RUST` + act`IX`-web
 
 # Graphique - plotters
 - https://github.com/plotters-rs/plotters

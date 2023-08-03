@@ -1,14 +1,18 @@
 # CHANGELOG
 
-Historique des modifications
+# Historique des modifications
 
-### À venir :
-- ya du taf
+### TODO :
+- x installer actix-web
+- x router
+- x template askama
+- dictionnaire partagé global au serveur actix
+- rechargement du dictionnaire en live
+- verrouillage accès pendant le rechargement
 
-- `fixed`
-- `added`
-- `deleted`
-- `changed`
+
+0.1.1 - 3 août 2023
+- `added` actix-web, template askama
 
 0.1.0 - 1er août 2023
 - `added` initialisation dans github avec des bricoles

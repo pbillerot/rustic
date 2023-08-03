@@ -25,7 +25,7 @@ pub struct Application {
     pub wiki: String,
 }
 impl Application {
-    pub fn load(appid: String) -> Application {
+    pub fn new(appid: String) -> Application {
         dotenv::dotenv().expect("Unable to load environment variables from .env file");
         let dico_path = std::env::var("DICO_PATH")
             .expect("Unable to read DICO_PATH env var");
