@@ -1520,7 +1520,7 @@ dependencies = [
 ]
 
 [[package]]
-name = "rustix"
+name = "rustic"
 version = "0.1.1"
 dependencies = [
  "actix-web",
@@ -2020,7 +2020,7 @@ dependencies = [
  "cfg-if",
  "fastrand",
  "redox_syscall",
- "rustix 0.38.6",
+ "rustix",
  "windows-sys",
 ]
 

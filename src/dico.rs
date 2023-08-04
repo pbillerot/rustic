@@ -26,6 +26,17 @@ impl Portail {
         myport
     }
 }
+impl Clone for Portail {
+    fn clone(&self) -> Portail {
+        Portail {
+            title: self.title.clone(),
+            info: self.info.clone(),
+            icon_file: self.icon_file.clone(),
+            applications: self.applications.clone(),
+        }
+
+    }
+}
 
 #[derive(Debug, Serialize, Deserialize)]
 pub struct Application {

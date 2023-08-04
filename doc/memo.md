@@ -11,6 +11,9 @@
 - https://actix.rs/docs
 - https://github.com/TechEmpower/FrameworkBenchmarks/tree/master/frameworks/Rust/actix
 
+## Middleware
+- https://github.com/actix/examples/tree/master/middleware
+
 ## Templates
 - https://github.com/Ghostff/actix-web-mvc-boilerplate/tree/master
 - https://lib.rs/crates/askama
@@ -59,7 +62,7 @@ sqlx = { version = "0.6", features = [ "runtime-tokio-rustls", "postgres", "macr
 
 # Nom de baptème du framework
 
-    RUSTIX = `RUST` + act`IX`-web
+    RUSTIC = `RUST` + act`IX`-web
 
 # Graphique - plotters
 - https://github.com/plotters-rs/plotters

@@ -4,8 +4,10 @@ use askama::Template;
 use actix_web_lab::respond::Html;
 use std::{
     collections::HashMap,
-    // sync::atomic::AtomicPtr,
-    // sync::Arc,
+    // sync::Mutex,
+    sync::Arc,
+    sync::atomic::AtomicPtr,
+    sync::atomic::Ordering,
 };
 mod dico;
 
@@ -96,10 +98,11 @@ struct PortailTemplate {
 
 // http://127.0.0.1:8080/portail
 #[get("/portail")]
-async fn portail(ctx: web::Data<RustixContext>) -> Result<impl Responder> {
+async fn portail(data: web::Data<AppData>) -> Result<impl Responder> {
+    let ptr = data.portail.load(Ordering::Relaxed);
     let html = PortailTemplate {
-        title: ctx.title.clone(),
-        applications: ctx.applications.clone(),
+        title: unsafe{(*ptr).title.clone()},
+        applications: unsafe{(*ptr).applications.clone()},
     }
     .render()
     .expect("template should be valid");
@@ -107,31 +110,47 @@ async fn portail(ctx: web::Data<RustixContext>) -> Result<impl Responder> {
     Ok(Html(html))
 }
 
-// #[derive(Clone)]
+// http://127.0.0.1:8080/portail2
+// RusticContext toujours accessible
+#[get("/portail2")]
+async fn portail2(data: web::Data<AppData>) -> Result<impl Responder> {
+    let ptr = data.portail.load(Ordering::Relaxed);
+    let html = PortailTemplate {
+        title: unsafe{(*ptr).title.clone()},
+        applications: unsafe{(*ptr).applications.clone()},
+    }
+    .render()
+    .expect("template should be valid");
+
+    Ok(Html(html))
+}
+
+#[derive(Clone)]
 // #[allow(dead_code)]
-struct RustixContext {
-    title: String,
-    applications: Vec<String>,
+// https://actix.rs/docs/extractors#application-state-extractor
+struct AppData {
+    portail: Arc<AtomicPtr<dico::Portail>>
 }
 
 #[actix_web::main]
 async fn main() -> std::io::Result<()> {
     use actix_web::{App, HttpServer};
 
-    let pp = dico::Portail::new();
+    let pp = &mut dico::Portail::new();
 
+    let data = AppData {
+         portail: Arc::new(AtomicPtr::new(pp)),
+    };
     println!("starting HTTP server at http://localhost:8080");
 
     HttpServer::new(move|| App::new()
-        .app_data(web::Data::new(RustixContext {
-            title: pp.title.clone(),
-            applications: pp.applications.clone(),
-        }))
+        .app_data(web::Data::new(data.clone()))
         .service(index)
         .service(useri)
         .service(users)
         .service(groups)
         .service(portail)
+        .service(portail2)
         .service(hello))
         .bind(("127.0.0.1", 8080))?
         .run()
