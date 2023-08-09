@@ -5,6 +5,7 @@
 - https://blog.guillaume-gomez.fr/Rust/1/1
 - https://rust.developpez.com/cours/
 - https://rust.developpez.com/tutoriels/rust-par-l-exemple/
+- [Read the tutorial article](https://docs.qovery.com/guides/tutorial/create-a-blazingly-fast-api-in-rust/)
 
 ## ACTIX
 - https://docs.rs/actix-web/latest/actix_web/index.html
@@ -26,15 +27,8 @@
 - https://codevoweb.com/rust-build-a-crud-api-with-sqlx-and-postgresql/
 - https://www.opensourceforu.com/2022/05/sqlx-the-rust-sql-toolkit/
 
-```toml
-[dependencies]
-sqlx = { version = "0.6", features = [ "runtime-tokio-rustls", "postgres", "macros" ] }
-```
-
-`cargo install sqlx-cli --no-default-features --features rustls,postgres`
 
 ## YAML
-
 - https://tms-dev-blog.com/how-to-read-and-write-yaml-in-rust-with-serde/
 - https://docs.rs/serde_yaml/latest/serde_yaml/
 - https://serde.rs/data-model.html
@@ -66,3 +60,22 @@ sqlx = { version = "0.6", features = [ "runtime-tokio-rustls", "postgres", "macr
 
 # Graphique - plotters
 - https://github.com/plotters-rs/plotters
+
+# source
+- https://github.com/evoxmusic/twitter-clone-rust/blob/487198ee7b306f36dbab01f40a44345f85387db2/src/main.rs
+
+# sqlx postgres
+- https://codevoweb.com/rust-build-a-crud-api-with-sqlx-and-postgresql/
+- https://github.com/wpcodevo/rust-postgres-crud-sqlx
+
+# sqlx map
+- https://gist.github.com/jeremychone/34d1e3daffc38eb602b1a9ab21298d10
+
+# MVC
+- https://github.com/Nickforall/Iron-MVC
+
+# TESTS
+## list tweets
+curl http://localhost:8080/tweets
+## create a tweet
+curl -X POST -d '{"message": "This is a tweet"}' -H "Content-type: application/json" http://localhost:8080/tweets

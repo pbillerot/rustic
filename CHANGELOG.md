@@ -8,6 +8,10 @@ x vérif acces dico autre scope - NON
 - rechargement du dictionnaire en live
 - verrouillage accès pendant le rechargement
 
+0.2.0 - 9 août 2023
+- `added` découpage en modules
+- `added` partage du pool et portail dans AppState
+
 0.1.3 - 4 août 2023
 - `changed` le nom du package redevient "rustic" car rustix existe déja dans crate.io
 - `added` test pointeur partagé sur portail inter threads - pas concluant
