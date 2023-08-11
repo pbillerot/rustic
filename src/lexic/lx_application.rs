@@ -2,28 +2,28 @@ use serde::{Deserialize, Serialize};
 use serde_yaml::{self};
 use std::collections::HashMap;
 
-use crate::dx::dx_utils;
+use crate::lexic::lx_utils;
 
 #[derive(Debug, Serialize, Deserialize)]
 pub struct Application {
     pub app_id: String,
-    #[serde(default = "dx_utils::default_str")]
+    #[serde(default = "lx_utils::default_str")]
     pub title: String,
-    #[serde(default = "dx_utils::default_str")]
+    #[serde(default = "lx_utils::default_str")]
     pub image: String,
-    #[serde(default = "dx_utils::default_str")]
+    #[serde(default = "lx_utils::default_str")]
     pub icon_name: String,
-    #[serde(default = "dx_utils::default_str")]
+    #[serde(default = "lx_utils::default_str")]
     pub group: String,
-    #[serde(default = "dx_utils::default_map")]
+    #[serde(default = "lx_utils::default_map")]
     pub parameters: HashMap<String, String>,
     #[serde(default = "TableView::default")]
     pub menu: Vec<TableView>,
-    #[serde(default = "dx_utils::default_bool")]
+    #[serde(default = "lx_utils::default_bool")]
     pub shareable: bool,
-    #[serde(default = "dx_utils::default_str")]
+    #[serde(default = "lx_utils::default_str")]
     pub tasks_table_name: String,
-    #[serde(default = "dx_utils::default_str")]
+    #[serde(default = "lx_utils::default_str")]
     pub wiki: String,
 }
 #[allow(dead_code)]
@@ -42,11 +42,11 @@ impl Application {
 
 #[derive(Debug, Serialize, Deserialize)]
 pub struct TableView {
-    #[serde(default = "dx_utils::default_str")]
+    #[serde(default = "lx_utils::default_str")]
     pub table_id: String,
-    #[serde(default = "dx_utils::default_str")]
+    #[serde(default = "lx_utils::default_str")]
     pub view_id: String,
-    #[serde(default = "dx_utils::default_bool")]
+    #[serde(default = "lx_utils::default_bool")]
     pub in_footer: bool,
 }
 impl TableView {

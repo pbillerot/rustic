@@ -8,6 +8,10 @@ x vérif acces dico autre scope - NON
 - rechargement du dictionnaire en live
 - verrouillage accès pendant le rechargement
 
+0.3.0 - 11 août 2023
+- `added` middleware session data
+- `changed` nom des modules lexic routic servic
+
 0.2.0 - 9 août 2023
 - `added` découpage en modules
 - `added` partage du pool et portail dans AppState

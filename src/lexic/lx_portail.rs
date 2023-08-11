@@ -3,15 +3,15 @@ use serde_yaml::{self};
 // use log::error;
 use log::info;
 
-use crate::dx::dx_utils;
+use crate::lexic::lx_utils;
 
 #[derive(Debug, Serialize, Deserialize)]
 pub struct Portail {
-    #[serde(default = "dx_utils::default_str")]
+    #[serde(default = "lx_utils::default_str")]
     pub title: String,
-    #[serde(default = "dx_utils::default_str")]
+    #[serde(default = "lx_utils::default_str")]
     pub info: String,
-    #[serde(default = "dx_utils::default_str")]
+    #[serde(default = "lx_utils::default_str")]
     pub icon_file: String,
     #[serde(default = "Vec::new")]
     pub applications: Vec<String>

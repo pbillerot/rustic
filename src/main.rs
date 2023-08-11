@@ -1,5 +1,5 @@
 // use actix_web::{get, post, web, HttpRequest, Result, Responder};
-use actix_web::{middleware, App, HttpServer, web};
+use actix_web::{middleware, App, HttpServer, web, cookie::{self, Key},};
 // use serde::Deserialize;
 use askama::Template;
 // use actix_web_lab::respond::Html;
@@ -7,10 +7,15 @@ use std::env;
 use sqlx::{postgres::PgPoolOptions, Pool, Postgres};
 use log::{error, info};
 
+use actix_session::{
+    config::PersistentSession, storage::CookieSessionStore, SessionMiddleware,
+};
+
 // Déclarations des modules
 mod constants;
-mod dx;
-mod rx;
+mod lexic;
+mod routic;
+mod servic;
 mod models;
 
 #[derive(Template)]
@@ -26,7 +31,7 @@ struct PortailTemplate {
 // https://actix.rs/docs/extractors#application-state-extractor
 pub struct AppState {
     db: Pool<Postgres>,
-    portail: dx::Portail,
+    portail: lexic::Portail,
 }
 
 #[actix_web::main]
@@ -57,18 +62,34 @@ async fn main() -> std::io::Result<()> {
 
     HttpServer::new(move|| {
         App::new()
-            // enable logger - always register actix-web Logger middleware last
-            .wrap(middleware::Logger::default())
-            // pool accessible dans les requets
             .app_data(web::Data::new(AppState {
                 db: pool.clone(),
-                portail: dx::Portail::new().clone(),
+                portail: lexic::Portail::new().clone(),
             }))
-            .service(rx::portail)
-            .service(rx::list)
-            .service(rx::get)
-            .service(rx::create)
-            .service(rx::delete)
+            // enable logger - always register actix-web Logger middleware last
+            .wrap(middleware::Logger::default())
+            // activation du contrôle de connexion de l'utilisateur
+            .wrap(servic::sx_redirect::CheckLogin)
+            // un message partagé
+            .wrap(servic::sx_data::AddMsg::enabled())
+            // données disponibles dans les requetes
+            // activation de actix-session
+            .wrap(
+                SessionMiddleware::builder(CookieSessionStore::default(), Key::from(&[0; 64]))
+                    .cookie_secure(false) // à true en https
+                    // customize session and cookie expiration
+                    .session_lifecycle(
+                        PersistentSession::default().session_ttl(cookie::time::Duration::minutes(1)),
+                    )
+                    .build(),
+            )
+            .service(routic::portail)
+            .service(routic::login)
+            .service(routic::logout)
+            .service(routic::list)
+            .service(routic::get)
+            .service(routic::create)
+            .service(routic::delete)
         })
         .bind(("127.0.0.1", 8080))?
         .workers(1)
