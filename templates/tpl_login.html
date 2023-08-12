@@ -1,0 +1,12 @@
+<h1>Login</h1>
+<form action="/login" method="POST">
+<label for="user_id">Identifiant</label>
+<input type="text" id="user_id" name="user_id" value="{{user_id}}"
+    required minlength="4" maxlength="20" size="10" />
+
+<label for="passord">Mot de passe</label>
+<input type="password" id="password" name="password" value="{{password}}"
+    required minlength="4" maxlength="50" size="10" />
+
+<input type="submit" value="Se connecter" />
+</form>

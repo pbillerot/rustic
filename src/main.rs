@@ -1,11 +1,9 @@
 // use actix_web::{get, post, web, HttpRequest, Result, Responder};
 use actix_web::{middleware, App, HttpServer, web, cookie::{self, Key},};
 // use serde::Deserialize;
-use askama::Template;
 // use actix_web_lab::respond::Html;
 use std::env;
 use sqlx::{postgres::PgPoolOptions, Pool, Postgres};
-use log::{error, info};
 
 use actix_session::{
     config::PersistentSession, storage::CookieSessionStore, SessionMiddleware,
@@ -17,14 +15,6 @@ mod lexic;
 mod routic;
 mod servic;
 mod models;
-
-#[derive(Template)]
-#[template(path = "tx_portail.html")]
-#[allow(dead_code)]
-struct PortailTemplate {
-    title: String,
-    applications: Vec<String>,
-}
 
 #[derive(Clone)]
 #[allow(dead_code)]
@@ -49,16 +39,16 @@ async fn main() -> std::io::Result<()> {
         .await
     {
         Ok(pool) => {
-            info!("Connection to the database is successful!");
+            log::info!("Connection to the database is successful!");
             pool
         }
         Err(err) => {
-            error!("Failed to connect to the database: {:?}", err);
+            log::error!("Failed to connect to the database: {:?}", err);
             std::process::exit(1);
         }
     };
 
-    info!("starting HTTP server at http://localhost:8080");
+    log::info!("starting HTTP server at http://localhost:8080");
 
     HttpServer::new(move|| {
         App::new()
@@ -69,9 +59,9 @@ async fn main() -> std::io::Result<()> {
             // enable logger - always register actix-web Logger middleware last
             .wrap(middleware::Logger::default())
             // activation du contrôle de connexion de l'utilisateur
-            .wrap(servic::sx_redirect::CheckLogin)
+            .wrap(servic::sr_redirect::CheckLogin)
             // un message partagé
-            .wrap(servic::sx_data::AddMsg::enabled())
+            // .wrap(servic::sr_data::AddMsg::enabled())
             // données disponibles dans les requetes
             // activation de actix-session
             .wrap(
@@ -85,11 +75,8 @@ async fn main() -> std::io::Result<()> {
             )
             .service(routic::portail)
             .service(routic::login)
+            .service(routic::login_post)
             .service(routic::logout)
-            .service(routic::list)
-            .service(routic::get)
-            .service(routic::create)
-            .service(routic::delete)
         })
         .bind(("127.0.0.1", 8080))?
         .workers(1)

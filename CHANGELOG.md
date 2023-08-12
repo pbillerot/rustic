@@ -8,6 +8,9 @@ x vérif acces dico autre scope - NON
 - rechargement du dictionnaire en live
 - verrouillage accès pendant le rechargement
 
+0.3.1 - 11 août 2023
+- `added` formulaire login - redirection
+
 0.3.0 - 11 août 2023
 - `added` middleware session data
 - `changed` nom des modules lexic routic servic

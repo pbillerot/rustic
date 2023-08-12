@@ -1,17 +1,15 @@
 use serde::{Deserialize, Serialize};
 use serde_yaml::{self};
-// use log::error;
-use log::info;
 
-use crate::lexic::lx_utils;
+use crate::lexic::lex_utils;
 
 #[derive(Debug, Serialize, Deserialize)]
 pub struct Portail {
-    #[serde(default = "lx_utils::default_str")]
+    #[serde(default = "lex_utils::default_str")]
     pub title: String,
-    #[serde(default = "lx_utils::default_str")]
+    #[serde(default = "lex_utils::default_str")]
     pub info: String,
-    #[serde(default = "lx_utils::default_str")]
+    #[serde(default = "lex_utils::default_str")]
     pub icon_file: String,
     #[serde(default = "Vec::new")]
     pub applications: Vec<String>
@@ -23,7 +21,7 @@ impl Portail {
         let dico_path = std::env::var("DICO_PATH")
             .expect("Unable to read DICO_PATH env var");
         let path = format!("{}/portail.yaml", &dico_path);
-        info!("Load de {}", path);
+        log::info!("Load de {}", path);
         let f = std::fs::File::open(&path).expect("Could not open file.");
         let myport: Portail  = serde_yaml::from_reader(f).expect("Could not read values.");
 

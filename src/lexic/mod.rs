@@ -1,11 +1,11 @@
 // Modules de gestion du dictionnaire
 
 
-mod lx_portail;
-pub use self::lx_portail::Portail;
+mod lex_portail;
+pub use self::lex_portail::Portail;
 
 
-mod lx_application;
+mod lex_application;
 
-mod lx_utils;
+mod lex_utils;
 

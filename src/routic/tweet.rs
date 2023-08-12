@@ -9,8 +9,6 @@ use actix_web::{
 use chrono::{DateTime, Utc};
 use serde::{Deserialize, Serialize};
 // use uuid::Uuid;
-use log::info;
-// use log::debug;
 // extern crate sqlx;
 // use sqlx::postgres::PgRow;
 // use sqlx::postgres::Postgres;
@@ -84,7 +82,7 @@ pub async fn list(data: web::Data<AppState>) -> HttpResponse {
     .await.expect("query error");
 
     let vmap = rows_to_vmap(rows);
-    info!("{:?}", vmap);
+    log::info!("{:?}", vmap);
     let tweets = Tweets { results: vec![] };
 
     //let rowson = serde_json::to_string(&rows).expect("erreur convert json");

@@ -27,7 +27,6 @@
 - https://codevoweb.com/rust-build-a-crud-api-with-sqlx-and-postgresql/
 - https://www.opensourceforu.com/2022/05/sqlx-the-rust-sql-toolkit/
 
-
 ## YAML
 - https://tms-dev-blog.com/how-to-read-and-write-yaml-in-rust-with-serde/
 - https://docs.rs/serde_yaml/latest/serde_yaml/
@@ -54,10 +53,6 @@
 - https://github.com/fbriden/yahoo-finance-rs
 - sudo apt-get install pkg-config libssl-dev
 
-# Nom de baptème du framework
-
-    RUSTIC = `RUST` + act`IX`-web
-
 # Graphique - plotters
 - https://github.com/plotters-rs/plotters
 
@@ -79,3 +74,14 @@
 curl http://localhost:8080/tweets
 ## create a tweet
 curl -X POST -d '{"message": "This is a tweet"}' -H "Content-type: application/json" http://localhost:8080/tweets
+
+# Forms
+- https://www.lpalmieri.com/posts/session-based-authentication-in-rust/
+- https://dev.to/chaudharypraveen98/form-validation-in-rust-404l
+- https://lib.rs/crates/actix-form-data
+- https://github.com/actix/examples/blob/master/forms/form/src/main.rs
+- https://github.com/Keats/validator
+- https://docs.rs/actix-csrf/latest/actix_csrf/
+- https://github.com/edward-shen/actix-csrf/blob/master/README.md
+- https://github.com/edward-shen/actix-csrf
+- https://kvnallsn.github.io/actix-web-database-identity/actix_web/middleware/csrf/index.html

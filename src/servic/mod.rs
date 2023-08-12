@@ -1,6 +1,6 @@
 
-pub mod sx_data;
+pub mod sr_data;
 
 // use self::servic_data::AddMsg;
 
-pub mod sx_redirect;
+pub mod sr_redirect;

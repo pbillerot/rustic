@@ -33,12 +33,13 @@
 /// /eddy/document/:key
 /// /eddy/log
 
-mod rx_login;
-pub use self::rx_login::login; // curl http://0.0.0.0:8080/login
-pub use self::rx_login::logout; // curl http://0.0.0.0:8080/logout
+mod rt_login;
+pub use self::rt_login::login; // curl http://0.0.0.0:8080/login
+pub use self::rt_login::login_post;
+pub use self::rt_login::logout; // curl http://0.0.0.0:8080/logout
 
-mod rx_portail;
-pub use self::rx_portail::portail; // curl http://0.0.0.0:8080/
+mod rt_portail;
+pub use self::rt_portail::portail; // curl http://0.0.0.0:8080/
 
 mod tweet;
 pub use self::tweet::list;
