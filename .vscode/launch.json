@@ -7,15 +7,15 @@
         {
             "type": "lldb",
             "request": "launch",
-            "name": "Debug executable 'rustic'",
+            "name": "Debug executable 'silex'",
             "cargo": {
                 "args": [
                     "build",
-                    "--bin=rustic",
-                    "--package=rustic"
+                    "--bin=silex",
+                    "--package=silex"
                 ],
                 "filter": {
-                    "name": "rustic",
+                    "name": "silex",
                     "kind": "bin"
                 }
             },
@@ -25,16 +25,16 @@
         {
             "type": "lldb",
             "request": "launch",
-            "name": "Debug unit tests in executable 'rustic'",
+            "name": "Debug unit tests in executable 'silex'",
             "cargo": {
                 "args": [
                     "test",
                     "--no-run",
-                    "--bin=rustic",
-                    "--package=rustic"
+                    "--bin=silex",
+                    "--package=silex"
                 ],
                 "filter": {
-                    "name": "rustic",
+                    "name": "silex",
                     "kind": "bin"
                 }
             },

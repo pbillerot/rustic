@@ -1,7 +1,5 @@
 // use actix_web::{get, post, web, HttpRequest, Result, Responder};
-use actix_web::{middleware, App, HttpServer, web, cookie::{self, Key},};
-// use serde::Deserialize;
-// use actix_web_lab::respond::Html;
+use actix_web::{middleware, App, HttpServer, web, cookie::{self, Key}};
 use std::env;
 use sqlx::{postgres::PgPoolOptions, Pool, Postgres};
 
@@ -15,6 +13,7 @@ mod lexic;
 mod routic;
 mod servic;
 mod models;
+
 
 #[derive(Clone)]
 #[allow(dead_code)]

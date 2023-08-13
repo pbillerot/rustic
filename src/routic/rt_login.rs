@@ -18,6 +18,7 @@ use askama::Template;
 use actix_web_lab::respond::Html;
 use actix_session::{Session, SessionExt};
 use serde::{Deserialize, Serialize};
+// use actix_csrf::extractor::{Csrf, CsrfGuarded, CsrfToken};
 
 use crate::AppState;
 
@@ -62,6 +63,12 @@ pub struct LoginForm {
     user_id: String,
     password: String,
 }
+// impl CsrfGuarded for LoginForm {
+//     fn csrf_token(&self) -> &CsrfToken {
+//         &self.csrf_token
+//     }
+// }
+
 #[post("/login")]
 pub async fn login_post(params: web::Form<LoginForm>,
     _session: Session,

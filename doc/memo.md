@@ -81,7 +81,5 @@ curl -X POST -d '{"message": "This is a tweet"}' -H "Content-type: application/j
 - https://lib.rs/crates/actix-form-data
 - https://github.com/actix/examples/blob/master/forms/form/src/main.rs
 - https://github.com/Keats/validator
-- https://docs.rs/actix-csrf/latest/actix_csrf/
-- https://github.com/edward-shen/actix-csrf/blob/master/README.md
-- https://github.com/edward-shen/actix-csrf
+- ko pb dépendances https://github.com/edward-shen/actix-csrf
 - https://kvnallsn.github.io/actix-web-database-identity/actix_web/middleware/csrf/index.html

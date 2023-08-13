@@ -3,10 +3,14 @@
 # Historique des modifications
 
 ### TODO :
-x vérif acces dico autre scope - NON
-- ajout d'un middleware
-- rechargement du dictionnaire en live
-- verrouillage accès pendant le rechargement
+- mise en prod de la maquette pour vérif en https de csrf
+- ajout csrf
+- modèle docker
+- rechargement du lexique en live - un challenge compliqué
+
+0.4.0 - 13 août 2023
+- `added` docker pour test en https
+- `changed` nom de baptème du projet SILEX Système d'Information LEXical (utilisation d'un lexique)
 
 0.3.1 - 11 août 2023
 - `added` formulaire login - redirection

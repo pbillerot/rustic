@@ -1,0 +1,23 @@
+
+version: "3.3"
+services:
+  silex:
+    build:
+      context: .
+    image: silex
+    container_name: silex
+    restart: unless-stopped
+    user: 1000:1000
+    # ports:
+    #   - "7601:3945"
+    volumes:
+    - /volshare:/volshare
+    networks:
+    - docker_web
+
+volumes:
+  certs:
+
+networks:
+  docker_web:
+    external: true
