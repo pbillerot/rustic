@@ -1,5 +1,5 @@
 # build stage
-FROM rust:latest as cargo-build
+FROM rust:bookworm as cargo-build
 
 RUN apt-get update && apt-get install libpq-dev musl-tools git -y
 RUN rustup target add x86_64-unknown-linux-musl
