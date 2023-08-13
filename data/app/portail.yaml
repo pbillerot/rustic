@@ -1,6 +1,6 @@
-title: "Rustic en action"
+title: "Silex en action"
 info: "Cadriciel de développement WEB en Yaml et Sql"
-icon_file: "rustic.svg"
+icon_file: "silex.svg"
 
 # Liste des applications gérées par le portail
 applications:

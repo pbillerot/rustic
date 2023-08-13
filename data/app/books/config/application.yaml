@@ -1,6 +1,6 @@
-# Application "Books" pour "Rustic"
+# Application "Books" pour "Silex"
 app_id: books
-title: "Books pour Rustic"
+title: "Books pour Silex"
 group: billerot
 image: "book.png"
 menu:

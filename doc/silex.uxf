@@ -1,4 +1,4 @@
-<diagram program="umletino" version="15.1"><zoom_level>10</zoom_level><element><id>UMLClass</id><coordinates><x>70</x><y>40</y><w>380</w><h>340</h></coordinates><panel_attributes>*RUSTIC HTTP SERVER*
+<diagram program="umletino" version="15.1"><zoom_level>10</zoom_level><element><id>UMLClass</id><coordinates><x>70</x><y>40</y><w>380</w><h>340</h></coordinates><panel_attributes>*SILEX HTTP SERVER*
 --
 style=wordwrap
 

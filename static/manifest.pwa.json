@@ -1,13 +1,13 @@
 {
     "description": "Cadriciel de développement WEB en Yaml et Sql",
     "display": "standalone",
-    "name": "Rustic",
+    "name": "Silex",
     "short_name": "beedule",
     "start_url": "/",
     "screenshots": ["/static/apropos.png"],
     "icons": [
       {
-        "src": "/static/rustic.png",
+        "src": "/static/silex.png",
         "sizes": "252x252",
         "type": "image/png"
       }
