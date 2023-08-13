@@ -6,7 +6,7 @@ RUN rustup target add x86_64-unknown-linux-musl
 
 WORKDIR /usr/src/app
 
-COPY . .
+COPY .. .
 
 RUN RUSTFLAGS=-Clinker=musl-gcc cargo build --release --target=x86_64-unknown-linux-musl
 
