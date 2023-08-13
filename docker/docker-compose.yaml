@@ -3,7 +3,7 @@ version: "3.3"
 services:
   silex:
     build:
-      context: ../
+      context: .
     image: silex
     container_name: silex
     restart: unless-stopped
