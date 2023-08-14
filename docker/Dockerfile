@@ -1,32 +1,29 @@
+# -*- mode: dockerfile -*-
+#
+# An example Dockerfile showing how to build a Rust executable using this
+# image, and deploy it with a tiny Alpine Linux container.
+
+# You can override this `--build-arg BASE_IMAGE=...` to use different
+# version of Rust or OpenSSL.
+
+# https://hub.docker.com/r/ekidd/rust-musl-builder/
 # build stage
-FROM rust:latest as builder
+ARG BASE_IMAGE=alpine:latest
 
-RUN apt-get update && apt-get install libpq-dev musl-tools git -y
-# RUN rustup target add x86_64-unknown-linux-musl
+FROM ${BASE_IMAGE} AS builder
 
-WORKDIR /usr/src
-RUN git clone https://github.com/pbillerot/silex.git
-WORKDIR silex
-
-RUN cargo build install --path .
-# RUN RUSTFLAGS=-Clinker=musl-gcc cargo build --release --target=x86_64-unknown-linux-musl
-
-# final stage
-# FROM alpine:latest
-FROM debian:bullseye-slim
-RUN apt-get update && apt-get install -y extra-runtime-dependencies && rm -rf /var/lib/apt/lists/*
+RUN apk fix && \
+    apk --no-cache --update add git
 
 RUN addgroup -g 1000 app
 RUN adduser -D -s /bin/sh -u 1000 -G app app
 
-WORKDIR /home/app/bin/
-
-COPY --from=builder /usr/local/cargo/bin/silex /home/app/bin/silex
-# COPY --from=cargo-build /usr/src/silex/target/x86_64-unknown-linux-musl/release/silex .
-
-RUN chown app:app silex
 USER app
+WORKDIR /home/app/
+RUN git clone https://github.com/pbillerot/silex.git
 
 EXPOSE 8080
+
+WORKDIR /home/app/silex/production
 
 CMD ["./silex"]
