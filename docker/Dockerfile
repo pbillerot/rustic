@@ -1,30 +1,29 @@
-# -*- mode: dockerfile -*-
-#
-# An example Dockerfile showing how to build a Rust executable using this
-# image, and deploy it with a tiny Alpine Linux container.
-
-# You can override this `--build-arg BASE_IMAGE=...` to use different
-# version of Rust or OpenSSL.
-
-# https://hub.docker.com/r/ekidd/rust-musl-builder/
-# build stage
-ARG BASE_IMAGE=alpine:latest
+ARG BASE_IMAGE=debian:bookworm-slim
 
 FROM ${BASE_IMAGE} AS builder
 
-RUN apk fix && \
-    apk --no-cache --update add git
+# DEBIAN CONFIG
+RUN apt-get update
+# - TIME ZONE Europe/Paris
+RUN apt-get install -yq tzdata
+RUN ln -fs /usr/share/zoneinfo/Europe/Paris /etc/localtime
+RUN dpkg-reconfigure -f noninteractive tzdata
 
-RUN addgroup -g 1000 app
-RUN adduser -D -s /bin/sh -u 1000 -G app app
+ENV TZ=Europe/Paris
+# - LANG fr_FR
+RUN apt-get install -y locales locales-all
+ENV LC_ALL fr_FR.UTF-8
+ENV LANG fr_FR.UTF-8
+ENV LANGUAGE fr_FR.UTF-8
 
-USER app
-WORKDIR /home/app/
+# INSTALLATION DE CRONTAB
+RUN apt-get install -yq git
+
+WORKDIR /app/
 RUN git clone https://github.com/pbillerot/silex.git
 
 EXPOSE 8080
 
-WORKDIR /home/app/silex/production
-RUN ls -l
-
+WORKDIR /app/silex/production
 CMD ["./silex"]
+# CMD ["sh", "-c", "tail -f /dev/null"]
