@@ -1,0 +1,196 @@
+# table USERS
+setting:
+  alias-db: admin
+  key: user_name
+  col-display: user_name
+  icon-name: "user"
+
+elements:
+  user_name:
+    type: text
+    label-long: "Nom ou pseudo"
+    label-short: "Nom ou pseudo"
+    pattern: "[a-zA-Z0-9]+"
+    required: true
+  user_password:
+    type: password
+    label-long: "Mot de passe"
+    pattern: "[a-zA-Z0-9_-]+"
+    required: true
+    min-length: 3
+  user_email:
+    type: email
+    label-long: "Email"
+    label-short: "Email"
+    required: true
+  user_is_admin:
+    type: checkbox
+    label-long: "Administrateur"
+    label-short: "Administrateur"
+    col-align: center
+  user_groupes:
+    type: tag
+    label-long: "Groupes"
+    label-short: "Groupes"
+    col-align: center
+    width: xl
+    items-sql: "select group_id as key, group_id as label from groups order by group_id"
+  _pwd_change:
+    type: button
+    label-long: "Changer le mot de passe..."
+    params:
+      url: "/bee/edit/admin/users/vall/fpwd/{user_name}"
+  _card_MDP:
+    type: card
+    label-long: "Sécurité"
+    icon-name: lock
+    params:
+      form: fmdp
+  _new_password:
+    type: password
+    label-long: "Nouveau mot de passe"
+    pattern: "[a-zA-Z0-9_-]+"
+    required: true
+    min-length: 3
+  _confirm_password:
+    type: password
+    label-long: "Confirmer le mot de passe"
+    pattern: "[a-zA-Z0-9_-]+"
+    required: true
+    min-length: 3
+
+views:
+  vall:
+    form-view: fview
+    form-add: fadd
+    form-edit: fedit
+    group: admin
+    deletable: true
+    title: "Comptes Utilisateurs"
+    icon-name: user
+    order-by: user_name
+    card:
+      header:
+        - user_name
+      meta:
+        - user_email
+      description:
+      extra:
+        - user_is_admin
+      footer:
+        - user_groupes
+    elements:
+      user_name:
+      user_email:
+        hide-on-mobile: true
+      user_is_admin:
+        hide-on-mobile: true
+      user_groupes:
+
+  vprofil:
+    form-view: fprofil
+    form-edit: fedit_owner
+    group: owner
+    title: "Mon profil"
+    icon-name: user
+    order-by: user_name
+    card:
+      header:
+        - user_name
+      meta:
+        - user_email
+      description:
+      extra:
+        - user_is_admin
+        - user_groupes
+    elements:
+      user_name:
+      user_email:
+      user_is_admin:
+      user_groupes:
+
+forms:
+  fadd:
+    title: "Fiche Compte"
+    groupe: admin
+    elements:
+      user_name:
+        order: 10
+      user_email:
+        order: 20
+  fedit:
+    title: "Fiche compte"
+    group: admin
+    elements:
+      user_name:
+        order: 10
+      user_email:
+        order: 20
+  fview:
+    title: "Fiche Compte"
+    group: admin
+    elements:
+      user_name:
+        order: 10
+      user_email:
+        order: 20
+      _card_MDP:
+        order: 30
+      user_is_admin:
+        order: 50
+      user_groupes:
+        order: 60
+      _pwd_change:
+        order: 70
+  fprofil:
+    title: "Mon profil"
+    group: owner
+    elements:
+      user_name:
+        order: 10
+      user_email:
+        order: 20
+      _card_MDP:
+        order: 30
+      user_is_admin:
+        order: 50
+      user_groupes:
+        order: 60
+      _pwd_change:
+        order: 70
+  fedit_owner:
+    title: "Fiche compte"
+    group: owner
+    elements:
+      user_name:
+        order: 10
+        read-only: true
+      user_email:
+        order: 20
+  fpwd:
+    title: "Changer le mot de passe"
+    group: owner
+    elements:
+      user_name:
+        order: 10
+        read-only: true
+      _new_password:
+        order: 20
+      _confirm_password:
+        order: 30
+        # protected: true
+    check-sqlite:
+      - "select 'les mots de passe ne sont pas identiques' where '{_new_password}' <> '{_confirm_password}' "
+    post-sql:
+      - "update users set user_password = '{_new_password}' where user_name = '{user_name}'"
+  fmdp:
+    title: "Sécurité"
+    group: admin
+    elements:
+      user_name:
+        order: 10
+        read-only: true
+      user_is_admin:
+        order: 30
+      user_groupes:
+        order: 40

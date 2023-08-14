@@ -1,0 +1,84 @@
+# Table books de la table books.sqlite
+setting:
+  alias-db: books
+  key: id
+  col-display: titre
+  icon-name: "book"
+
+elements:
+  id:
+    type: counter
+    label-long: "n°"
+    label-short: "n°"
+  titre:
+    type: textarea
+    label-long: "Titre"
+    label-short: "Titre"
+  auteur:
+    type: text
+    label-long: "Auteur"
+    label-short: "Auteur"
+  editeur:
+    type: text
+    label-long: "Éditeur"
+    label-short: "Éditeur"
+  note:
+    type: radio
+    label-long: "Note"
+    label-short: "Note"
+    items:
+      - key: "1"
+        label: "1"
+      - key: "2"
+        label: "2"
+      - key: "3"
+        label: "3"
+      - key: "4"
+        label: "4"
+      - key: "5"
+        label: "5"
+  commentaire:
+    type: textarea
+    label-long: "Commentaire"
+    label-short: "Commentaire"
+
+views:
+  vall:
+    form-add: fedit
+    form-edit: fedit
+    deletable: false
+    type: table
+    title: "Books"
+    icon-name: book
+    order-by: "titre"
+    elements:
+      id:
+      	order: 10
+      titre:
+      	order: 20
+      auteur:
+      	order: 30
+      editeur:
+      	order: 40
+      note:
+      	order: 50
+      commentaire:
+        order: 60
+
+forms:
+  fedit:
+    title: "Book"
+    icon-name: book
+    elements:
+      id:
+      	order: 10
+      titre:
+      	order: 20
+      auteur:
+      	order: 30
+      editeur:
+      	order: 40
+      note:
+      	order: 50
+      commentaire:
+        order: 60

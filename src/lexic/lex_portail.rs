@@ -18,9 +18,9 @@ pub struct Portail {
 impl Portail {
     pub fn new() -> Portail {
         dotenv::dotenv().expect("Unable to load environment variables from .env file");
-        let dico_path = std::env::var("DICO_PATH")
-            .expect("Unable to read DICO_PATH env var");
-        let path = format!("{}/portail.yaml", &dico_path);
+        let lexic_path = std::env::var("LEXIC_PATH")
+            .expect("Unable to read LEXIC_PATH env var");
+        let path = format!("{}/portail.yaml", &lexic_path);
         log::info!("Load de {}", path);
         let f = std::fs::File::open(&path).expect("Could not open file.");
         let myport: Portail  = serde_yaml::from_reader(f).expect("Could not read values.");

@@ -22,7 +22,6 @@
 - https://djc.github.io/askama/askama.html
 
 ## SQLX
-- https://betterprogramming.pub/how-to-interact-with-postgresql-from-rust-using-sqlx-cfa2a7c758e7
 - le BASIC https://tms-dev-blog.com/rust-sqlx-basics-with-sqlite/
 - https://codevoweb.com/rust-build-a-crud-api-with-sqlx-and-postgresql/
 - https://www.opensourceforu.com/2022/05/sqlx-the-rust-sql-toolkit/

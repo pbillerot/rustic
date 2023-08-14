@@ -8,6 +8,10 @@
 - modèle docker
 - rechargement du lexique en live - un challenge compliqué
 
+0.4.1 - 14 août 2023
+- `added` development.conf production.conf externe à la webapp
+- `changed` nom de baptème du projet SILEX Système d'Information LEXical (utilisation d'un lexique)
+
 0.4.0 - 13 août 2023
 - `added` docker pour test en https
 - `changed` nom de baptème du projet SILEX Système d'Information LEXical (utilisation d'un lexique)

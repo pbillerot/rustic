@@ -25,5 +25,6 @@ RUN git clone https://github.com/pbillerot/silex.git
 EXPOSE 8080
 
 WORKDIR /home/app/silex/production
+RUN ls -l
 
 CMD ["./silex"]

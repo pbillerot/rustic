@@ -1,12 +1,11 @@
 // use actix_web::{get, post, web, HttpRequest, Result, Responder};
 use actix_web::{middleware, App, HttpServer, web, cookie::{self, Key}};
-use std::env;
 use sqlx::{postgres::PgPoolOptions, Pool, Postgres};
 
 use actix_session::{
     config::PersistentSession, storage::CookieSessionStore, SessionMiddleware,
 };
-
+use dotenv;
 // Déclarations des modules
 mod constants;
 mod lexic;
@@ -26,10 +25,20 @@ pub struct AppState {
 #[actix_web::main]
 async fn main() -> std::io::Result<()> {
     dotenv::dotenv().expect("Unable to load environment variables from .env file");
+    std::env::set_var("RUST_LOG", "debug");
+    env_logger::init();
+
+    let env_file = match std::env::var_os("CARGO") {
+        Some(_) => std::env::var("DEVELOPMENT_CONFIG").expect("ERROR DEVELOPMENT_CONFIG non définie"),
+        None => std::env::var("PRODUCTION_CONFIG").expect("ERROR PRODUCTION_CONFIG non définie"),
+    };
+    log::info!("Environnement : {:?}", env_file);
+
+    dotenv::from_filename(env_file).expect("Unable to load environment variables");
     // env::set_var("RUST_LOG", "actix_web=debug,actix_server=info");
     // env::set_var("RUST_LOG", std::env::var("RUST_LOG").expect("RUST_LOG must be set"));
-    env::set_var("RUST_LOG", "debug");
-    env_logger::init();
+    // std::env::set_var("RUST_LOG", "debug");
+    println!("{:?}", dotenv::vars());
 
     let database_url = std::env::var("DATABASE_URL").expect("DATABASE_URL must be set");
     let pool = match PgPoolOptions::new()
