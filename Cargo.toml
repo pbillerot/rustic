@@ -8,6 +8,7 @@ authors = ["Philippe Billerot <philippe.billerot@gmail.com>"]
 # actix-csrf = "0.7.0"
 # actix-csrf = {path = "./actix_csrf"}
 actix-session = { version = "0.7.2", features = ["cookie-session"] }
+actix-settings = "0.6.0"
 actix-web = "4"
 actix-web-lab = "0.19.1"
 askama = "0.12.0"
