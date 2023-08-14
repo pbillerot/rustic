@@ -86,7 +86,7 @@ async fn main() -> std::io::Result<()> {
             .service(routic::login_post)
             .service(routic::logout)
         })
-        .bind(("127.0.0.1", 8080))?
+        .bind(("0.0.0.0", 8080))?
         .server_hostname(std::env::var("HOSTNAME").expect("HOSTNAME not define"))
         .workers(match std::env::var("WORKERS") {
             Ok(ss) => ss.parse::<usize>().unwrap(),
