@@ -35,10 +35,6 @@ async fn main() -> std::io::Result<()> {
     log::info!("Environnement : {:?}", env_file);
 
     dotenv::from_filename(env_file).expect("Unable to load environment variables");
-    // env::set_var("RUST_LOG", "actix_web=debug,actix_server=info");
-    // env::set_var("RUST_LOG", std::env::var("RUST_LOG").expect("RUST_LOG must be set"));
-    // std::env::set_var("RUST_LOG", "debug");
-    println!("{:?}", dotenv::vars());
 
     let database_url = std::env::var("DATABASE_URL").expect("DATABASE_URL must be set");
     let pool = match PgPoolOptions::new()
@@ -56,7 +52,7 @@ async fn main() -> std::io::Result<()> {
         }
     };
 
-    log::info!("starting HTTP server at http://localhost:8080");
+    log::info!("starting HTTP server at http://0.0.0.0:8080");
 
     HttpServer::new(move|| {
         App::new()
@@ -87,11 +83,11 @@ async fn main() -> std::io::Result<()> {
             .service(routic::logout)
         })
         .bind(("0.0.0.0", 8080))?
-        .server_hostname(std::env::var("HOSTNAME").expect("HOSTNAME not define"))
-        .workers(match std::env::var("WORKERS") {
-            Ok(ss) => ss.parse::<usize>().unwrap(),
-            Err(_) => 1
-        })
+        // .server_hostname(std::env::var("HOSTNAME").expect("HOSTNAME not define"))
+        // .workers(match std::env::var("WORKERS") {
+        //     Ok(ss) => ss.parse::<usize>().unwrap(),
+        //     Err(_) => 1
+        // })
         .run()
         .await
 
