@@ -6,7 +6,7 @@ use crate::lexic::lex_utils;
 
 #[derive(Debug, Serialize, Deserialize)]
 pub struct Application {
-    pub app_id: String,
+    pub appid: String,
     #[serde(default = "lex_utils::default_str")]
     pub title: String,
     #[serde(default = "lex_utils::default_str")]
@@ -26,31 +26,58 @@ pub struct Application {
     #[serde(default = "lex_utils::default_str")]
     pub wiki: String,
 }
+
 #[allow(dead_code)]
 impl Application {
-    pub fn new(appid: String) -> Application {
-        dotenv::dotenv().expect("Unable to load environment variables from .env file");
+    pub fn load(appid: &str) -> Application {
+        // dotenv::dotenv().expect("Unable to load environment variables from .env file");
         let lexic_path = std::env::var("LEXIC_PATH")
             .expect("Unable to read LEXIC_PATH env var");
-        let path = format!("{}/{}/config/application.yaml", &lexic_path, &appid);
+        let path = format!("{}/{}/config/application.yaml", &lexic_path, appid);
+        log::info!("Load de {}", path);
         let f = std::fs::File::open(&path).expect("Could not open file.");
         let application  = serde_yaml::from_reader(f).expect("Could not read values.");
 
         application
     }
 }
+impl Clone for Application {
+    fn clone(&self) -> Application {
+        Application {
+            appid: self.appid.clone(),
+            title: self.title.clone(),
+            image: self.image.clone(),
+            icon_name: self.icon_name.clone(),
+            group: self.group.clone(),
+            parameters: self.parameters.clone(),
+            menu: self.menu.clone(),
+            shareable: self.shareable.clone(),
+            tasks_table_name: self.tasks_table_name.clone(),
+            wiki: self.wiki.clone(),
+        }
+    }
+}
 
 #[derive(Debug, Serialize, Deserialize)]
 pub struct TableView {
     #[serde(default = "lex_utils::default_str")]
-    pub table_id: String,
+    pub tableid: String,
     #[serde(default = "lex_utils::default_str")]
-    pub view_id: String,
+    pub viewid: String,
     #[serde(default = "lex_utils::default_bool")]
     pub in_footer: bool,
 }
 impl TableView {
     pub fn default() -> Vec<TableView> {
         Vec::new()
+    }
+}
+impl Clone for TableView {
+    fn clone(&self) -> TableView {
+        TableView {
+            tableid: self.tableid.clone(),
+            viewid: self.viewid.clone(),
+            in_footer: self.in_footer.clone(),
+        }
     }
 }

@@ -1,11 +1,20 @@
 # Liens divers et variés sur le projet
 
+## Cargo
+- cargo install cargo-watch
+- cargo watch -x run
+- https://rurust.github.io/cargo-docs-ru/environment-variables.html
+
 ## RUST
 - Le book https://doc.rust-lang.org/book/title-page.html
 - https://blog.guillaume-gomez.fr/Rust/1/1
 - https://rust.developpez.com/cours/
 - https://rust.developpez.com/tutoriels/rust-par-l-exemple/
 - [Read the tutorial article](https://docs.qovery.com/guides/tutorial/create-a-blazingly-fast-api-in-rust/)
+
+## modules
+- https://larouille.github.io/modules/#mettre-notre-module-dans-un-fichier-dedie
+
 
 ## ACTIX
 - https://docs.rs/actix-web/latest/actix_web/index.html
@@ -16,6 +25,7 @@
 - https://github.com/actix/examples/tree/master/middleware
 
 ## Templates
+- https://djc.github.io/askama/
 - https://github.com/Ghostff/actix-web-mvc-boilerplate/tree/master
 - https://lib.rs/crates/askama
 - https://github.com/actix/examples/blob/master/templating/askama/src/main.rs

@@ -33,16 +33,14 @@
 /// /eddy/document/:key
 /// /eddy/log
 
-mod rt_login;
-pub use self::rt_login::login; // curl http://0.0.0.0:8080/login
-pub use self::rt_login::login_post;
-pub use self::rt_login::logout; // curl http://0.0.0.0:8080/logout
+// mod rt_login;
+// pub use self::rt_login::login; // curl http://0.0.0.0:8080/login
+// pub use self::rt_login::login_post;
+// pub use self::rt_login::logout; // curl http://0.0.0.0:8080/logout
 
 mod rt_portail;
 pub use self::rt_portail::portail; // curl http://0.0.0.0:8080/
 
-mod tweet;
-pub use self::tweet::list;
-pub use self::tweet::get;
-pub use self::tweet::create;
-pub use self::tweet::delete;
+mod rt_application;
+pub use self::rt_application::application; // curl http://0.0.0.0:8080/app/{app}
+

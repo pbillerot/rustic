@@ -1,8 +1,8 @@
-<h1>{{title}}</h1>
-<ul>
-{% for app in applications %}
-  <li>{{ app|e }}</li>
-{% endfor %}
-</ul>
+{% extends "tpl_base.html" %}
 
-<pre>{{user_id}} connect&eacute;</pre>
+{% block content %}
+  <h1>{{title}}</h1>
+  {% for app in applications %}
+    <li><a href="/list/{{app}}/table/view">{{ app|e }}</a></li>
+  {% endfor %}
+{% endblock %}

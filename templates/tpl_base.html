@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>{% block title %}{{ title }}{% endblock %}</title>
+    {% block head %}{% endblock %}
+  </head>
+  <body>
+    <div id="content">
+      {% block content %}<p>Placeholder content</p>{% endblock %}
+    </div>
+    {% block foot %}
+    <hr/>
+    <h6>
+        <a href="{{env!("CARGO_PKG_HOMEPAGE")}}" target="_blank">{{env!("CARGO_PKG_NAME")|upper}}</a>
+        {{env!("CARGO_PKG_VERSION")}} &copy; {{env!("CARGO_PKG_AUTHORS")}}
+    </h6>
+    {% endblock %}
+  </body>
+</html>

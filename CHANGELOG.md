@@ -3,10 +3,17 @@
 # Historique des modifications
 
 ### TODO :
-- mise en prod de la maquette pour vérif en https de csrf
-- ajout csrf
-- modèle docker
+- récup variable de cargo let version = env!("CARGO_PKG_VERSION");
+  https://rurust.github.io/cargo-docs-ru/environment-variables.html
+- import template header footer
+- ajout csrf -> pas évident
 - rechargement du lexique en live - un challenge compliqué
+
+0.5.0 - 16 août 2023
+- `changed` build-release.sh à la racine
+- `changed` dockerfile mini avec seulement l'exécutable
+- `added` lexic racine à portail et applications
+- `added` template tpl_base
 
 0.4.1 - 14 août 2023
 - `added` development.conf production.conf externe à la webapp

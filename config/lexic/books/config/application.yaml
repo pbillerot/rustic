@@ -1,9 +1,9 @@
 # Application "Books" pour "Silex"
-app_id: books
+appid: "books"
 title: "Books pour Silex"
-group: billerot
+group: "billerot"
 image: "book.png"
 menu:
-- table_id: books
-  view_id: vall
+- tableid: "books"
+  viewid: "vall"
   in_footer: false

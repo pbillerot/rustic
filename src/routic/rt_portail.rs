@@ -1,3 +1,6 @@
+//! Page d'accueil de Silex
+//! Ouverture du portail
+
 use actix_web::{
     get,
     // delete,
@@ -48,8 +51,8 @@ pub async fn portail(
     };
 
     let html = PortailTemplate {
-        title: data.portail.title.clone(),
-        applications: data.portail.applications.clone(),
+        title: data.lexic.portail.title.clone(),
+        applications: data.lexic.portail.applications.clone(),
         user_id: userid,
     }
     .render()

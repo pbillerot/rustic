@@ -1,11 +1,8 @@
-// Modules de gestion du dictionnaire
+// Modules de gestion du lexique
 
+pub mod lex_lexic;
 
 mod lex_portail;
-pub use self::lex_portail::Portail;
-
-
 mod lex_application;
-
 mod lex_utils;
 

@@ -7,11 +7,11 @@ use actix_session::{
 };
 use dotenv;
 // Déclarations des modules
-mod constants;
+// mod constants;
 mod lexic;
 mod routic;
 mod servic;
-mod models;
+// mod models;
 
 
 #[derive(Clone)]
@@ -19,7 +19,7 @@ mod models;
 // https://actix.rs/docs/extractors#application-state-extractor
 pub struct AppState {
     db: Pool<Postgres>,
-    portail: lexic::Portail,
+    lexic: lexic::lex_lexic::Lexic,
 }
 
 #[actix_web::main]
@@ -28,9 +28,10 @@ async fn main() -> std::io::Result<()> {
     std::env::set_var("RUST_LOG", "debug");
     env_logger::init();
 
-    let env_file = match std::env::var_os("CARGO") {
-        Some(_) => std::env::var("DEVELOPMENT_CONFIG").expect("ERROR DEVELOPMENT_CONFIG non définie"),
-        None => std::env::var("PRODUCTION_CONFIG").expect("ERROR PRODUCTION_CONFIG non définie"),
+    // Environnemnt d'exécution ?
+    let env_file = match cfg!(debug_assertions) {
+        true => std::env::var("DEVELOPMENT_CONFIG").expect("ERROR DEVELOPMENT_CONFIG non définie"),
+        false => std::env::var("PRODUCTION_CONFIG").expect("ERROR PRODUCTION_CONFIG non définie"),
     };
     log::info!("Environnement : {:?}", env_file);
 
@@ -58,12 +59,12 @@ async fn main() -> std::io::Result<()> {
         App::new()
             .app_data(web::Data::new(AppState {
                 db: pool.clone(),
-                portail: lexic::Portail::new().clone(),
+                lexic: lexic::lex_lexic::Lexic::load(),
             }))
             // enable logger - always register actix-web Logger middleware last
             .wrap(middleware::Logger::default())
             // activation du contrôle de connexion de l'utilisateur
-            .wrap(servic::sr_redirect::CheckLogin)
+            // .wrap(servic::sr_redirect::CheckLogin)
             // un message partagé
             // .wrap(servic::sr_data::AddMsg::enabled())
             // données disponibles dans les requetes
@@ -78,16 +79,13 @@ async fn main() -> std::io::Result<()> {
                     .build(),
             )
             .service(routic::portail)
-            .service(routic::login)
-            .service(routic::login_post)
-            .service(routic::logout)
+            .service(routic::application)
         })
         .bind(("0.0.0.0", 8080))?
-        // .server_hostname(std::env::var("HOSTNAME").expect("HOSTNAME not define"))
-        // .workers(match std::env::var("WORKERS") {
-        //     Ok(ss) => ss.parse::<usize>().unwrap(),
-        //     Err(_) => 1
-        // })
+        .workers(match std::env::var("WORKERS") {
+            Ok(ss) => ss.parse::<usize>().unwrap(),
+            Err(_) => 1
+        })
         .run()
         .await
 
