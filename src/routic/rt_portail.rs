@@ -15,7 +15,7 @@ use actix_web::{
 use actix_session::Session;
 use actix_web_lab::respond::Html;
 use askama::Template;
-
+use std::sync::atomic::Ordering;
 // use crate::servic;
 use crate::AppState;
 
@@ -36,7 +36,7 @@ pub async fn portail(
     // msg: Option<ReqData<servic::sr_data::Msg>>,
 ) -> Result<impl Responder> {
     log::info!("Session {:?} {:?}", session.status(), session.entries());
-
+    let plexic = data.plexic.load(Ordering::Relaxed);
     // if let Some(msg_data) = msg {
     //     let servic::sr_data::Msg(message) = msg_data.into_inner();
     //     log::info!("Msg: {:?}", message);
@@ -51,8 +51,8 @@ pub async fn portail(
     };
 
     let html = PortailTemplate {
-        title: data.lexic.portail.title.clone(),
-        applications: data.lexic.portail.applications.clone(),
+        title: unsafe {(*plexic).portail.title.clone()},
+        applications: unsafe {(*plexic).portail.applications.clone()},
         user_id: userid,
     }
     .render()

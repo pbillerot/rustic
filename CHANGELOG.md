@@ -3,11 +3,12 @@
 # Historique des modifications
 
 ### TODO :
-- récup variable de cargo let version = env!("CARGO_PKG_VERSION");
-  https://rurust.github.io/cargo-docs-ru/environment-variables.html
-- import template header footer
 - ajout csrf -> pas évident
 - rechargement du lexique en live - un challenge compliqué
+- static files
+
+0.5.1 - 16 août 2023
+- `added` lexic partagé unique
 
 0.5.0 - 16 août 2023
 - `changed` build-release.sh à la racine

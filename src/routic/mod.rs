@@ -44,3 +44,7 @@ pub use self::rt_portail::portail; // curl http://0.0.0.0:8080/
 mod rt_application;
 pub use self::rt_application::application; // curl http://0.0.0.0:8080/app/{app}
 
+mod rt_lexic;
+pub use self::rt_lexic::lexicall; // curl http://0.0.0.0:8080/lexic/{action}
+
+// pub const APPLICATION_JSON: &str = "application/json";

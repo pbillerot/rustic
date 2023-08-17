@@ -2,6 +2,11 @@
 use actix_web::{middleware, App, HttpServer, web, cookie::{self, Key}};
 use sqlx::{postgres::PgPoolOptions, Pool, Postgres};
 
+use std::sync::Arc;
+use std::sync::atomic::AtomicPtr;
+// use std::sync::atomic::Ordering;
+// use std::sync::Mutex;
+
 use actix_session::{
     config::PersistentSession, storage::CookieSessionStore, SessionMiddleware,
 };
@@ -17,9 +22,11 @@ mod servic;
 #[derive(Clone)]
 #[allow(dead_code)]
 // https://actix.rs/docs/extractors#application-state-extractor
+// https://docs.rs/crossbeam/0.2.10/crossbeam/sync/struct.ArcCell.html
 pub struct AppState {
     db: Pool<Postgres>,
-    lexic: lexic::lex_lexic::Lexic,
+    // lexic: lexic::lex_lexic::Lexic,
+    plexic: Arc<AtomicPtr<lexic::lex_lexic::Lexic>>,
 }
 
 #[actix_web::main]
@@ -37,6 +44,7 @@ async fn main() -> std::io::Result<()> {
 
     dotenv::from_filename(env_file).expect("Unable to load environment variables");
 
+    // Déclarations des pools de connexion aux base de données
     let database_url = std::env::var("DATABASE_URL").expect("DATABASE_URL must be set");
     let pool = match PgPoolOptions::new()
         .max_connections(5)
@@ -52,6 +60,9 @@ async fn main() -> std::io::Result<()> {
             std::process::exit(1);
         }
     };
+    // le lexic sera paratagé entre tous les threads du serveur
+    // let data = Arc::new(Mutex::new(vec![1u32, 2, 3]));
+    let lexic = Box::new(lexic::lex_lexic::Lexic::load());
 
     log::info!("starting HTTP server at http://0.0.0.0:8080");
 
@@ -59,7 +70,9 @@ async fn main() -> std::io::Result<()> {
         App::new()
             .app_data(web::Data::new(AppState {
                 db: pool.clone(),
-                lexic: lexic::lex_lexic::Lexic::load(),
+                // lexic: lexic::lex_lexic::Lexic::load(),
+                // plexic: Arc::new(AtomicPtr::new(&mut lexic::lex_lexic::Lexic::load())),
+                plexic: Arc::new(AtomicPtr::new(Box::into_raw(lexic.clone()))),
             }))
             // enable logger - always register actix-web Logger middleware last
             .wrap(middleware::Logger::default())
@@ -80,6 +93,7 @@ async fn main() -> std::io::Result<()> {
             )
             .service(routic::portail)
             .service(routic::application)
+            .service(routic::lexicall)
         })
         .bind(("0.0.0.0", 8080))?
         .workers(match std::env::var("WORKERS") {
