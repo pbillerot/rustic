@@ -7,6 +7,9 @@
 - rechargement du lexique en live - un challenge compliqué
 - static files
 
+0.5.2 - 17 août 2023
+- `added` gestion erreurs chargement du lexique
+
 0.5.1 - 16 août 2023
 - `added` lexic partagé unique
 

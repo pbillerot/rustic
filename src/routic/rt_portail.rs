@@ -35,7 +35,7 @@ pub async fn portail(
     data: web::Data<AppState>,
     // msg: Option<ReqData<servic::sr_data::Msg>>,
 ) -> Result<impl Responder> {
-    log::info!("Session {:?} {:?}", session.status(), session.entries());
+    // log::info!("Session {:?} {:?}", session.status(), session.entries());
     let plexic = data.plexic.load(Ordering::Relaxed);
     // if let Some(msg_data) = msg {
     //     let servic::sr_data::Msg(message) = msg_data.into_inner();

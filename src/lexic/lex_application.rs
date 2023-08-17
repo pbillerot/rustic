@@ -29,16 +29,17 @@ pub struct Application {
 
 #[allow(dead_code)]
 impl Application {
-    pub fn load(appid: &str) -> Application {
-        // dotenv::dotenv().expect("Unable to load environment variables from .env file");
+    pub fn load(appid: &str) -> Result<Application, String> {
         let lexic_path = std::env::var("LEXIC_PATH")
-            .expect("Unable to read LEXIC_PATH env var");
+            .map_err(|e| format!("Unable to read LEXIC_PATH env var {:?}", e))?;
         let path = format!("{}/{}/config/application.yaml", &lexic_path, appid);
         log::info!("Load de {}", path);
-        let f = std::fs::File::open(&path).expect("Could not open file.");
-        let application  = serde_yaml::from_reader(f).expect("Could not read values.");
+        let f = std::fs::File::open(&path)
+            .map_err(|e| format!("Could not open file {:?}", e))?;
+        let application  = serde_yaml::from_reader(f)
+            .map_err(|e| format!("Could not read values {:?}", e))?;
 
-        application
+        Ok(application)
     }
 }
 impl Clone for Application {

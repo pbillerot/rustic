@@ -9,16 +9,17 @@ pub struct Lexic {
     pub applications: HashMap<String, lex_application::Application>
 }
 impl Lexic {
-    pub fn load() -> Lexic {
-        let portail = lex_portail::Portail::load();
+    pub fn load() -> Result<Lexic, String> {
+        let portail = lex_portail::Portail::load()?;
         let mut map = HashMap::new();
         for appid in &portail.applications {
-            map.insert(appid.to_string(), lex_application::Application::load(appid.as_str()));
+            let app = lex_application::Application::load(appid.as_str())?;
+            map.insert(appid.to_string(), app);
         }
-        Lexic {
+        Ok(Lexic {
             portail: portail,
             applications : map,
-        }
+        })
     }
 }
 

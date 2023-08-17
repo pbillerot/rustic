@@ -62,7 +62,14 @@ async fn main() -> std::io::Result<()> {
     };
     // le lexic sera paratagé entre tous les threads du serveur
     // let data = Arc::new(Mutex::new(vec![1u32, 2, 3]));
-    let lexic = Box::new(lexic::lex_lexic::Lexic::load());
+    let lexic = match lexic::lex_lexic::Lexic::load() {
+        Ok(t) => Box::new(t),
+        Err(e) => {
+            log::error!("Erreur chargement {}", e);
+            std::process::exit(1);
+        }
+    };
+    // let plexic = Box::new(lexic);
 
     log::info!("starting HTTP server at http://0.0.0.0:8080");
 

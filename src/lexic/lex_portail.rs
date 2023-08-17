@@ -16,16 +16,18 @@ pub struct Portail {
 }
 #[allow(dead_code)]
 impl Portail {
-    pub fn load() -> Portail {
-        // dotenv::dotenv().expect("Unable to load environment variables from .env file");
+    pub fn load() -> Result<Portail, String> {
         let lexic_path = std::env::var("LEXIC_PATH")
-            .expect("Unable to read LEXIC_PATH env var");
+            .map_err(|e| format!("Unable to read LEXIC_PATH env var {:?}", e))?;
         let path = format!("{}/portail.yaml", &lexic_path);
         log::info!("Load de {}", path);
-        let f = std::fs::File::open(&path).expect("Could not open file.");
-        let portail: Portail  = serde_yaml::from_reader(f).expect("Could not read values.");
+        let f = std::fs::File::open(&path)
+            .map_err(|e| format!("Could not open file {:?}", e))?;
+        let portail: Portail  = serde_yaml::from_reader(f)
+            .map_err(|e| format!("Could not read values {:?}", e))?;
 
-        portail
+        Ok(portail)
+
     }
 }
 impl Clone for Portail {
