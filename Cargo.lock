@@ -2224,7 +2224,7 @@ dependencies = [
 
 [[package]]
 name = "silex"
-version = "0.5.3"
+version = "0.5.4"
 dependencies = [
  "actix-session",
  "actix-settings",

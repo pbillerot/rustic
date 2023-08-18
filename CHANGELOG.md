@@ -7,6 +7,9 @@
 - rechargement du lexique en live - un challenge compliqué
 - static files
 
+0.5.4 - 18 août 2023
+- `fixed` AppState créé avant httpserver
+
 0.5.3 - 18 août 2023
 - `changed` tpl avec objet portail et application
 - `added` tpl application

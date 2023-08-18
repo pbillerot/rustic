@@ -38,7 +38,7 @@ pub async fn portail(
     // log::info!("Session {:?} {:?}", session.status(), session.entries());
     let ptr = data.plexic.load(Ordering::Relaxed);
 
-    unsafe { log::info!("ptr: {}", (*ptr).portail.title)}
+    // unsafe { log::info!("ptr: {}", (*ptr).portail.title)}
 
     let appids = unsafe {(*ptr).portail.applications.clone()};
     let apps = unsafe {&(*ptr).applications.clone()};

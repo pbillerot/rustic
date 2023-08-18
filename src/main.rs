@@ -77,15 +77,17 @@ async fn main() -> std::io::Result<()> {
             std::process::exit(1);
         }
     };
+    // AppState doit être crée devant le HyypServer, sinon le ptr sera privé au thread
+    let data = AppState {
+        db: pool,
+        plexic: Arc::new(AtomicPtr::new(Box::into_raw(lexic))),
+    };
 
     log::info!("starting HTTP server at http://0.0.0.0:8080");
 
     HttpServer::new(move|| {
         App::new()
-            .app_data(web::Data::new(AppState {
-                db: pool.clone(),
-                plexic: Arc::new(AtomicPtr::new(Box::into_raw(lexic.clone()))),
-            }))
+            .app_data(web::Data::new(data.clone()))
             // enable logger - always register actix-web Logger middleware last
             .wrap(middleware::Logger::default())
 
