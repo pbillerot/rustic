@@ -1,6 +1,8 @@
 use actix_web::{middleware, App, HttpServer, web, cookie::{self, Key}};
 use sqlx::{postgres::PgPoolOptions, Pool, Postgres};
 
+use chrono::Local;
+use std::io::Write;
 use std::sync::Arc;
 use std::sync::atomic::AtomicPtr;
 // use std::sync::atomic::Ordering;
@@ -17,7 +19,6 @@ mod routic;
 mod servic;
 // mod sqlic;
 
-
 #[derive(Clone)]
 #[allow(dead_code)]
 pub struct AppState {
@@ -29,7 +30,19 @@ pub struct AppState {
 async fn main() -> std::io::Result<()> {
     dotenv::dotenv().expect("Unable to load environment variables from .env file");
     std::env::set_var("RUST_LOG", "debug");
-    env_logger::init();
+    // env_logger::init();
+    let env = env_logger::Env::default();
+    env_logger::Builder::from_env(env).format(|buf, record| {
+        let time = Local::now().format("%Y-%m-%D %H:%M:%S");
+        // let time = std::time::SystemTime::now();
+        writeln!(buf, "[{} {:5} {} {:4} {:?}] {}",
+            time,// format_rfc3339_micros(time),
+            record.level(),
+            if let Some(s) = record.module_path_static() { s } else { "" },
+            if let Some(v) = record.line() { v } else { 0 },
+            std::thread::current().id(),
+            record.args())
+    }).init();
 
     // Environnemnt d'exécution ?
     let env_file = match cfg!(debug_assertions) {

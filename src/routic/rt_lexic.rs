@@ -31,26 +31,25 @@ async fn lexicall(info: web::Path<Info>, data: web::Data<AppState>) -> impl Resp
     // println!("{:?}", info);
     if info.action == "refresh" {
         log::info!("On Lexic action [{}] ...", info.action);
-        let ptr = data.plexic.load(Ordering::Relaxed);
+        // Réservation du pointeur - les autres threads seront en attente
+        // let _ptr = data.plexic.get_mut();
+        let ptr1 = data.plexic.load(Ordering::Relaxed);
+        unsafe { log::info!("ptr1: {}", (*ptr1).portail.title)}
 
         // Chargement d'un nouveau lexique
-        let _newlexic = match lexic::lex_lexic::Lexic::load() {
+        let mut _newlexic = match lexic::lex_lexic::Lexic::load() {
             Ok(t) => {
-                let _result = data.plexic.fetch_update(Ordering::SeqCst, Ordering::SeqCst, |x| {
-                    if x == ptr {
-                        log::info!("New lexic ok");
-                        Some(Box::into_raw(Box::new(t.clone())))
-                    } else {
-                        log::error!("Error update lexique");
-                        None
-                    }
+                let _oldptr = data.plexic.fetch_update(Ordering::SeqCst, Ordering::SeqCst, |_x| {
+                    log::info!("New lexic ok");
+                    Some(Box::into_raw(Box::new(t.clone())))
                 });
-
             },
             Err(e) => {
                 log::error!("Error loading lexic {:?}", e);
             }
         };
+        let ptr2 = data.plexic.load(Ordering::Relaxed);
+        unsafe { log::info!("ptr2: {}", (*ptr2).portail.title)}
 
         log::info!("On Lexic action [{}] end", info.action);
     }

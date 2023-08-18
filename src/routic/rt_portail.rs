@@ -16,6 +16,7 @@ use actix_session::Session;
 use actix_web_lab::respond::Html;
 use askama::Template;
 use std::sync::atomic::Ordering;
+
 // use crate::servic;
 use crate::AppState;
 use crate::lexic::{lex_application, lex_portail};
@@ -35,9 +36,12 @@ pub async fn portail(
     data: web::Data<AppState>,
 ) -> Result<impl Responder> {
     // log::info!("Session {:?} {:?}", session.status(), session.entries());
-    let plexic = data.plexic.load(Ordering::Relaxed);
-    let appids = unsafe {(*plexic).portail.applications.clone()};
-    let apps = unsafe {&(*plexic).applications.clone()};
+    let ptr = data.plexic.load(Ordering::Relaxed);
+
+    unsafe { log::info!("ptr: {}", (*ptr).portail.title)}
+
+    let appids = unsafe {(*ptr).portail.applications.clone()};
+    let apps = unsafe {&(*ptr).applications.clone()};
     let mut vapp = Vec::new();
     for appid in appids {
         let app = apps.get(&appid).unwrap();
@@ -45,7 +49,7 @@ pub async fn portail(
     }
 
     let html = PortailTemplate {
-        portail: unsafe {(*plexic).portail.clone()},
+        portail: unsafe {(*ptr).portail.clone()},
         applications: vapp,
     }
     .render()
