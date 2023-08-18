@@ -1,6 +1,7 @@
 use serde::{Deserialize, Serialize};
 use serde_yaml::{self};
 use std::collections::HashMap;
+use std::fmt;
 
 use crate::lexic::lex_utils;
 
@@ -56,6 +57,16 @@ impl Clone for Application {
             tasks_table_name: self.tasks_table_name.clone(),
             wiki: self.wiki.clone(),
         }
+    }
+}
+impl fmt::Display for Application {
+    // This trait requires `fmt` with this exact signature.
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        // Write strictly the first element into the supplied output
+        // stream: `f`. Returns `fmt::Result` which indicates whether the
+        // operation succeeded or failed. Note that `write!` uses syntax which
+        // is very similar to `println!`.
+        write!(f, "{}:{}", self.appid, self.title)
     }
 }
 

@@ -18,42 +18,35 @@ use askama::Template;
 use std::sync::atomic::Ordering;
 // use crate::servic;
 use crate::AppState;
+use crate::lexic::{lex_application, lex_portail};
 
 #[derive(Template)]
 #[template(path = "tpl_portail.html")]
 #[allow(dead_code)]
 struct PortailTemplate {
-    title: String,
-    applications: Vec<String>,
-    user_id: String,
+    portail: lex_portail::Portail,
+    applications: Vec<lex_application::Application>,
 }
 
 // cuerl http://0.0.0.0:8080/
 #[get("/")]
 pub async fn portail(
-    session: Session,
+    _session: Session,
     data: web::Data<AppState>,
-    // msg: Option<ReqData<servic::sr_data::Msg>>,
 ) -> Result<impl Responder> {
     // log::info!("Session {:?} {:?}", session.status(), session.entries());
     let plexic = data.plexic.load(Ordering::Relaxed);
-    // if let Some(msg_data) = msg {
-    //     let servic::sr_data::Msg(message) = msg_data.into_inner();
-    //     log::info!("Msg: {:?}", message);
-    // } else {
-    //     log::error!("no message found");
-    // }
-
-    let userid = if let Some(user_id) = session.get::<String>("user_id")? {
-        user_id
-    } else {
-        "anonymous".to_string()
-    };
+    let appids = unsafe {(*plexic).portail.applications.clone()};
+    let apps = unsafe {&(*plexic).applications.clone()};
+    let mut vapp = Vec::new();
+    for appid in appids {
+        let app = apps.get(&appid).unwrap();
+        vapp.push(app.clone());
+    }
 
     let html = PortailTemplate {
-        title: unsafe {(*plexic).portail.title.clone()},
-        applications: unsafe {(*plexic).portail.applications.clone()},
-        user_id: userid,
+        portail: unsafe {(*plexic).portail.clone()},
+        applications: vapp,
     }
     .render()
     .expect("template should be valid");

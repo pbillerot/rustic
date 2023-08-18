@@ -7,6 +7,10 @@
 - rechargement du lexique en live - un challenge compliqué
 - static files
 
+0.5.3 - 18 août 2023
+- `changed` tpl avec objet portail et application
+- `added` tpl application
+
 0.5.2 - 17 août 2023
 - `added` gestion erreurs chargement du lexique
 

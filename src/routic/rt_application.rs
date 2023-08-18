@@ -18,43 +18,33 @@ use askama::Template;
 use std::sync::atomic::Ordering;
 // use crate::servic;
 use crate::AppState;
+use crate::lexic::{lex_application, lex_portail};
 
 #[derive(Template)]
-#[template(path = "tpl_portail.html")]
+#[template(path = "tpl_application.html")]
 #[allow(dead_code)]
-struct TableTemplate {
-    title: String,
-    applications: Vec<String>,
-    user_id: String,
+struct ApplicationTemplate {
+    portail: lex_portail::Portail,
+    application: lex_application::Application,
 }
 
 // cuerl http://0.0.0.0:8080/
-#[get("/app/{app}")]
+#[get("/app/{appid}")]
 pub async fn application(
-    path: Path<(String,)>,
-    session: Session,
+    path: Path<String>,
+    _session: Session,
     data: web::Data<AppState>,
     // msg: Option<ReqData<servic::sr_data::Msg>>,
 ) -> Result<impl Responder> {
-    log::info!("Session {:?} {:?} {:?}", session.status(), session.entries(), path);
+    // log::info!("Session {:?} {:?} {:?}", session.status(), session.entries(), path);
+    let appid = path.into_inner();
     let plexic = data.plexic.load(Ordering::Relaxed);
-    // if let Some(msg_data) = msg {
-    //     let servic::sr_data::Msg(message) = msg_data.into_inner();
-    //     log::info!("Msg: {:?}", message);
-    // } else {
-    //     log::error!("no message found");
-    // }
+    let apps = unsafe {&(*plexic).applications.clone()};
+    let app = apps.get(&appid).unwrap();
 
-    let userid = if let Some(user_id) = session.get::<String>("user_id")? {
-        user_id
-    } else {
-        "anonymous".to_string()
-    };
-
-    let html = TableTemplate {
-        title: unsafe {(*plexic).portail.title.clone()},
-        applications: unsafe {(*plexic).portail.applications.clone()},
-        user_id: userid,
+    let html = ApplicationTemplate {
+        portail: unsafe {(*plexic).portail.clone()},
+        application: app.clone(),
     }
     .render()
     .expect("template should be valid");

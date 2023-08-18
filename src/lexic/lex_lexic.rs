@@ -1,9 +1,7 @@
 use std::collections::HashMap;
-
 use crate::lexic::lex_portail;
 use crate::lexic::lex_application;
 use crate::lexic::lex_utils;
-
 pub struct Lexic {
     pub portail: lex_portail::Portail,
     pub applications: HashMap<String, lex_application::Application>

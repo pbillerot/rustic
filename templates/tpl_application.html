@@ -1,8 +1,8 @@
 {% extends "tpl_base.html" %}
 
 {% block content %}
-  <h1>{{title}}</h1>
-  {% for app in applications %}
-    <li><a href="/list/{{app}}/table/view">{{ app|e }}</a></li>
+  <h1>{{application.title}}</h1>
+  {% for tv in application.menu %}
+    <li><a href="/list/{{application.appid}}/{{tv.tableid}}/{{tv.viewid}}">{{tv.tableid}}/{{tv.viewid}}</a></li>
   {% endfor %}
 {% endblock %}

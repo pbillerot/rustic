@@ -1,4 +1,3 @@
-// use actix_web::{get, post, web, HttpRequest, Result, Responder};
 use actix_web::{middleware, App, HttpServer, web, cookie::{self, Key}};
 use sqlx::{postgres::PgPoolOptions, Pool, Postgres};
 
@@ -16,16 +15,13 @@ use dotenv;
 mod lexic;
 mod routic;
 mod servic;
-// mod models;
+// mod sqlic;
 
 
 #[derive(Clone)]
 #[allow(dead_code)]
-// https://actix.rs/docs/extractors#application-state-extractor
-// https://docs.rs/crossbeam/0.2.10/crossbeam/sync/struct.ArcCell.html
 pub struct AppState {
     db: Pool<Postgres>,
-    // lexic: lexic::lex_lexic::Lexic,
     plexic: Arc<AtomicPtr<lexic::lex_lexic::Lexic>>,
 }
 
@@ -60,8 +56,7 @@ async fn main() -> std::io::Result<()> {
             std::process::exit(1);
         }
     };
-    // le lexic sera paratagé entre tous les threads du serveur
-    // let data = Arc::new(Mutex::new(vec![1u32, 2, 3]));
+    // le lexic sera partagé entre tous les threads du serveur
     let lexic = match lexic::lex_lexic::Lexic::load() {
         Ok(t) => Box::new(t),
         Err(e) => {
@@ -69,7 +64,6 @@ async fn main() -> std::io::Result<()> {
             std::process::exit(1);
         }
     };
-    // let plexic = Box::new(lexic);
 
     log::info!("starting HTTP server at http://0.0.0.0:8080");
 
@@ -77,17 +71,17 @@ async fn main() -> std::io::Result<()> {
         App::new()
             .app_data(web::Data::new(AppState {
                 db: pool.clone(),
-                // lexic: lexic::lex_lexic::Lexic::load(),
-                // plexic: Arc::new(AtomicPtr::new(&mut lexic::lex_lexic::Lexic::load())),
                 plexic: Arc::new(AtomicPtr::new(Box::into_raw(lexic.clone()))),
             }))
             // enable logger - always register actix-web Logger middleware last
             .wrap(middleware::Logger::default())
+
             // activation du contrôle de connexion de l'utilisateur
             // .wrap(servic::sr_redirect::CheckLogin)
+
             // un message partagé
             // .wrap(servic::sr_data::AddMsg::enabled())
-            // données disponibles dans les requetes
+
             // activation de actix-session
             .wrap(
                 SessionMiddleware::builder(CookieSessionStore::default(), Key::from(&[0; 64]))

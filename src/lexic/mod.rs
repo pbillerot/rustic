@@ -2,7 +2,7 @@
 
 pub mod lex_lexic;
 
-mod lex_portail;
-mod lex_application;
-mod lex_utils;
+pub mod lex_portail;
+pub mod lex_application;
+pub mod lex_utils;
 

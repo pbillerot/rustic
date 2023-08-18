@@ -1,8 +1,8 @@
 {% extends "tpl_base.html" %}
 
 {% block content %}
-  <h1>{{title}}</h1>
+  <h1>{{portail.title}}</h1>
   {% for app in applications %}
-    <li><a href="/list/{{app}}/table/view">{{ app|e }}</a></li>
+    <li><a href="/app/{{app.appid}}" title="{{ app.title|e }}">{{ app.title|e }}</a></li>
   {% endfor %}
 {% endblock %}
