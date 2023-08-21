@@ -1,18 +1,17 @@
 use serde::{Deserialize, Serialize};
 use serde_yaml::{self};
 
-use crate::lexic::lex_utils;
-
 #[derive(Debug, Serialize, Deserialize)]
 pub struct Portail {
-    #[serde(default = "lex_utils::default_str")]
+    #[serde(default = "String::new")]
     pub title: String,
-    #[serde(default = "lex_utils::default_str")]
+    #[serde(default = "String::new")]
     pub info: String,
-    #[serde(default = "lex_utils::default_str")]
+    #[serde(default = "String::new")]
     pub icon_file: String,
     #[serde(default = "Vec::new")]
-    pub applications: Vec<String>,
+    #[serde(rename = "applications")]
+    pub appids: Vec<String>,
 }
 #[allow(dead_code)]
 impl Portail {
@@ -33,14 +32,14 @@ impl Portail {
 impl Clone for Portail {
     fn clone(&self) -> Portail {
         let mut v = Vec::new();
-        for k in &self.applications {
+        for k in &self.appids {
             v.push(k.to_string());
         }
         Portail {
             title: self.title.clone(),
             info: self.info.clone(),
             icon_file: self.icon_file.clone(),
-            applications: v,
+            appids: v,
         }
     }
 }

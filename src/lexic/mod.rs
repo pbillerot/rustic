@@ -4,5 +4,6 @@ pub mod lex_lexic;
 
 pub mod lex_portail;
 pub mod lex_application;
+pub mod lex_table;
 pub mod lex_utils;
 

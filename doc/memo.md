@@ -92,3 +92,36 @@ curl -X POST -d '{"message": "This is a tweet"}' -H "Content-type: application/j
 - https://github.com/Keats/validator
 - ko pb dépendances https://github.com/edward-shen/actix-csrf
 - https://kvnallsn.github.io/actix-web-database-identity/actix_web/middleware/csrf/index.html
+
+# Code
+```rust
+// fusion
+a.into_iter().map(|(k, v)| b.insert(k, v));
+```
+```rust
+// Mutating one map
+fn merge1(map1: &mut HashMap<(), ()>, map2: HashMap<(), ()>) {
+    map1.extend(map2);
+}
+
+// Without mutation
+fn merge2(map1: HashMap<(), ()>, map2: HashMap<(), ()>) -> HashMap<(), ()> {
+    map1.into_iter().chain(map2).collect()
+}
+
+// If you only have a reference to the map to be merged in
+fn merge_from_ref(map: &mut HashMap<(), ()>, map_ref: &HashMap<(), ()>) {
+    map.extend(map_ref.into_iter().map(|(k, v)| (k.clone(), v.clone())));
+}
+```
+```rust
+```
+```rust
+```
+```rust
+```
+```rust
+```
+```rust
+```
+

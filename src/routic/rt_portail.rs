@@ -24,9 +24,9 @@ use crate::lexic::{lex_application, lex_portail};
 #[derive(Template)]
 #[template(path = "tpl_portail.html")]
 #[allow(dead_code)]
-struct PortailTemplate {
-    portail: lex_portail::Portail,
-    applications: Vec<lex_application::Application>,
+struct PortailTemplate<'a> {
+    portail: &'a lex_portail::Portail,
+    applications: &'a Vec<&'a lex_application::Application>,
 }
 
 // cuerl http://0.0.0.0:8080/
@@ -40,17 +40,17 @@ pub async fn portail(
 
     // unsafe { log::info!("ptr: {}", (*ptr).portail.title)}
 
-    let appids = unsafe {(*ptr).portail.applications.clone()};
-    let apps = unsafe {&(*ptr).applications.clone()};
-    let mut vapp = Vec::new();
+    let appids = unsafe {(*ptr).portail.appids.clone()};
+    let apps: &std::collections::HashMap<String, lex_application::Application> = unsafe {&(*ptr).applications};
+    let mut vapp: Vec<&lex_application::Application> = Vec::new();
     for appid in appids {
         let app = apps.get(&appid).unwrap();
-        vapp.push(app.clone());
+        vapp.push(&app);
     }
 
     let html = PortailTemplate {
-        portail: unsafe {(*ptr).portail.clone()},
-        applications: vapp,
+        portail: unsafe {&(*ptr).portail},
+        applications: &vapp,
     }
     .render()
     .expect("template should be valid");

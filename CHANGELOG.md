@@ -4,8 +4,12 @@
 
 ### TODO :
 - ajout csrf -> pas évident
-- rechargement du lexique en live - un challenge compliqué
+- question AtomicPtr::fetch_update : la mémoire de l'ancien pointeur sera-t-elle libérée après la fin des requests en cours ?
 - static files
+- lexic table
+
+0.5.5 - 20 août 2023
+- `added` template Askama avant bascule sur Tera
 
 0.5.4 - 18 août 2023
 - `fixed` AppState créé avant httpserver

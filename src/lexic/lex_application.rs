@@ -4,28 +4,33 @@ use std::collections::HashMap;
 use std::fmt;
 
 use crate::lexic::lex_utils;
+use crate::lexic::lex_table;
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Serialize, Deserialize, Clone)]
 pub struct Application {
     pub appid: String,
-    #[serde(default = "lex_utils::default_str")]
+    #[serde(default = "String::new")]
     pub title: String,
-    #[serde(default = "lex_utils::default_str")]
+    #[serde(default = "String::new")]
     pub image: String,
-    #[serde(default = "lex_utils::default_str")]
+    #[serde(default = "String::new")]
     pub icon_name: String,
-    #[serde(default = "lex_utils::default_str")]
+    #[serde(default = "String::new")]
     pub group: String,
-    #[serde(default = "lex_utils::default_map")]
+    #[serde(default = "HashMap::new")]
     pub parameters: HashMap<String, String>,
-    #[serde(default = "TableView::default")]
+    #[serde(default = "Vec::new")]
     pub menu: Vec<TableView>,
     #[serde(default = "lex_utils::default_bool")]
     pub shareable: bool,
-    #[serde(default = "lex_utils::default_str")]
+    #[serde(default = "String::new")]
     pub tasks_table_name: String,
-    #[serde(default = "lex_utils::default_str")]
+    #[serde(default = "String::new")]
     pub wiki: String,
+    // Données calculées
+    #[serde(default = "HashMap::new")]
+    pub tables: HashMap<String, lex_table::Table>,
+
 }
 
 #[allow(dead_code)]
@@ -37,26 +42,14 @@ impl Application {
         log::info!("Load de {}", path);
         let f = std::fs::File::open(&path)
             .map_err(|e| format!("Could not open file {:?}", e))?;
-        let application  = serde_yaml::from_reader(f)
+        let mut application: Application  = serde_yaml::from_reader(f)
             .map_err(|e| format!("Could not read values {:?}", e))?;
+        for menu in &application.menu {
+            let table: &lex_table::Table = &lex_table::Table::load(&appid, &menu.tableid)?;
+            application.tables.insert(menu.tableid.to_string(), table.clone());
+        }
 
         Ok(application)
-    }
-}
-impl Clone for Application {
-    fn clone(&self) -> Application {
-        Application {
-            appid: self.appid.clone(),
-            title: self.title.clone(),
-            image: self.image.clone(),
-            icon_name: self.icon_name.clone(),
-            group: self.group.clone(),
-            parameters: self.parameters.clone(),
-            menu: self.menu.clone(),
-            shareable: self.shareable.clone(),
-            tasks_table_name: self.tasks_table_name.clone(),
-            wiki: self.wiki.clone(),
-        }
     }
 }
 impl fmt::Display for Application {
@@ -70,26 +63,12 @@ impl fmt::Display for Application {
     }
 }
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Serialize, Deserialize, Clone)]
 pub struct TableView {
-    #[serde(default = "lex_utils::default_str")]
+    #[serde(default = "String::new")]
     pub tableid: String,
-    #[serde(default = "lex_utils::default_str")]
+    #[serde(default = "String::new")]
     pub viewid: String,
     #[serde(default = "lex_utils::default_bool")]
     pub in_footer: bool,
-}
-impl TableView {
-    pub fn default() -> Vec<TableView> {
-        Vec::new()
-    }
-}
-impl Clone for TableView {
-    fn clone(&self) -> TableView {
-        TableView {
-            tableid: self.tableid.clone(),
-            viewid: self.viewid.clone(),
-            in_footer: self.in_footer.clone(),
-        }
-    }
 }

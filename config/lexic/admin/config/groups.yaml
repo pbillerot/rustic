@@ -1,30 +1,30 @@
 # Table des Groupes Utilisateur
 setting:
-  alias-db: admin
+  alias_db: admin
   key: group_id
-  col-display: group_id
-  icon-name: "users"
+  col_display: group_id
+  icon_name: "users"
 
 elements:
   group_id:
     type: text
-    label-long: "Groupe"
-    label-short: "Groupe"
+    label_long: "Groupe"
+    label_short: "Groupe"
   group_note:
     type: textarea
-    label-long: "Note"
-    label-short: "Note"
+    label_long: "Note"
+    label_short: "Note"
 
 views:
   vall:
-    form-add: fedit
-    form-edit: fedit
+    form_add: fedit
+    form_edit: fedit
     deletable: true
     type: card
     group: admin
     title: "Groupes Utilisateurs"
-    icon-name: users
-    order-by: group_id
+    icon_name: users
+    order_by: group_id
     card:
       header:
         - group_id

@@ -110,6 +110,7 @@ async fn main() -> std::io::Result<()> {
             .service(routic::portail)
             .service(routic::application)
             .service(routic::lexicall)
+            .service(routic::list)
         })
         .bind(("0.0.0.0", 8080))?
         .workers(match std::env::var("WORKERS") {

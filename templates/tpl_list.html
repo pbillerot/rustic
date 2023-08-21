@@ -1,0 +1,14 @@
+{% extends "tpl_base.html" %}
+
+{% block menu %}
+{% for tv in application.menu %}
+<li><a href="/list/{{application.appid}}/{{tv.tableid}}/{{tv.viewid}}">{{tv.viewid}}</a></li>
+{% endfor %}
+{% endblock %}
+
+{% block content %}
+  <h1>{{view.title}}</h1>
+  {% for el in view.velements %}
+    <li>{{el.order}}:{{el.label_short}} ({{el.type_element}})</li>
+  {% endfor %}
+{% endblock %}

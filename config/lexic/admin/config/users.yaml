@@ -1,74 +1,74 @@
 # table USERS
 setting:
-  alias-db: admin
+  alias_db: admin
   key: user_name
-  col-display: user_name
-  icon-name: "user"
+  col_display: user_name
+  icon_name: "user"
 
 elements:
   user_name:
     type: text
-    label-long: "Nom ou pseudo"
-    label-short: "Nom ou pseudo"
+    label_long: "Nom ou pseudo"
+    label_short: "Nom ou pseudo"
     pattern: "[a-zA-Z0-9]+"
     required: true
   user_password:
     type: password
-    label-long: "Mot de passe"
+    label_long: "Mot de passe"
     pattern: "[a-zA-Z0-9_-]+"
     required: true
-    min-length: 3
+    min_length: 3
   user_email:
     type: email
-    label-long: "Email"
-    label-short: "Email"
+    label_long: "Email"
+    label_short: "Email"
     required: true
   user_is_admin:
     type: checkbox
-    label-long: "Administrateur"
-    label-short: "Administrateur"
-    col-align: center
+    label_long: "Administrateur"
+    label_short: "Administrateur"
+    col_align: center
   user_groupes:
     type: tag
-    label-long: "Groupes"
-    label-short: "Groupes"
-    col-align: center
+    label_long: "Groupes"
+    label_short: "Groupes"
+    col_align: center
     width: xl
-    items-sql: "select group_id as key, group_id as label from groups order by group_id"
+    items_sql: "select group_id as key, group_id as label from groups order by group_id"
   _pwd_change:
     type: button
-    label-long: "Changer le mot de passe..."
+    label_long: "Changer le mot de passe..."
     params:
       url: "/bee/edit/admin/users/vall/fpwd/{user_name}"
   _card_MDP:
     type: card
-    label-long: "Sécurité"
-    icon-name: lock
+    label_long: "Sécurité"
+    icon_name: lock
     params:
       form: fmdp
   _new_password:
     type: password
-    label-long: "Nouveau mot de passe"
+    label_long: "Nouveau mot de passe"
     pattern: "[a-zA-Z0-9_-]+"
     required: true
-    min-length: 3
+    min_length: 3
   _confirm_password:
     type: password
-    label-long: "Confirmer le mot de passe"
+    label_long: "Confirmer le mot de passe"
     pattern: "[a-zA-Z0-9_-]+"
     required: true
-    min-length: 3
+    min_length: 3
 
 views:
   vall:
-    form-view: fview
-    form-add: fadd
-    form-edit: fedit
+    form_view: fview
+    form_add: fadd
+    form_edit: fedit
     group: admin
     deletable: true
     title: "Comptes Utilisateurs"
-    icon-name: user
-    order-by: user_name
+    icon_name: user
+    order_by: user_name
     card:
       header:
         - user_name
@@ -82,18 +82,18 @@ views:
     elements:
       user_name:
       user_email:
-        hide-on-mobile: true
+        hide_on_mobile: true
       user_is_admin:
-        hide-on-mobile: true
+        hide_on_mobile: true
       user_groupes:
 
   vprofil:
-    form-view: fprofil
-    form-edit: fedit_owner
+    form_view: fprofil
+    form_edit: fedit_owner
     group: owner
     title: "Mon profil"
-    icon-name: user
-    order-by: user_name
+    icon_name: user
+    order_by: user_name
     card:
       header:
         - user_name
@@ -164,7 +164,7 @@ forms:
     elements:
       user_name:
         order: 10
-        read-only: true
+        read_only: true
       user_email:
         order: 20
   fpwd:
@@ -173,15 +173,15 @@ forms:
     elements:
       user_name:
         order: 10
-        read-only: true
+        read_only: true
       _new_password:
         order: 20
       _confirm_password:
         order: 30
         # protected: true
-    check-sqlite:
+    check_sqlite:
       - "select 'les mots de passe ne sont pas identiques' where '{_new_password}' <> '{_confirm_password}' "
-    post-sql:
+    post_sql:
       - "update users set user_password = '{_new_password}' where user_name = '{user_name}'"
   fmdp:
     title: "Sécurité"
@@ -189,7 +189,7 @@ forms:
     elements:
       user_name:
         order: 10
-        read-only: true
+        read_only: true
       user_is_admin:
         order: 30
       user_groupes:

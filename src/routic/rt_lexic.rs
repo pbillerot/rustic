@@ -32,8 +32,8 @@ async fn lexicall(info: web::Path<Info>, data: web::Data<AppState>) -> impl Resp
     if info.action == "refresh" {
         log::info!("On Lexic action [{}] ...", info.action);
         // Réservation du pointeur - les autres threads seront en attente
-        // let ptr1 = data.plexic.load(Ordering::Relaxed);
-        // unsafe { log::info!("ptr1: {}", (*ptr1).portail.title)}
+        let ptr1 = data.plexic.load(Ordering::Relaxed);
+        unsafe { log::info!("ptr1: {}", (*ptr1).portail.title)}
 
         // Chargement d'un nouveau lexique
         let mut _newlexic = match lexic::lex_lexic::Lexic::load() {
@@ -47,8 +47,10 @@ async fn lexicall(info: web::Path<Info>, data: web::Data<AppState>) -> impl Resp
                 log::error!("Error loading lexic {:?}", e);
             }
         };
-        // let ptr2 = data.plexic.load(Ordering::Relaxed);
-        // unsafe { log::info!("ptr2: {}", (*ptr2).portail.title)}
+        let ptr2 = data.plexic.load(Ordering::Relaxed);
+        unsafe { log::info!("ptr2: {}", (*ptr2).portail.title)}
+
+        unsafe { log::info!("ptr1: {}", (*ptr1).portail.title)}
 
         log::info!("On Lexic action [{}] end", info.action);
     }

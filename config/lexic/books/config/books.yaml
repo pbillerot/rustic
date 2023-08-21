@@ -1,31 +1,31 @@
 # Table books de la table books.sqlite
 setting:
-  alias-db: books
+  alias_db: books
   key: id
-  col-display: titre
-  icon-name: "book"
+  col_display: titre
+  icon_name: "book"
 
 elements:
   id:
     type: counter
-    label-long: "n°"
-    label-short: "n°"
+    label_long: "n°"
+    label_short: "n°"
   titre:
     type: textarea
-    label-long: "Titre"
-    label-short: "Titre"
+    label_long: "Titre"
+    label_short: "Titre"
   auteur:
     type: text
-    label-long: "Auteur"
-    label-short: "Auteur"
+    label_long: "Auteur"
+    label_short: "Auteur"
   editeur:
     type: text
-    label-long: "Éditeur"
-    label-short: "Éditeur"
+    label_long: "Éditeur"
+    label_short: "Éditeur"
   note:
     type: radio
-    label-long: "Note"
-    label-short: "Note"
+    label_long: "Note"
+    label_short: "Note"
     items:
       - key: "1"
         label: "1"
@@ -39,46 +39,46 @@ elements:
         label: "5"
   commentaire:
     type: textarea
-    label-long: "Commentaire"
-    label-short: "Commentaire"
+    label_long: "Commentaire"
+    label_short: "Commentaire"
 
 views:
   vall:
-    form-add: fedit
-    form-edit: fedit
+    form_add: fedit
+    form_edit: fedit
     deletable: false
     type: table
     title: "Books"
-    icon-name: book
-    order-by: "titre"
+    icon_name: book
+    order_by: "titre"
     elements:
       id:
-      	order: 10
+        order: 10
       titre:
-      	order: 20
+        order: 20
       auteur:
-      	order: 30
+        order: 30
       editeur:
-      	order: 40
+        order: 40
       note:
-      	order: 50
+        order: 50
       commentaire:
         order: 60
 
 forms:
   fedit:
     title: "Book"
-    icon-name: book
+    icon_name: book
     elements:
       id:
-      	order: 10
+        order: 10
       titre:
-      	order: 20
+        order: 20
       auteur:
-      	order: 30
+        order: 30
       editeur:
-      	order: 40
+        order: 40
       note:
-      	order: 50
+        order: 50
       commentaire:
         order: 60

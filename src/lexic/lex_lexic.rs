@@ -10,7 +10,7 @@ impl Lexic {
     pub fn load() -> Result<Lexic, String> {
         let portail = lex_portail::Portail::load()?;
         let mut map = HashMap::new();
-        for appid in &portail.applications {
+        for appid in &portail.appids {
             let app = lex_application::Application::load(appid.as_str())?;
             map.insert(appid.to_string(), app);
         }
