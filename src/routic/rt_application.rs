@@ -1,6 +1,4 @@
 //! Ouverture d'une application
-//! /app/{{app}}
-//!
 use actix_web::{
     get,
     // delete,
@@ -14,20 +12,11 @@ use actix_web::{
 // use log::info;
 use actix_session::Session;
 use actix_web_lab::respond::Html;
-use askama::Template;
-use std::sync::atomic::Ordering;
-// use crate::servic;
-use crate::AppState;
-use crate::lexic::{lex_application, lex_portail};
+use tera::Context;
 
-#[derive(Template)]
-#[template(path = "tpl_application.html")]
-#[allow(dead_code)]
-struct ApplicationTemplate<'a> {
-    portail: &'a lex_portail::Portail,
-    application: &'a lex_application::Application,
-}
-// cuerl http://0.0.0.0:8080/
+use std::sync::atomic::Ordering;
+use crate::AppState;
+
 #[get("/app/{appid}")]
 pub async fn application(
     path: Path<String>,
@@ -37,16 +26,14 @@ pub async fn application(
 ) -> Result<impl Responder> {
     // log::info!("Session {:?} {:?} {:?}", session.status(), session.entries(), path);
     let appid = path.into_inner();
-    let plexic = data.plexic.load(Ordering::Relaxed);
-    let apps = unsafe {&(*plexic).applications.clone()};
+    let ptr = data.plexic.load(Ordering::Relaxed);
+    let apps = unsafe {&(*ptr).applications.clone()};
     let app = apps.get(&appid).unwrap();
 
-    let html = ApplicationTemplate {
-        portail: unsafe {&(*plexic).portail},
-        application: &app,
-    }
-    .render()
-    .expect("template should be valid");
+    let mut context = Context::new();
+    context.insert("portail", unsafe { &(*ptr).portail });
+    context.insert("application", &app);
+    let html = data.template.render("tpl_application.html", &context).unwrap();
 
     Ok(Html(html))
 }

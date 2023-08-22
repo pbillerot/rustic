@@ -4,8 +4,6 @@
 
 {% block menu %}
 {% for tv in application.menu %}
-<li><a href="/list/{{application.appid}}/{{tv.tableid}}/{{tv.viewid}}">{{tv.tableid}}/{{tv.viewid}}</a></li>
+<li><a href="/list/{{application.appid}}/{{tv.tableid}}/{{tv.viewid}}">{{application.tables[tv.tableid].views[tv.viewid].title}}</a></li>
 {% endfor %}
 {% endblock %}
-
-{% block content %}{% endblock %}

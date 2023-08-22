@@ -11,6 +11,8 @@ use std::sync::atomic::AtomicPtr;
 use actix_session::{
     config::PersistentSession, storage::CookieSessionStore, SessionMiddleware,
 };
+use tera::Tera;
+
 use dotenv;
 // Déclarations des modules
 // mod constants;
@@ -23,6 +25,7 @@ mod servic;
 #[allow(dead_code)]
 pub struct AppState {
     db: Pool<Postgres>,
+    template: tera::Tera,
     plexic: Arc<AtomicPtr<lexic::lex_lexic::Lexic>>,
 }
 
@@ -77,9 +80,18 @@ async fn main() -> std::io::Result<()> {
             std::process::exit(1);
         }
     };
+    let tera = match Tera::new("templates/*.html") {
+        Ok(t) => t,
+        Err(e) => {
+            log::error!("Parsing error(s): {}", e);
+            ::std::process::exit(1);
+        }
+    };
+
     // AppState doit être crée devant le HyypServer, sinon le ptr sera privé au thread
     let data = AppState {
         db: pool,
+        template: tera,
         plexic: Arc::new(AtomicPtr::new(Box::into_raw(lexic))),
     };
 

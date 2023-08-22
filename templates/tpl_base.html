@@ -2,7 +2,7 @@
 <html lang="en">
 
 <head>
-  <title>{% block title %}{{ portail.title }}{% endblock %}</title>
+  <title>{% block head_title %}{{ portail.title }}{% endblock %}</title>
   {% block head %}{% endblock %}
 </head>
 
@@ -43,8 +43,8 @@
         <th colspan="3" style="text-align: left; padding: 1em;">
           {% block foot %}
           <h6>
-            <a href='{{env!("CARGO_PKG_HOMEPAGE")}}' title='Page Home'>{{env!("CARGO_PKG_NAME")|upper}}</a>
-            {{env!("CARGO_PKG_VERSION")}} &copy; {{env!("CARGO_PKG_AUTHORS")}}
+            <a href="/" title="Page Home"/>SILEX</a>
+            0.5.0 &copy; Philippe Billerot
           </h6>
           {% endblock %}
         </th>

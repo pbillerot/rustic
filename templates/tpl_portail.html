@@ -4,6 +4,6 @@
   <h1>{{portail.title}}</h1>
   <h3>Liste des applications</h3>
   {% for app in applications %}
-    <li><a href="/app/{{app.appid}}" title="{{ app.title|e }}">{{ app.title|e }}</a></li>
+    <li><a href="/app/{{app.appid}}" title="{{ app.title }}">{{ app.title }}</a></li>
   {% endfor %}
 {% endblock %}

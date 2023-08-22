@@ -8,6 +8,9 @@
 - static files
 - lexic table
 
+0.6.0 - 22 août 2023
+- `added` template Tera remplace Askama
+
 0.5.5 - 20 août 2023
 - `added` template Askama avant bascule sur Tera
 

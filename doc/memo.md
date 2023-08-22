@@ -25,6 +25,9 @@
 - https://github.com/actix/examples/tree/master/middleware
 
 ## Templates
+- https://keats.github.io/tera/
+- https://nivethan.dev/devlog/a-web-app-in-rust.html
+
 - https://djc.github.io/askama/
 - https://github.com/Ghostff/actix-web-mvc-boilerplate/tree/master
 - https://lib.rs/crates/askama

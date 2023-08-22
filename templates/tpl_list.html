@@ -1,14 +1,17 @@
 {% extends "tpl_base.html" %}
 
+{% block title %}<span>&nbsp;<b>{{ application.tables[tableid].views[viewid].title }}</b></span>{% endblock %}
+
 {% block menu %}
 {% for tv in application.menu %}
-<li><a href="/list/{{application.appid}}/{{tv.tableid}}/{{tv.viewid}}">{{tv.viewid}}</a></li>
+<li><a href="/list/{{application.appid}}/{{tv.tableid}}/{{tv.viewid}}">{{application.tables[tv.tableid].views[tv.viewid].title}}</a></li>
 {% endfor %}
 {% endblock %}
 
+
 {% block content %}
-  <h1>{{view.title}}</h1>
-  {% for el in view.velements %}
-    <li>{{el.order}}:{{el.label_short}} ({{el.type_element}})</li>
+  <h1>{{application.tables[tableid].views[viewid].title}}</h1>
+  {% for el in application.tables[tableid].views[viewid].velements %}
+    <li>{{el.order}}:{{el.label_short}}</li>
   {% endfor %}
 {% endblock %}
