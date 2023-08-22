@@ -6,6 +6,8 @@ use crate::lexic::lex_utils;
 
 #[derive(Debug, Serialize, Deserialize, Clone)]
 pub struct Table {
+    #[serde(default = "String::new")]
+    pub tableid: String,
     #[serde(default = "Setting::new")]
     pub setting: Setting,
     #[serde(default = "HashMap::new")]
@@ -27,15 +29,30 @@ impl Table {
         let f = std::fs::File::open(&path).map_err(|e| format!("Could not open file {:?}", e))?;
         let mut table: Table =
             serde_yaml::from_reader(f).map_err(|e| format!("Could not read values {:?}", e))?;
-        // alimentation de velements avec view.element fusionés avec table.elements
-        for (_viewid, view) in table.views.iter_mut() {
-            for (id, element) in &view.elements {
+        table.tableid = tableid.to_string().clone();
+        // alimentation de velements avec view.elements fusionnés avec table.elements
+        for (viewid, view) in table.views.iter_mut() {
+            view.viewid = viewid.clone(); // TODO: que devient l'ancienne valeur ?
+            for (key, element) in &view.elements {
                 let mut el = element.clone();
-                let fel = table.elements.get(id).unwrap();
-                el.merge(fel);
+                let tel = table.elements.get(key).unwrap();
+                el.elid = key.clone();
+                el.merge(tel);
                 view.velements.push(el);
             }
             view.velements.sort_by(|a, b| a.order.cmp(&b.order));
+        }
+        // alimentation de felements avec form.elements fusionnés avec table.elements
+        for (formid, form) in table.forms.iter_mut() {
+            form.formid = formid.clone(); // TODO: que devient l'ancienne valeur ?
+            for (key, element) in &form.elements {
+                let mut el = element.clone();
+                let tel = table.elements.get(key).unwrap();
+                el.elid = key.clone();
+                el.merge(tel);
+                form.felements.push(el);
+            }
+            form.felements.sort_by(|a, b| a.order.cmp(&b.order));
         }
 
         Ok(table)
@@ -45,6 +62,8 @@ impl Table {
 // Element as
 #[derive(Debug, Serialize, Deserialize, Clone)]
 pub struct Element {
+    #[serde(default = "String::new")]
+    pub elid: String,
     #[serde(default = "Vec::new")]
     pub actions: Vec<Action>,             // bouton d'actions
     #[serde(default = "HashMap::new")]
@@ -125,91 +144,94 @@ pub struct Element {
 }
 
 impl Element {
-    fn merge(&mut self, fel: &Element) {
+    fn merge(&mut self, fullelement: &Element) {
         // let mut fusel = fullElement;
+        if self.elid.is_empty() {
+            self.elid = fullelement.elid.clone();
+        }
         if self.actions.is_empty() {
-            self.actions = fel.actions.clone();
+            self.actions = fullelement.actions.clone();
         }
         if self.args.is_empty() {
-            self.args = fel.args.clone();
+            self.args = fullelement.args.clone();
         }
-        if self.ajax_sql != fel.ajax_sql {
-            self.ajax_sql = fel.ajax_sql.clone();
+        if self.ajax_sql != fullelement.ajax_sql {
+            self.ajax_sql = fullelement.ajax_sql.clone();
         }
-        if self.class_sqlite != fel.class_sqlite {
-            self.class_sqlite = fel.class_sqlite.clone();
+        if self.class_sqlite != fullelement.class_sqlite {
+            self.class_sqlite = fullelement.class_sqlite.clone();
         }
-        if self.col_align != fel.col_align {
-            self.col_align = fel.col_align.clone();
+        if self.col_align != fullelement.col_align {
+            self.col_align = fullelement.col_align.clone();
         }
         // if self.col_no_wrap != fel.col_no_wrap {
         //     self.col_no_wrap = fel.col_no_wrap.clone();
         // }
-        if self.compute_sqlite != fel.compute_sqlite {
-            self.compute_sqlite = fel.compute_sqlite.clone();
+        if self.compute_sqlite != fullelement.compute_sqlite {
+            self.compute_sqlite = fullelement.compute_sqlite.clone();
         }
         if self.dataset.is_empty() {
-            self.dataset = fel.dataset.clone();
+            self.dataset = fullelement.dataset.clone();
         }
-        if self.default_sqlite != fel.default_sqlite {
-            self.default_sqlite = fel.default_sqlite.clone();
+        if self.default_sqlite != fullelement.default_sqlite {
+            self.default_sqlite = fullelement.default_sqlite.clone();
         }
-        if self.format_sqlite != fel.format_sqlite {
-            self.format_sqlite = fel.format_sqlite.clone();
+        if self.format_sqlite != fullelement.format_sqlite {
+            self.format_sqlite = fullelement.format_sqlite.clone();
         }
-        if self.group != fel.group {
-            self.group = fel.group.clone();
+        if self.group != fullelement.group {
+            self.group = fullelement.group.clone();
         }
-        if self.help != fel.help {
-            self.help = fel.help.clone();
+        if self.help != fullelement.help {
+            self.help = fullelement.help.clone();
         }
-        if self.hide_sqlite != fel.hide_sqlite {
-            self.hide_sqlite = fel.hide_sqlite.clone();
+        if self.hide_sqlite != fullelement.hide_sqlite {
+            self.hide_sqlite = fullelement.hide_sqlite.clone();
         }
         // if self.hide_on_mobile != fel.hide_on_mobile {
         //     self.hide_on_mobile = fel.hide_on_mobile.clone();
         // }
-        if self.icon_name != fel.icon_name {
-            self.icon_name = fel.icon_name.clone();
+        if self.icon_name != fullelement.icon_name {
+            self.icon_name = fullelement.icon_name.clone();
         }
         if self.items.is_empty() {
-            self.items = fel.items.clone();
+            self.items = fullelement.items.clone();
         }
-        if self.items_sql != fel.items_sql {
-            self.items_sql = fel.items_sql.clone();
+        if self.items_sql != fullelement.items_sql {
+            self.items_sql = fullelement.items_sql.clone();
         }
         if self.jointure != self.jointure {
-            self.jointure = fel.jointure.clone();
+            self.jointure = fullelement.jointure.clone();
         }
-        if self.label_long != fel.label_long {
-            self.label_long = fel.label_long.clone();
+        if self.label_long != fullelement.label_long {
+            self.label_long = fullelement.label_long.clone();
         }
-        if self.label_short != fel.label_short {
-            self.label_short = fel.label_short.clone();
+        if self.label_short != fullelement.label_short {
+            self.label_short = fullelement.label_short.clone();
         }
         if self.max == 0 {
-            self.max = fel.max;
+            self.max = fullelement.max;
         }
         if self.max_length == 0 {
-            self.max_length = fel.max_length;
+            self.max_length = fullelement.max_length;
         }
         if self.min == 0 {
-            self.min = fel.min;
+            self.min = fullelement.min;
         }
         if self.min_length == 0 {
-            self.min_length = fel.min_length;
+            self.min_length = fullelement.min_length;
         }
         if self.order == 0 {
-            self.order = fel.order;
+            self.order = fullelement.order;
         }
-        if self.params != fel.params {
-            self.params = fel.params.clone();
+        if self.params != fullelement.params {
+            self.params = fullelement.params.clone();
         }
-        if self.pattern != fel.pattern {
-            self.pattern = fel.pattern.clone();
+        if self.pattern != fullelement.pattern {
+            self.pattern = fullelement.pattern.clone();
         }
-        if self.place_holder != fel.place_holder {
-            self.place_holder = fel.place_holder.clone();
+        if self.place_holder != fullelement.place_holder {
+            self.place_holder = fullelement.place_holder.clone();
         }
         // if self.protected != fel.protected {
         //    self.protected = fel.protected;
@@ -220,17 +242,17 @@ impl Element {
         // if self.required == false {
         //     self.required = fel.required;
         // }
-        if self.sort_direction != fel.sort_direction {
-            self.sort_direction = fel.sort_direction.clone();
+        if self.sort_direction != fullelement.sort_direction {
+            self.sort_direction = fullelement.sort_direction.clone();
         }
-        if self.sql_out != fel.sql_out {
-            self.sql_out = fel.sql_out.clone();
+        if self.sql_out != fullelement.sql_out {
+            self.sql_out = fullelement.sql_out.clone();
         }
-        if self.style_sqlite != fel.style_sqlite {
-            self.style_sqlite = fel.style_sqlite.clone();
+        if self.style_sqlite != fullelement.style_sqlite {
+            self.style_sqlite = fullelement.style_sqlite.clone();
         }
-        if self.type_element != fel.type_element {
-            self.type_element = fel.type_element.clone();
+        if self.type_element != fullelement.type_element {
+            self.type_element = fullelement.type_element.clone();
         }
         // if self.with_script != fel.with_script {
         //     self.with_script = fel.with_script;
@@ -245,6 +267,8 @@ impl Element {
 // View Vue d'une table
 #[derive(Debug, Serialize, Deserialize)]
 pub struct View {
+    #[serde(default = "String::new")]
+    pub viewid: String,
     #[serde(default = "Action::new")]
     pub action_press: Action, // Action sur appui long sur l'article
     #[serde(default = "Vec::new")]
@@ -338,6 +362,7 @@ pub struct View {
 impl Clone for View {
     fn clone(&self) -> View {
         View {
+            viewid: self.viewid.clone(),
             action_press: self.action_press.clone(),
             actions: self.actions.clone(),
             card: self.card.clone(),
@@ -371,6 +396,8 @@ impl Clone for View {
 // Form formulaire
 #[derive(Debug, Serialize, Deserialize, Clone)]
 pub struct Form {
+    #[serde(default = "String::new")]
+    pub formid: String,
     #[serde(default = "Vec::new")]
     pub actions: Vec<Action>, // Action appel d'un formulaire ou exécution d'une requête SQL
     #[serde(default = "String::new")]

@@ -1,6 +1,8 @@
 {% extends "tpl_base.html" %}
 
-{% block title %}<span>&nbsp;<b>{{ application.tables[tableid].views[viewid].title }}</b></span>{% endblock %}
+{% block title %}
+<span>&nbsp;<b>{{ application.title }}</b></span>
+{% endblock %}
 
 {% block menu %}
 {% for tv in application.menu %}
@@ -8,10 +10,10 @@
 {% endfor %}
 {% endblock %}
 
-
 {% block content %}
-  <h1>{{application.tables[tableid].views[viewid].title}}</h1>
-  {% for el in application.tables[tableid].views[viewid].velements %}
-    <li>{{el.order}}:{{el.label_short}}</li>
+{% set vv = application.tables[tableid].views[viewid] %}
+  <h1>{{vv.title}}</h1>
+  {% for el in vv.velements %}
+    <li>{{el.elid}}:{{el.order}}:{{el.label_short}}</li>
   {% endfor %}
 {% endblock %}
