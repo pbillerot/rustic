@@ -6,14 +6,27 @@
 
 {% block menu %}
 {% for tv in application.menu %}
-<li><a href="/list/{{application.appid}}/{{tv.tableid}}/{{tv.viewid}}">{{application.tables[tv.tableid].views[tv.viewid].title}}</a></li>
+<li><a
+    href="/list/{{application.appid}}/{{tv.tableid}}/{{tv.viewid}}">{{application.tables[tv.tableid].views[tv.viewid].title}}</a>
+</li>
 {% endfor %}
 {% endblock %}
 
 {% block content %}
 {% set vv = application.tables[tableid].views[viewid] %}
-  <h1>{{vv.title}}</h1>
-  {% for el in vv.velements %}
-    <li>{{el.elid}}:{{el.order}}:{{el.label_short}}</li>
+<h1>{{vv.title}}</h1>
+<table>
+  <tr>
+    {% for el in vv.velements %}
+    <th>{{el.elid}}</th>
+    {% endfor %}
+  </tr>
+  {% for rowel in rowsel %}
+  <tr>
+    {% for vel in vv.velements %}
+    <td>{{rowel[vel.elid].value}}</td>
+    {% endfor %}
+  </tr>
   {% endfor %}
+</table>
 {% endblock %}

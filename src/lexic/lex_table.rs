@@ -1,7 +1,8 @@
 use serde::{Deserialize, Serialize};
 use serde_yaml::{self};
 use std::collections::HashMap;
-
+use sqlx::{Pool, Postgres, Sqlite};
+// use actix_web::web;
 use crate::lexic::lex_utils;
 
 #[derive(Debug, Serialize, Deserialize, Clone)]
@@ -35,10 +36,14 @@ impl Table {
             view.viewid = viewid.clone(); // TODO: que devient l'ancienne valeur ?
             for (key, element) in &view.elements {
                 let mut el = element.clone();
-                let tel = table.elements.get(key).unwrap();
-                el.elid = key.clone();
-                el.merge(tel);
-                view.velements.push(el);
+                match table.elements.get(key) {
+                    Some(t) => {
+                        el.elid = key.clone();
+                        el.merge(t);
+                        view.velements.push(el);
+                    },
+                    None => continue, // un view.element peut ne pas exister dans table.elements
+                };
             }
             view.velements.sort_by(|a, b| a.order.cmp(&b.order));
         }
@@ -47,10 +52,14 @@ impl Table {
             form.formid = formid.clone(); // TODO: que devient l'ancienne valeur ?
             for (key, element) in &form.elements {
                 let mut el = element.clone();
-                let tel = table.elements.get(key).unwrap();
-                el.elid = key.clone();
-                el.merge(tel);
-                form.felements.push(el);
+                match table.elements.get(key) {
+                    Some(t) => {
+                        el.elid = key.clone();
+                        el.merge(t);
+                        form.felements.push(el);
+                    },
+                    None => continue, // un form.element peut ne pas exister dans table.elements
+                };
             }
             form.felements.sort_by(|a, b| a.order.cmp(&b.order));
         }
@@ -71,6 +80,8 @@ pub struct Element {
     #[serde(default = "String::new")]
     pub ajax_sql: String,                  // query sql pour ramenener des données dans le formulaire
     #[serde(default = "String::new")]
+    pub class: String, // class semantic
+    #[serde(default = "String::new")]
     pub class_sqlite: String, // SQL pour alimenter Class error warning info green blue
     #[serde(default = "String::new")]
     pub col_align: String, //
@@ -81,13 +92,19 @@ pub struct Element {
     #[serde(default = "HashMap::new")]
     pub dataset: HashMap<String, String>, // Dataset pour un Chartjs ou pour passer des arguments à une vue ou à une "ajax-sql"
     #[serde(default = "String::new")]
+    pub default: String, // valeur par défaut
+    #[serde(default = "String::new")]
     pub default_sqlite: String, // Ordre SQL qui retournera la colonne pour alimenter Default
+    #[serde(default = "String::new")]
+    pub format: String,  // pattern du display
     #[serde(default = "String::new")]
     pub format_sqlite: String,  // select strftime('%H:%M:%S', {Milliseconds}/1000, 'unixepoch')
     #[serde(default = "String::new")]
     pub group: String, // Groupe autorisé à accéder à cette rubrique - Si owner c'est l'enregistreement qui sera protégé
     #[serde(default = "String::new")]
     pub help: String,  // TODO aide sur la rubrique
+    #[serde(default = "lex_utils::default_bool")]
+    pub hide: bool, // TODO cachée si condition
     #[serde(default = "String::new")]
     pub hide_sqlite: String, // TODO cachée si condition
     #[serde(default = "lex_utils::default_bool")]
@@ -141,97 +158,122 @@ pub struct Element {
     pub with_script: bool, // javascript de présentation
     #[serde(default = "lex_utils::default_bool")]
     pub with_sum: bool, // dans une table calcule la somme des valeurs
+    // calcul
+    #[serde(default = "String::new")]
+    pub value: String, // valeur récupérée dans la table des données
 }
 
 impl Element {
-    fn merge(&mut self, fullelement: &Element) {
+    // fn compute_before(&mut self, app_state:AppState ,elements: &HashMap<String, Element>) {
+    //     // Calcul des attributs par défaut :
+    //     // default_sqlite -> default
+
+    // }
+    pub fn compute(&mut self, _db: &Pool<Postgres>, _dblite: &Pool<Sqlite> ,_element_with_all_attributes: &Element, _hmap: &HashMap<String, String>) {
+        // Calcul des attributs avec les valeurs lues dans la table :
+        // class_sqlite -> class
+        // compute_sqlite -> valeur
+        // default_sqlite -> default
+        // format_sqlite -> format
+        // hide_sqlite -> hide
+        // items_sql -> items
+        // style_sqlite -> style
+        if !self.class_sqlite.is_empty() {
+            self.class = self.class_sqlite.clone();
+        }
+
+    }
+    fn merge(&mut self, helement: &Element) {
         // let mut fusel = fullElement;
         if self.elid.is_empty() {
-            self.elid = fullelement.elid.clone();
+            self.elid = helement.elid.clone();
         }
         if self.actions.is_empty() {
-            self.actions = fullelement.actions.clone();
+            self.actions = helement.actions.clone();
         }
         if self.args.is_empty() {
-            self.args = fullelement.args.clone();
+            self.args = helement.args.clone();
         }
-        if self.ajax_sql != fullelement.ajax_sql {
-            self.ajax_sql = fullelement.ajax_sql.clone();
+        if self.ajax_sql != helement.ajax_sql {
+            self.ajax_sql = helement.ajax_sql.clone();
         }
-        if self.class_sqlite != fullelement.class_sqlite {
-            self.class_sqlite = fullelement.class_sqlite.clone();
+        if self.class_sqlite != helement.class_sqlite {
+            self.class_sqlite = helement.class_sqlite.clone();
         }
-        if self.col_align != fullelement.col_align {
-            self.col_align = fullelement.col_align.clone();
+        if self.col_align != helement.col_align {
+            self.col_align = helement.col_align.clone();
         }
         // if self.col_no_wrap != fel.col_no_wrap {
         //     self.col_no_wrap = fel.col_no_wrap.clone();
         // }
-        if self.compute_sqlite != fullelement.compute_sqlite {
-            self.compute_sqlite = fullelement.compute_sqlite.clone();
+        if self.compute_sqlite != helement.compute_sqlite {
+            self.compute_sqlite = helement.compute_sqlite.clone();
         }
         if self.dataset.is_empty() {
-            self.dataset = fullelement.dataset.clone();
+            self.dataset = helement.dataset.clone();
         }
-        if self.default_sqlite != fullelement.default_sqlite {
-            self.default_sqlite = fullelement.default_sqlite.clone();
+        if self.default_sqlite != helement.default_sqlite {
+            self.default_sqlite = helement.default_sqlite.clone();
         }
-        if self.format_sqlite != fullelement.format_sqlite {
-            self.format_sqlite = fullelement.format_sqlite.clone();
+        if self.format_sqlite != helement.format_sqlite {
+            self.format_sqlite = helement.format_sqlite.clone();
         }
-        if self.group != fullelement.group {
-            self.group = fullelement.group.clone();
+        if self.group != helement.group {
+            self.group = helement.group.clone();
         }
-        if self.help != fullelement.help {
-            self.help = fullelement.help.clone();
+        if self.help != helement.help {
+            self.help = helement.help.clone();
         }
-        if self.hide_sqlite != fullelement.hide_sqlite {
-            self.hide_sqlite = fullelement.hide_sqlite.clone();
+        // if self.hide != fullelement.hide {
+        //     self.hide = fullelement.hide.clone();
+        // }
+        if self.hide_sqlite != helement.hide_sqlite {
+            self.hide_sqlite = helement.hide_sqlite.clone();
         }
         // if self.hide_on_mobile != fel.hide_on_mobile {
         //     self.hide_on_mobile = fel.hide_on_mobile.clone();
         // }
-        if self.icon_name != fullelement.icon_name {
-            self.icon_name = fullelement.icon_name.clone();
+        if self.icon_name != helement.icon_name {
+            self.icon_name = helement.icon_name.clone();
         }
         if self.items.is_empty() {
-            self.items = fullelement.items.clone();
+            self.items = helement.items.clone();
         }
-        if self.items_sql != fullelement.items_sql {
-            self.items_sql = fullelement.items_sql.clone();
+        if self.items_sql != helement.items_sql {
+            self.items_sql = helement.items_sql.clone();
         }
         if self.jointure != self.jointure {
-            self.jointure = fullelement.jointure.clone();
+            self.jointure = helement.jointure.clone();
         }
-        if self.label_long != fullelement.label_long {
-            self.label_long = fullelement.label_long.clone();
+        if self.label_long != helement.label_long {
+            self.label_long = helement.label_long.clone();
         }
-        if self.label_short != fullelement.label_short {
-            self.label_short = fullelement.label_short.clone();
+        if self.label_short != helement.label_short {
+            self.label_short = helement.label_short.clone();
         }
         if self.max == 0 {
-            self.max = fullelement.max;
+            self.max = helement.max;
         }
         if self.max_length == 0 {
-            self.max_length = fullelement.max_length;
+            self.max_length = helement.max_length;
         }
         if self.min == 0 {
-            self.min = fullelement.min;
+            self.min = helement.min;
         }
         if self.min_length == 0 {
-            self.min_length = fullelement.min_length;
+            self.min_length = helement.min_length;
         }
         if self.order == 0 {
-            self.order = fullelement.order;
+            self.order = helement.order;
         }
-        if self.params != fullelement.params {
-            self.params = fullelement.params.clone();
+        if self.params != helement.params {
+            self.params = helement.params.clone();
         }
-        if self.pattern != fullelement.pattern {
-            self.pattern = fullelement.pattern.clone();
+        if self.pattern != helement.pattern {
+            self.pattern = helement.pattern.clone();
         }
-        if self.place_holder != fullelement.place_holder {
-            self.place_holder = fullelement.place_holder.clone();
+        if self.place_holder != helement.place_holder {
+            self.place_holder = helement.place_holder.clone();
         }
         // if self.protected != fel.protected {
         //    self.protected = fel.protected;
@@ -242,17 +284,17 @@ impl Element {
         // if self.required == false {
         //     self.required = fel.required;
         // }
-        if self.sort_direction != fullelement.sort_direction {
-            self.sort_direction = fullelement.sort_direction.clone();
+        if self.sort_direction != helement.sort_direction {
+            self.sort_direction = helement.sort_direction.clone();
         }
-        if self.sql_out != fullelement.sql_out {
-            self.sql_out = fullelement.sql_out.clone();
+        if self.sql_out != helement.sql_out {
+            self.sql_out = helement.sql_out.clone();
         }
-        if self.style_sqlite != fullelement.style_sqlite {
-            self.style_sqlite = fullelement.style_sqlite.clone();
+        if self.style_sqlite != helement.style_sqlite {
+            self.style_sqlite = helement.style_sqlite.clone();
         }
-        if self.type_element != fullelement.type_element {
-            self.type_element = fullelement.type_element.clone();
+        if self.type_element != helement.type_element {
+            self.type_element = helement.type_element.clone();
         }
         // if self.with_script != fel.with_script {
         //     self.with_script = fel.with_script;

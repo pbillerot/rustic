@@ -1,0 +1,108 @@
+# Table jecompte postgres
+setting:
+  alias_db: jecompte
+  key: id
+  col_display: id
+  icon_name: "th list"
+
+elements:
+  id:
+    type: counter
+    label_long: "id"
+    label_short: "id"
+    order: 10
+    hide: true
+  partie:
+    type: number
+    label_long: "N° partie"
+    label_short: "N°"
+    order: 20
+    col_align: "center"
+  joueur:
+    type: text
+    label_long: "Joueur"
+    label_short: "Joueur"
+    order: 30
+  points:
+    type: number
+    label_long: "Points de la partie"
+    label_short: "Points"
+    width: l
+    order: 40
+    class-sqlite: "select case when {points} < 0 then 'negative' else '' end"
+  rem:
+    type: text
+    label_short: "Note"
+    label_long: "Note"
+    order: 50
+  _rub_chart:
+    type: chart
+    order: 70
+    dataset:
+      chartid: "select 'chart-jecompte'"
+      labels: "select joueur from jec_joueurs where actif = 1 order by cumul desc"
+      cumuls: "select cumul from jec_joueurs where actif = 1 order by cumul desc"
+      # calcul du n° des 7 couleurs possible 0 à 6 - un joueur aur toujours la même couleur
+      couleurs: "select jj.num from jec_joueurs as j left outer join (select joueur, ((row_number() over (order by joueur)) % 7) as num from jec_joueurs where actif = 1) as jj on jj.joueur = j.joueur where actif = 1 order by j.cumul desc"
+  cumul:
+    type: text
+    label_short: "Cumul"
+    order: 60
+    jointure:
+      join: "left outer join (select j.partie, j.joueur, (select sum(jj.points) as cumul from jec_jeux as jj where jj.joueur = j.joueur and jj.partie <= j.partie) as cumul from jec_jeux as j) as tt on tt.partie = jec_jeux.partie and tt.joueur = jec_jeux.joueur"
+      column: "tt.cumul"
+
+views:
+  vjeux:
+    form_edit: fedit
+    #form_view: fview (édition directe sans passer par fview)
+    type: table
+    title: "Parties"
+    icon_name: "th list"
+    order-by: jec_jeux.partie desc, tt.cumul desc
+    class-sqlite: "select case when ({partie} %2) = 0 then 'violet' else '' end"
+    elements:
+      id:
+      partie:
+      joueur:
+      points:
+      cumul:
+      rem:
+    actions:
+    - label: "Ajouter une partie..."
+      sql:
+      - "insert into jec_jeux (partie, joueur, points) select jj.partie, j.joueur, 0 from jec_joueurs as j left outer join (select coalesce(max(partie)+1,0) as partie from jec_jeux) as jj on j.actif = 1 where j.actif = 1"
+      with_confirm: true
+
+  vgraph:
+    type: dashboard
+    title: "Graphique"
+    icon_name: chart bar
+    elements:
+      _card_chart:
+        order: 200
+        type: card
+        label_long: "Résultats en graphique"
+        width: xxl
+        icon_name: chart bar
+      _rub_chart:
+        order: 210
+
+forms:
+  fedit:
+    title: "Saisie du score"
+    elements:
+      id:
+        hide: true
+      joueur:
+        hide: true
+      joueur:
+        hide: true
+      partie:
+        hide: true
+      points:
+        label_long: "POINTS de {joueur} : partie n° {partie}"
+      rem:
+    post_sql:
+    - "update jec_joueurs set cumul = coalesce((select sum(points) from jec_jeux where jec_joueurs.joueur = jec_jeux.joueur), 0)"
+

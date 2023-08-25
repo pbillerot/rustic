@@ -8,6 +8,10 @@
 - static files
 - lexic table
 
+0.7.0 - 25 août 2023
+- `added` ajout lecture des données de l'application et présentation dans une vue
+- `added` ajout moteur sqlite pour les calculs du framework
+
 0.6.1 - 22 août 2023
 - `added` ajout tableid viewid formid elid dans les structures adéquates
 - `added` load des forms

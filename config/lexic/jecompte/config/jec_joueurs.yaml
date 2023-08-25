@@ -1,0 +1,59 @@
+# Table jecompte joueurs.sqlite
+setting:
+  alias_db: jecompte
+  key: joueur
+  col_display: joueur
+  icon_name: "user"
+
+elements:
+  joueur:
+    type: text
+    label_long: "Joueur"
+    label_short: "Joueur"
+    order: 30
+  cumul:
+    type: number
+    label_long: "Points"
+    label_short: "Points"
+    default_sqlite: "select 0"
+    order: 40
+    style_sqlite: "select case when {cumul} < 0 then 'background-color: red' else '' end"
+  actif:
+    type: checkbox
+    label_long: "Actif"
+    label_short: "Actif"
+    col_align: center
+    order: 50
+    params:
+      form: factif
+views:
+  vjoueurs:
+    form_add: fedit
+    form_edit: fedit
+    form_view: fedit
+    deletable: true
+    type: table
+    title: "Joueurs"
+    icon_name: user
+    style_sqlite: "select case when '{actif}' = '1' then 'background-color: violet' else '' end"
+    order_by: "actif desc"
+    elements:
+      joueur:
+      cumul:
+      actif:
+    actions:
+    - label: "Nouveau jeu (raz de toutes les parties)..."
+      sql:
+      - "delete from jec_jeux"
+      - "update jec_joueurs set cumul = 0"
+      - "insert into jec_jeux (partie, joueur, points) select jj.partie, j.joueur, 0 from jec_joueurs as j left outer join (select coalesce(max(partie)+1,1) as partie from jec_jeux) as jj on j.actif = 1 where j.actif = 1"
+      with_confirm: true
+
+forms:
+  fedit:
+    title: "Joueurs"
+    groupe: admin
+    elements:
+      joueur:
+      actif:
+

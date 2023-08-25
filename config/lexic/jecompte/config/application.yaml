@@ -1,0 +1,16 @@
+appid: jecompte
+title: "Je compte pour toi"
+group: billerot
+image: "/bee/data/jecompte/calc.png"
+dico_dir: "/volshare/data/beedule/jecompte/config"
+shareable: true
+menu:
+- tableid: jec_jeux
+  viewid: vjeux
+  in-footer: true
+- tableid: jec_jeux
+  viewid: vgraph
+  in-footer: true
+- tableid: jec_joueurs
+  viewid: vjoueurs
+  in-footer: true

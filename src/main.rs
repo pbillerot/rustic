@@ -1,5 +1,5 @@
 use actix_web::{middleware, App, HttpServer, web, cookie::{self, Key}};
-use sqlx::{postgres::PgPoolOptions, Pool, Postgres};
+use sqlx::{postgres::PgPoolOptions, Pool, Postgres, Sqlite, SqlitePool};
 
 use chrono::Local;
 use std::io::Write;
@@ -19,12 +19,13 @@ use dotenv;
 mod lexic;
 mod routic;
 mod servic;
-// mod sqlic;
+mod sqlic;
 
 #[derive(Clone)]
 #[allow(dead_code)]
 pub struct AppState {
     db: Pool<Postgres>,
+    dblite: Pool<Sqlite>,
     template: tera::Tera,
     plexic: Arc<AtomicPtr<lexic::lex_lexic::Lexic>>,
 }
@@ -32,7 +33,7 @@ pub struct AppState {
 #[actix_web::main]
 async fn main() -> std::io::Result<()> {
     dotenv::dotenv().expect("Unable to load environment variables from .env file");
-    std::env::set_var("RUST_LOG", "debug");
+    std::env::set_var("RUST_LOG", "info");
     // env_logger::init();
     let env = env_logger::Env::default();
     env_logger::Builder::from_env(env).format(|buf, record| {
@@ -56,7 +57,7 @@ async fn main() -> std::io::Result<()> {
 
     dotenv::from_filename(env_file).expect("Unable to load environment variables");
 
-    // Déclarations des pools de connexion aux base de données
+    // Déclarations des pools de connexion aux bases de données
     let database_url = std::env::var("DATABASE_URL").expect("DATABASE_URL must be set");
     let pool = match PgPoolOptions::new()
         .max_connections(5)
@@ -69,6 +70,17 @@ async fn main() -> std::io::Result<()> {
         }
         Err(err) => {
             log::error!("Failed to connect to the database: {:?}", err);
+            std::process::exit(1);
+        }
+    };
+    let urlite = ":memory:?cache=shared";
+    let dblite = match SqlitePool::connect(urlite).await {
+        Ok(pool) => {
+            log::info!("Connection to sqlite is successful!");
+            pool
+        }
+        Err(err) => {
+            log::error!("Failed to connect to sqlite: [{}]{:?}", urlite, err);
             std::process::exit(1);
         }
     };
@@ -91,6 +103,7 @@ async fn main() -> std::io::Result<()> {
     // AppState doit être crée devant le HyypServer, sinon le ptr sera privé au thread
     let data = AppState {
         db: pool,
+        dblite: dblite,
         template: tera,
         plexic: Arc::new(AtomicPtr::new(Box::into_raw(lexic))),
     };
