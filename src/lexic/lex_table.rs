@@ -242,7 +242,7 @@ impl Element {
         if self.items_sql != helement.items_sql {
             self.items_sql = helement.items_sql.clone();
         }
-        if self.jointure != self.jointure {
+        if self.jointure.column != helement.jointure.column {
             self.jointure = helement.jointure.clone();
         }
         if self.label_long != helement.label_long {

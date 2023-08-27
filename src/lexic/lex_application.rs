@@ -19,6 +19,8 @@ pub struct Application {
     pub group: String,
     #[serde(default = "HashMap::new")]
     pub parameters: HashMap<String, String>,
+    #[serde(default = "String::new")]
+    pub limit_sql: String,
     #[serde(default = "Vec::new")]
     pub menu: Vec<TableView>,
     #[serde(default = "lex_utils::default_bool")]

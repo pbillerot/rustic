@@ -4,9 +4,9 @@ use actix_session::SessionExt;
 use actix_web::{
     body::EitherBody,
     dev::{self, Service, ServiceRequest, ServiceResponse, Transform},
-    http,
+    // http,
     Error,
-    HttpResponse,
+    // HttpResponse,
 };
 use futures_util::future::LocalBoxFuture;
 
@@ -62,42 +62,31 @@ where
         let session = request.get_session();
         log::info!("Session {:?} {:?}", session.status(), session.entries());
 
-        // let count_sx = session.get::<i32>("count_sx").unwrap_or(None);
-        // match count_sx {
-        //     Some(count) => {
-        //         session.insert("count_sx", count+1).unwrap();
-        //     },
-        //     None => {
-        //         session.insert("count_sx", 0).unwrap();
+        // if let Some(is_logged_in) = session.get::<bool>("is_logged").unwrap() {
+        //     if !is_logged_in  && request.path() != "/login" {
+        //         let (request, _pl) = request.into_parts();
+
+        //         let response = HttpResponse::Found()
+        //             .insert_header((http::header::LOCATION, "/login"))
+        //             .finish()
+        //             // constructed responses map to "right" body
+        //             .map_into_right_body();
+        //         log::info!("Redirection login false /login");
+        //         return Box::pin(async { Ok(ServiceResponse::new(request, response)) });
         //     }
-        // };
-        // log::info!("Session {:?}", session.entries());
+        // } else {
+        //     if request.path() != "/login" {
+        //         let (request, _pl) = request.into_parts();
 
-        if let Some(is_logged_in) = session.get::<bool>("is_logged").unwrap() {
-            if !is_logged_in  && request.path() != "/login" {
-                let (request, _pl) = request.into_parts();
-
-                let response = HttpResponse::Found()
-                    .insert_header((http::header::LOCATION, "/login"))
-                    .finish()
-                    // constructed responses map to "right" body
-                    .map_into_right_body();
-                log::info!("Redirection login false /login");
-                return Box::pin(async { Ok(ServiceResponse::new(request, response)) });
-            }
-        } else {
-            if request.path() != "/login" {
-                let (request, _pl) = request.into_parts();
-
-                let response = HttpResponse::Found()
-                    .insert_header((http::header::LOCATION, "/login"))
-                    .finish()
-                    // constructed responses map to "right" body
-                    .map_into_right_body();
-                log::info!("Redirect no login /login");
-                return Box::pin(async { Ok(ServiceResponse::new(request, response)) });
-            }
-        }
+        //         let response = HttpResponse::Found()
+        //             .insert_header((http::header::LOCATION, "/login"))
+        //             .finish()
+        //             // constructed responses map to "right" body
+        //             .map_into_right_body();
+        //         log::info!("Redirect no login /login");
+        //         return Box::pin(async { Ok(ServiceResponse::new(request, response)) });
+        //     }
+        // }
 
         let res = self.service.call(request);
 

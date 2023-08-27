@@ -13,9 +13,9 @@ use sqlx::{Pool, Sqlite};
 use std::collections::HashMap;
 // use crate::log::debug;
 
-pub async fn querlite(dblite: &Pool<Sqlite>, sql: &str ) -> Result<HashMap<String, String>, String> {
+pub async fn _querlite(poollite: &Pool<Sqlite>, sql: &str ) -> Result<HashMap<String, String>, String> {
 
-    let row = sqlx::query(sql).fetch_one(dblite).await
+    let row = sqlx::query(sql).fetch_one(poollite).await
         .map_err(|e| format!("{:?}", e))?;
 
     let mut result: HashMap<String, String> = HashMap::new();

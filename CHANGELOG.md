@@ -6,7 +6,15 @@
 - ajout csrf -> pas évident
 - question AtomicPtr::fetch_update : la mémoire de l'ancien pointeur sera-t-elle libérée après la fin des requests en cours ?
 - static files
-- lexic table
+- moteur macro https://docs.rs/subst/latest/subst/
+- intégration jointure
+
+0.7.1 - 26 août 2023
+- `added` RUST_LOG dans <fichier environnement>.conf
+- `added` view.limit_sql
+- `added` read sql traitement des jointures et _element
+- `added` sqlic.crud_read_all
+
 
 0.7.0 - 25 août 2023
 - `added` ajout lecture des données de l'application et présentation dans une vue

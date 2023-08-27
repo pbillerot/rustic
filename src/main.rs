@@ -7,7 +7,6 @@ use std::sync::Arc;
 use std::sync::atomic::AtomicPtr;
 // use std::sync::atomic::Ordering;
 // use std::sync::Mutex;
-
 use actix_session::{
     config::PersistentSession, storage::CookieSessionStore, SessionMiddleware,
 };
@@ -33,10 +32,17 @@ pub struct AppState {
 #[actix_web::main]
 async fn main() -> std::io::Result<()> {
     dotenv::dotenv().expect("Unable to load environment variables from .env file");
-    std::env::set_var("RUST_LOG", "info");
-    // env_logger::init();
-    let env = env_logger::Env::default();
-    env_logger::Builder::from_env(env).format(|buf, record| {
+    // Environnemnt d'exécution ?
+    let env_file = match cfg!(debug_assertions) {
+        true => std::env::var("DEVELOPMENT_CONFIG").expect("ERROR DEVELOPMENT_CONFIG non définie"),
+        false => std::env::var("PRODUCTION_CONFIG").expect("ERROR PRODUCTION_CONFIG non définie"),
+    };
+    log::info!("Environnement : {:?}", env_file);
+    dotenv::from_filename(env_file).expect("Unable to load environment variables");
+
+    // let env = env_logger::Env::default();
+    // println!("{:?}", env);
+    env_logger::Builder::from_default_env().format(|buf, record| {
         let time = Local::now().format("%Y-%m-%D %H:%M:%S");
         // let time = std::time::SystemTime::now();
         writeln!(buf, "[{} {:5} {} {:4} {:?}] {}",
@@ -54,8 +60,6 @@ async fn main() -> std::io::Result<()> {
         false => std::env::var("PRODUCTION_CONFIG").expect("ERROR PRODUCTION_CONFIG non définie"),
     };
     log::info!("Environnement : {:?}", env_file);
-
-    dotenv::from_filename(env_file).expect("Unable to load environment variables");
 
     // Déclarations des pools de connexion aux bases de données
     let database_url = std::env::var("DATABASE_URL").expect("DATABASE_URL must be set");
@@ -117,7 +121,7 @@ async fn main() -> std::io::Result<()> {
             .wrap(middleware::Logger::default())
 
             // activation du contrôle de connexion de l'utilisateur
-            // .wrap(servic::sr_redirect::CheckLogin)
+            .wrap(servic::sr_redirect::CheckLogin)
 
             // un message partagé
             // .wrap(servic::sr_data::AddMsg::enabled())
@@ -146,3 +150,4 @@ async fn main() -> std::io::Result<()> {
         .await
 
 }
+

@@ -97,6 +97,9 @@ curl -X POST -d '{"message": "This is a tweet"}' -H "Content-type: application/j
 - ko pb dépendances https://github.com/edward-shen/actix-csrf
 - https://kvnallsn.github.io/actix-web-database-identity/actix_web/middleware/csrf/index.html
 
+# Message Flash
+- https://docs.rs/actix-web-flash-messages/latest/actix_web_flash_messages/index.html
+
 # Code
 ```rust
 // fusion
