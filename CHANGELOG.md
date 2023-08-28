@@ -9,6 +9,9 @@
 - moteur macro https://docs.rs/subst/latest/subst/
 - intégration jointure
 
+0.8.1 - 28 août 2023
+- `added` view d'un enregistrement
+
 0.8.0 - 28 août 2023
 - `changed` modules renommés service router lexicer cruder
 - `added` début message flash maison

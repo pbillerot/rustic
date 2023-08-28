@@ -6,9 +6,8 @@ use crate::{
     // lexic::lex_table::{self, Element},
     AppState,
 };
-use actix_session::Session;
 use actix_web::{
-    get,
+    // get,
     // delete,
     // post,
     // HttpResponse,
@@ -25,15 +24,14 @@ use std::{
 use crate::service;
 
 // cuerl http://0.0.0.0:8080/
-#[get("/list/{appid}/{tableid}/{viewid}")]
+// #[get("/list/{appid}/{tableid}/{viewid}")]
 pub async fn list(
     path: Path<(String, String, String)>,
-    session: Session,
     data: web::Data<AppState>,
     // msg: Option<ReqData<servic::sr_data::Msg>>,
 ) -> Result<impl Responder> {
     // log::info!("Session {:?} {:?} {:?}", session.status(), session.entries(), path);
-    let mut messages = session.get::<Vec<service::Message>>("messages")?.unwrap();
+    let mut messages = Vec::new();
     messages.push(service::Message::new("list:Tout va bien", service::MESSAGE_LEVEL_INFO));
 
     let (appid, tableid, viewid) = path.into_inner();
@@ -41,9 +39,9 @@ pub async fn list(
     let apps = unsafe { &(*ptr).applications.clone() };
     let app = apps.get(&appid).unwrap();
 
-    let mut rowsel = Vec::new();
+    let mut records = Vec::new();
 
-    crud_read_all(&data.db, &data.dblite, app, &tableid, &viewid ,&"".to_string(), &mut rowsel, &mut messages).await;
+    crud_read_all(&data.db, &data.dblite, app, &tableid, &viewid, "", "", &mut records, &mut messages).await;
 
     // TESTS SQLITE
     // let _reslite: HashMap<String, String> = match querlite(&data.dblite,
@@ -74,7 +72,8 @@ pub async fn list(
     context.insert("application", &app);
     context.insert("tableid", &tableid);
     context.insert("viewid", &viewid);
-    context.insert("rowsel", &rowsel);
+    context.insert("records", &records);
+
     let html = data.template.render("tpl_list.html", &context).unwrap();
 
     Ok(Html(html))

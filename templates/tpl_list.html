@@ -14,6 +14,7 @@
 
 {% block content %}
 {% set vv = application.tables[tableid].views[viewid] %}
+{% set key = application.tables[tableid].setting.key %}
 <h1>{{vv.title}}</h1>
 <table>
   <tr>
@@ -21,12 +22,23 @@
     <th>{{el.elid}}</th>
     {% endfor %}
   </tr>
-  {% for rowel in rowsel %}
+  {% for record in records %}
   <tr>
-    {% for vel in vv.velements %}
-    <td>{{rowel[vel.elid].value}}</td>
+    {% for el in vv.velements %}
+    <td>
+      {% if el.elid == key %}
+        <a href="/view/{{application.appid}}/{{tableid}}/{{viewid}}/{{record[el.elid].value}}">{{record[el.elid].value}}</a>
+      {% else %}
+        {{record[el.elid].value}}
+      {% endif %}
+    </td>
     {% endfor %}
   </tr>
   {% endfor %}
 </table>
+{% block actions %}
+{% for action in application.tables[tableid].views[viewid].actions %}
+<li><a href="">{{ action.label }}</a></li>
+{% endfor %}
+{% endblock %}
 {% endblock %}

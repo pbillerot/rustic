@@ -10,6 +10,7 @@ pub const MESSAGE_LEVEL_WARNING: i32 = 1;
 pub const MESSAGE_LEVEL_ERROR: i32 = 2;
 #[allow(dead_code)]
 pub const MESSAGE_LEVEL_DEBUG: i32 = 3;
+
 #[derive(Debug, Serialize, Deserialize, Clone)]
 pub struct Message {
     pub content: String, // le message

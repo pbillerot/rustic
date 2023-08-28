@@ -9,17 +9,17 @@ use crate::service;
 use crate::cruder::sql_utils::rows_to_vmap;
 use std::collections::HashMap;
 ///
-/// - Lecture des données de la **view**
-/// - en retour une table des éléments
+/// - Lecture des données de la table
 ///
 pub async fn crud_read_all(
     pooldb: &Pool<Postgres>,
     poolite: &Pool<Sqlite>,
     application: &Application, // le lexique de l'application
-    tableid: &String,
-    viewid: &String,
-    filter: &String, // TODO: voir si utile
-    rowsel: &mut Vec<HashMap<String, Element>>, // en retour une table d'élément
+    tableid: &str,
+    viewid: &str,
+    id: &str,
+    filter: &str, // TODO: voir si utile
+    records: &mut Vec<HashMap<String, Element>>, // en retour une table d'élément
     messages: &mut Vec<service::Message>,
     ) {
 
@@ -55,34 +55,30 @@ pub async fn crud_read_all(
             sql.push_str(format!(" {}", &join).as_str());
         }
     }
-    if !view.where_sql.is_empty() {
-        sql.push_str(format!(" WHERE ( {} )", &view.where_sql).as_str());
-    }
-    if !filter.is_empty() {
-        sql.push_str(format!(" AND ( {} )", &filter).as_str());
-    }
-    if !view.order_by.is_empty() {
-        sql.push_str(format!(" ORDER BY {}", &view.order_by).as_str());
-    }
-    if !application.limit_sql.is_empty() {
-        sql.push_str(format!(" LIMIT {}", &application.limit_sql).as_str());
+    // Cas id valorisé ou non
+    if id.is_empty() {
+        if !view.where_sql.is_empty() {
+            sql.push_str(format!(" WHERE ( {} )", &view.where_sql).as_str());
+        }
+        if !view.where_sql.is_empty() {
+            sql.push_str(format!(" WHERE ( {} )", &view.where_sql).as_str());
+        }
+        if !filter.is_empty() {
+            sql.push_str(format!(" AND ( {} )", &filter).as_str());
+        }
+        if !view.order_by.is_empty() {
+            sql.push_str(format!(" ORDER BY {}", &view.order_by).as_str());
+        }
+        if !application.limit_sql.is_empty() {
+            sql.push_str(format!(" LIMIT {}", &application.limit_sql).as_str());
+        } else {
+            sql.push_str(" LIMIT 50");
+        }
     } else {
-        sql.push_str(" LIMIT 50");
+        sql.push_str(format!(" WHERE ( {} = '{}' )", &table.setting.key, id).as_str());
     }
 
-    // // Ajout d'un message dans la session
-    // if let Some(mut flash) = session.get::<Vec<String>>("flash").unwrap() {
-    //     session.insert("flash", flash.push(sql.clone())).unwrap();
-    // } else {
-    //     let mut flash = Vec::new();
-    //     flash.push(&sql);
-    //     session.insert("flash", flash).unwrap();
-    // };
-
-    // Exécution du SQL
-    // log::debug!("SQL:[{}]", sql);
-
-    messages.push(service::Message::new(&sql.to_string(), service::MESSAGE_LEVEL_INFO));
+    messages.push(service::Message::new(&sql, service::MESSAGE_LEVEL_INFO));
 
     let rows = match sqlx::query(&sql).fetch_all(pooldb).await {
         Ok(t) => t,
@@ -103,7 +99,8 @@ pub async fn crud_read_all(
             element.value = hrow.get(&vel.elid).unwrap().clone();
             hel.insert(vel.elid.clone(), element);
         }
-        rowsel.push(hel);
+        records.push(hel);
     }
 
 }
+

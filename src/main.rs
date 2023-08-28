@@ -133,10 +133,11 @@ async fn main() -> std::io::Result<()> {
                     )
                     .build(),
             )
-            .service(router::portail)
-            .service(router::application)
-            .service(router::lexicall)
-            .service(router::list)
+            .route("/lexic/{action}", web::get().to(router::lexicall))
+            .route("/", web::get().to(router::portail))
+            .route("/app/{appid}", web::get().to(router::application))
+            .route("/list/{appid}/{tableid}/{viewid}", web::get().to(router::list))
+            .route("/view/{appid}/{tableid}/{viewid}/{id}", web::get().to(router::view))
         })
         .bind(("0.0.0.0", 8080))?
         .workers(match std::env::var("WORKERS") {

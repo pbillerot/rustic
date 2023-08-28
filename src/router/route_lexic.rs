@@ -2,7 +2,7 @@
 use serde::{Deserialize, Serialize};
 use std::sync::atomic::Ordering;
 use actix_web::{
-    get,
+    // get,
     // delete,
     // post,
     HttpResponse,
@@ -22,12 +22,12 @@ use crate::lexicer;
 #[derive(Debug)]
 
 #[derive(Deserialize, Serialize)]
-struct Info {
+pub struct Info {
     action: String,
 }
 
-#[get("/lexic/{action}")]
-async fn lexicall(info: web::Path<Info>, data: web::Data<AppState>) -> impl Responder {
+// #[get("/lexic/{action}")]
+pub async fn lexicall(info: web::Path<Info>, data: web::Data<AppState>) -> impl Responder {
     // println!("{:?}", info);
     if info.action == "refresh" {
         log::info!("On Lexic action [{}] ...", info.action);

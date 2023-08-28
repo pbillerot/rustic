@@ -1,6 +1,6 @@
 //! Ouverture d'une application
 use actix_web::{
-    get,
+    // get,
     // delete,
     // post,
     // HttpResponse,
@@ -10,7 +10,7 @@ use actix_web::{
     Result,
 };
 // use log::info;
-use actix_session::Session;
+// use actix_session::Session;
 use actix_web_lab::respond::Html;
 use tera::Context;
 
@@ -18,15 +18,14 @@ use std::sync::atomic::Ordering;
 use crate::AppState;
 use crate::service;
 
-#[get("/app/{appid}")]
+// #[get("/app/{appid}")]
 pub async fn application(
     path: Path<String>,
-    session: Session,
     data: web::Data<AppState>,
     // msg: Option<ReqData<servic::sr_data::Msg>>,
 ) -> Result<impl Responder> {
     // log::info!("Session {:?} {:?} {:?}", session.status(), session.entries(), path);
-    let mut messages = session.get::<Vec<service::Message>>("messages")?.unwrap();
+    let mut messages = Vec::new();
     messages.push(service::Message::new("app:Tout va bien", service::MESSAGE_LEVEL_INFO));
 
 

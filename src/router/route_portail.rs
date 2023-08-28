@@ -2,7 +2,7 @@
 //! Ouverture du portail
 
 use actix_web::{
-    get,
+    // get,
     Error,
     // delete,
     // post,
@@ -13,7 +13,7 @@ use actix_web::{
     Result,
 };
 // use log::info;
-use actix_session::Session;
+// use actix_session::Session;
 use actix_web_lab::respond::Html;
 use tera::Context;
 
@@ -24,11 +24,11 @@ use crate::lexicer::lex_application;
 use crate::service;
 use crate::AppState;
 
-#[get("/")]
-pub async fn portail(session: Session, data: web::Data<AppState>) -> Result<impl Responder, Error> {
+// #[get("/")]
+pub async fn portail(data: web::Data<AppState>) -> Result<impl Responder, Error> {
     // log::info!("Session {:?} {:?}", session.status(), session.entries());
     let ptr = data.plexic.load(Ordering::Relaxed);
-    let mut messages = session.get::<Vec<service::Message>>("messages")?.unwrap();
+    let mut messages = Vec::new();
     messages.push(service::Message::new("port:Tout va bien", service::MESSAGE_LEVEL_INFO));
 
     let appids = unsafe { (*ptr).portail.appids.clone() };

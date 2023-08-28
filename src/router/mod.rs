@@ -2,15 +2,18 @@
 /// Gestion des routes
 ///
 
-mod rt_lexic;
-pub use self::rt_lexic::lexicall; // curl http://0.0.0.0:8080/lexic/{action}
+mod route_lexic;
+pub use self::route_lexic::lexicall; // curl http://0.0.0.0:8080/lexic/action
 
-mod rt_portail;
-pub use self::rt_portail::portail; // curl http://0.0.0.0:8080/
+mod route_portail;
+pub use self::route_portail::portail; // curl http://0.0.0.0:8080/
 
-mod rt_application;
-pub use self::rt_application::application; // curl http://0.0.0.0:8080/app/{appid}
+mod route_application;
+pub use self::route_application::application; // curl http://0.0.0.0:8080/app/appid
 
-mod rt_list;
-pub use self::rt_list::list; // curl http://0.0.0.0:8080/appid/tableid/viewid
+mod route_list;
+pub use self::route_list::list; // curl http://0.0.0.0:8080/list/appid/tableid/viewid
+
+mod route_view;
+pub use self::route_view::view; // curl http://0.0.0.0:8080//view/appid/tableid/viewid/id
 

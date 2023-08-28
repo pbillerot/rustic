@@ -1,6 +1,6 @@
 use std::future::{ready, Ready};
 
-use actix_session::SessionExt;
+// use actix_session::SessionExt;
 use actix_web::{
     body::EitherBody,
     dev::{self, Service, ServiceRequest, ServiceResponse, Transform},
@@ -9,7 +9,7 @@ use actix_web::{
     // HttpResponse,
 };
 use futures_util::future::LocalBoxFuture;
-use crate::service::Message;
+// use crate::service::Message;
 
 
 pub struct CheckSession;
@@ -60,17 +60,17 @@ where
     fn call(&self, request: ServiceRequest) -> Self::Future {
         // Change this to see the change in outcome in the browser.
         // Usually this boolean would be acquired from a password check or other auth verification.
-        let session = request.get_session();
-        log::info!("Session {:?} {:?}", session.status(), session.entries());
+        // let session = request.get_session();
+        // log::info!("Session {:?} {:?}", session.status(), session.entries());
 
-        if let Some(messages) = session.get::<Vec<Message>>("messages").unwrap() {
-            for message in messages {
-                log::debug!("{:?}", message);
-            }
-        } else {
-            let messages: Vec<Message> = Vec::new();
-            session.insert("messages", messages).unwrap();
-        }
+        // if let Some(messages) = session.get::<Vec<Message>>("messages").unwrap() {
+        //     for message in messages {
+        //         log::debug!("{:?}", message);
+        //     }
+        // } else {
+        //     let messages: Vec<Message> = Vec::new();
+        //     session.insert("messages", messages).unwrap();
+        // }
 
         // if let Some(is_logged_in) = session.get::<bool>("is_logged").unwrap() {
         //     if !is_logged_in  && request.path() != "/login" {
