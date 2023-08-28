@@ -1,8 +1,11 @@
 [package]
 name = "silex"
-version = "0.6.0"
+version = "0.8.0"
 edition = "2021"
 authors = ["Philippe Billerot"]
+documentation = ""
+homepage = ""
+repository = "https://github.com/pbillerot/silex"
 
 [dependencies]
 # actix-csrf = "0.7.0"

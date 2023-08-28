@@ -15,10 +15,10 @@ use tera::Tera;
 use dotenv;
 // Déclarations des modules
 // mod constants;
-mod lexic;
-mod routic;
-mod servic;
-mod sqlic;
+mod lexicer;
+mod router;
+mod service;
+mod cruder;
 
 #[derive(Clone)]
 #[allow(dead_code)]
@@ -26,7 +26,7 @@ pub struct AppState {
     db: Pool<Postgres>,
     dblite: Pool<Sqlite>,
     template: tera::Tera,
-    plexic: Arc<AtomicPtr<lexic::lex_lexic::Lexic>>,
+    plexic: Arc<AtomicPtr<lexicer::lex_lexic::Lexic>>,
 }
 
 #[actix_web::main]
@@ -89,7 +89,7 @@ async fn main() -> std::io::Result<()> {
         }
     };
     // le lexic sera partagé entre tous les threads du serveur
-    let lexic = match lexic::lex_lexic::Lexic::load() {
+    let lexic = match lexicer::lex_lexic::Lexic::load() {
         Ok(t) => Box::new(t),
         Err(e) => {
             log::error!("Erreur chargement {}", e);
@@ -120,11 +120,8 @@ async fn main() -> std::io::Result<()> {
             // enable logger - always register actix-web Logger middleware last
             .wrap(middleware::Logger::default())
 
-            // activation du contrôle de connexion de l'utilisateur
-            .wrap(servic::sr_redirect::CheckLogin)
-
-            // un message partagé
-            // .wrap(servic::sr_data::AddMsg::enabled())
+            // contrôle de le session utilisateur
+            .wrap(service::srv_session::CheckSession)
 
             // activation de actix-session
             .wrap(
@@ -136,10 +133,10 @@ async fn main() -> std::io::Result<()> {
                     )
                     .build(),
             )
-            .service(routic::portail)
-            .service(routic::application)
-            .service(routic::lexicall)
-            .service(routic::list)
+            .service(router::portail)
+            .service(router::application)
+            .service(router::lexicall)
+            .service(router::list)
         })
         .bind(("0.0.0.0", 8080))?
         .workers(match std::env::var("WORKERS") {

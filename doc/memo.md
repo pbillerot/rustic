@@ -11,6 +11,7 @@
 - https://rust.developpez.com/cours/
 - https://rust.developpez.com/tutoriels/rust-par-l-exemple/
 - [Read the tutorial article](https://docs.qovery.com/guides/tutorial/create-a-blazingly-fast-api-in-rust/)
+- https://blog.logrocket.com/understanding-rust-string-str/
 
 ## modules
 - https://larouille.github.io/modules/#mettre-notre-module-dans-un-fichier-dedie

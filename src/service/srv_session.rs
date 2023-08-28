@@ -9,11 +9,12 @@ use actix_web::{
     // HttpResponse,
 };
 use futures_util::future::LocalBoxFuture;
+use crate::service::Message;
 
 
-pub struct CheckLogin;
+pub struct CheckSession;
 
-impl<S, B> Transform<S, ServiceRequest> for CheckLogin
+impl<S, B> Transform<S, ServiceRequest> for CheckSession
 where
     S: Service<ServiceRequest, Response = ServiceResponse<B>, Error = Error>,
     S::Future: 'static,
@@ -22,18 +23,18 @@ where
     type Response = ServiceResponse<EitherBody<B>>;
     type Error = Error;
     type InitError = ();
-    type Transform = CheckLoginMiddleware<S>;
+    type Transform = CheckSessionMiddleware<S>;
     type Future = Ready<Result<Self::Transform, Self::InitError>>;
 
     fn new_transform(&self, service: S) -> Self::Future {
-        ready(Ok(CheckLoginMiddleware { service }))
+        ready(Ok(CheckSessionMiddleware { service }))
     }
 }
-pub struct CheckLoginMiddleware<S> {
+pub struct CheckSessionMiddleware<S> {
     service: S,
 }
 
-impl<S, B> Service<ServiceRequest> for CheckLoginMiddleware<S>
+impl<S, B> Service<ServiceRequest> for CheckSessionMiddleware<S>
 where
     S: Service<ServiceRequest, Response = ServiceResponse<B>, Error = Error>,
     S::Future: 'static,
@@ -61,6 +62,15 @@ where
         // Usually this boolean would be acquired from a password check or other auth verification.
         let session = request.get_session();
         log::info!("Session {:?} {:?}", session.status(), session.entries());
+
+        if let Some(messages) = session.get::<Vec<Message>>("messages").unwrap() {
+            for message in messages {
+                log::debug!("{:?}", message);
+            }
+        } else {
+            let messages: Vec<Message> = Vec::new();
+            session.insert("messages", messages).unwrap();
+        }
 
         // if let Some(is_logged_in) = session.get::<bool>("is_logged").unwrap() {
         //     if !is_logged_in  && request.path() != "/login" {

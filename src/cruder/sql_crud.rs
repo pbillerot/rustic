@@ -1,27 +1,26 @@
-use actix_session::Session;
-// use actix_session::Session;
 ///
 /// CRUD sur les données
 ///
 use sqlx::{Pool, Postgres, Sqlite};
 
-use crate::lexic::lex_application::Application;
-use crate::lexic::lex_table::Element;
-use crate::sqlic::sql_utils::rows_to_vmap;
+use crate::lexicer::lex_application::Application;
+use crate::lexicer::lex_table::Element;
+use crate::service;
+use crate::cruder::sql_utils::rows_to_vmap;
 use std::collections::HashMap;
 ///
 /// - Lecture des données de la **view**
 /// - en retour une table des éléments
 ///
 pub async fn crud_read_all(
-    _session: &Session,
     pooldb: &Pool<Postgres>,
     poolite: &Pool<Sqlite>,
     application: &Application, // le lexique de l'application
     tableid: &String,
     viewid: &String,
     filter: &String, // TODO: voir si utile
-    rowsel: &mut Vec<HashMap<String, Element>> // en retour une table d'élément
+    rowsel: &mut Vec<HashMap<String, Element>>, // en retour une table d'élément
+    messages: &mut Vec<service::Message>,
     ) {
 
     // construction de l'ordre sql
@@ -82,6 +81,9 @@ pub async fn crud_read_all(
 
     // Exécution du SQL
     // log::debug!("SQL:[{}]", sql);
+
+    messages.push(service::Message::new(&sql.to_string(), service::MESSAGE_LEVEL_INFO));
+
     let rows = match sqlx::query(&sql).fetch_all(pooldb).await {
         Ok(t) => t,
         Err(e) => {

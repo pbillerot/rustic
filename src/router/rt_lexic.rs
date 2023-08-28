@@ -17,7 +17,7 @@ use actix_web::{
 // use std::sync::atomic::Ordering;
 // use crate::servic;
 use crate::AppState;
-use crate::lexic;
+use crate::lexicer;
 
 #[derive(Debug)]
 
@@ -36,7 +36,7 @@ async fn lexicall(info: web::Path<Info>, data: web::Data<AppState>) -> impl Resp
         unsafe { log::info!("ptr1: {}", (*ptr1).portail.title)}
 
         // Chargement d'un nouveau lexique
-        let mut _newlexic = match lexic::lex_lexic::Lexic::load() {
+        let mut _newlexic = match lexicer::lex_lexic::Lexic::load() {
             Ok(t) => {
                 let _oldptr = data.plexic.fetch_update(Ordering::SeqCst, Ordering::SeqCst, |_x| {
                     log::info!("New lexic ok");

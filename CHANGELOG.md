@@ -9,12 +9,15 @@
 - moteur macro https://docs.rs/subst/latest/subst/
 - intégration jointure
 
+0.8.0 - 28 août 2023
+- `changed` modules renommés service router lexicer cruder
+- `added` début message flash maison
+
 0.7.1 - 26 août 2023
 - `added` RUST_LOG dans <fichier environnement>.conf
 - `added` view.limit_sql
 - `added` read sql traitement des jointures et _element
 - `added` sqlic.crud_read_all
-
 
 0.7.0 - 25 août 2023
 - `added` ajout lecture des données de l'application et présentation dans une vue

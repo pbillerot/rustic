@@ -3,6 +3,7 @@
 
 use actix_web::{
     get,
+    Error,
     // delete,
     // post,
     // HttpResponse,
@@ -18,14 +19,17 @@ use tera::Context;
 
 use std::sync::atomic::Ordering;
 
-// use crate::servic;
-use crate::lexic::lex_application;
+// use crate::service;
+use crate::lexicer::lex_application;
+use crate::service;
 use crate::AppState;
 
 #[get("/")]
-pub async fn portail(_session: Session, data: web::Data<AppState>) -> Result<impl Responder> {
+pub async fn portail(session: Session, data: web::Data<AppState>) -> Result<impl Responder, Error> {
     // log::info!("Session {:?} {:?}", session.status(), session.entries());
     let ptr = data.plexic.load(Ordering::Relaxed);
+    let mut messages = session.get::<Vec<service::Message>>("messages")?.unwrap();
+    messages.push(service::Message::new("port:Tout va bien", service::MESSAGE_LEVEL_INFO));
 
     let appids = unsafe { (*ptr).portail.appids.clone() };
     let apps: &std::collections::HashMap<String, lex_application::Application> =
@@ -37,6 +41,7 @@ pub async fn portail(_session: Session, data: web::Data<AppState>) -> Result<imp
     }
 
     let mut context = Context::new();
+    context.insert("messages", &messages);
     context.insert("portail", unsafe { &(*ptr).portail });
     context.insert("applications", &vapp);
     let html = data.template.render("tpl_portail.html", &context).unwrap();

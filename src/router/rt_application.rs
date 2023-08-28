@@ -16,21 +16,27 @@ use tera::Context;
 
 use std::sync::atomic::Ordering;
 use crate::AppState;
+use crate::service;
 
 #[get("/app/{appid}")]
 pub async fn application(
     path: Path<String>,
-    _session: Session,
+    session: Session,
     data: web::Data<AppState>,
     // msg: Option<ReqData<servic::sr_data::Msg>>,
 ) -> Result<impl Responder> {
     // log::info!("Session {:?} {:?} {:?}", session.status(), session.entries(), path);
+    let mut messages = session.get::<Vec<service::Message>>("messages")?.unwrap();
+    messages.push(service::Message::new("app:Tout va bien", service::MESSAGE_LEVEL_INFO));
+
+
     let appid = path.into_inner();
     let ptr = data.plexic.load(Ordering::Relaxed);
     let apps = unsafe {&(*ptr).applications.clone()};
     let app = apps.get(&appid).unwrap();
 
     let mut context = Context::new();
+    context.insert("messages", &messages);
     context.insert("portail", unsafe { &(*ptr).portail });
     context.insert("application", &app);
     let html = data.template.render("tpl_application.html", &context).unwrap();

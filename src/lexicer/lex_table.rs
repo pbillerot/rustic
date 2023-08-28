@@ -3,7 +3,7 @@ use serde_yaml::{self};
 use std::collections::HashMap;
 use sqlx::{Pool, Postgres, Sqlite};
 // use actix_web::web;
-use crate::lexic::lex_utils;
+use crate::lexicer::lex_utils;
 
 #[derive(Debug, Serialize, Deserialize, Clone)]
 pub struct Table {

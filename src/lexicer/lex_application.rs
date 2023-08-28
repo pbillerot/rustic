@@ -3,8 +3,8 @@ use serde_yaml::{self};
 use std::collections::HashMap;
 use std::fmt;
 
-use crate::lexic::lex_utils;
-use crate::lexic::lex_table;
+use crate::lexicer::lex_utils;
+use crate::lexicer::lex_table;
 
 #[derive(Debug, Serialize, Deserialize, Clone)]
 pub struct Application {
