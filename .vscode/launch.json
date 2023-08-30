@@ -20,7 +20,13 @@
                 }
             },
             "args": [],
-            "cwd": "${workspaceFolder}"
+            "cwd": "${workspaceFolder}",
+            "env": {
+                "CARGO_PKG_REPOSITORY": "/",
+                "CARGO_PKG_VERSION": "0.0.0",
+                "CARGO_PKG_AUTHORS": "pbillerot",
+                "CARGO_PKG_NAME": "silex"
+            }
         },
         {
             "type": "lldb",

@@ -1,0 +1,8 @@
+
+{%- macro el_td(el) -%}
+{%- if el.type_element == "number" -%}
+<td{% if el.style %} style="{{ el.style }}"{% else %} style="text-align: center;"{% endif %}{% if el.class %} class="{{ el.class }}"{% endif %}>{{el.value}}</td>
+{%- else -%}
+<td{% if el.style %} style="{{ el.style }}"{% endif %}{% if el.class %} class="{{ el.class }}"{% endif %}>{{el.value}}</td>
+{%- endif -%}
+{%- endmacro el_td -%}

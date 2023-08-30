@@ -1,9 +1,9 @@
+{% import "tpl_macros.html" as macros %}
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
-  <title>{% block head_title %}{{ portail.title }}{% endblock %}</title>
-  {% block head %}{% endblock %}
+<title>{%- block head_title -%}{{ portail.title }}{%- endblock -%}</title>
+{%- block head -%}{%- endblock -%}
 </head>
 
 <body>
@@ -11,45 +11,46 @@
     <thead>
       <tr style="background-color: aliceblue">
         <th colspan="3" style="padding: 1em;">
-          {% block icone %}<span style="float: left;">[ICO]</span>{% endblock %}
-          {% block navigation %}{% endblock %}
-              {% block title %}<span>&nbsp;<b>{{ portail.title }}</b></span>{% endblock %}
-              {% block boutons %}<span style="float: right;">[boutons]</span>{% endblock %}
+          {%- block icone -%}<span style="float: left;">[ICO]</span>{%- endblock -%}
+          {%- block navigation -%}{%- endblock -%}
+          {%- block title -%}<span>&nbsp;<b>{{ portail.title }}</b></span>{%- endblock -%}
+          {%- block boutons -%}<span style="float: right;">[boutons]</span>{%- endblock -%}
         </th>
       </tr>
     </thead>
     <tbody>
       <tr>
         <td style="vertical-align: top; background-color: aliceblue; width:10em; padding: 1em;"">
-          <div id=" menu">
+          <div id="menu">
           <h6><a href="/">Accueil</a></h6>
-          {% block menu %}{% endblock %}
-          </div>
-        </td>
+          {%- block menu -%}{%- endblock -%}
+          </div><!-- /menu -->
+        </td><!-- /td menu -->
         <td style="vertical-align: top; padding: 1em;">
           <div id="content">
-            {% for message in messages %}
+            {%- for message in messages -%}
             <div>{{message.level}}:{{message.content}}</div>
-            {% endfor %}
-            {% block content %}<p>Placeholder content</p>{% endblock %}
-          </div>
-        </td>
+            {%- endfor -%}
+            {%- block content -%}<p>Placeholder content</p>{%- endblock -%}
+          </div><!-- /content -->
+        </td><!-- /td content -->
         <td style="vertical-align: top; background-color: aliceblue; width:10em; padding: 1em;">
           <div style="" id="actions">
             <h6>Actions</h6>
-            {% block actions %}{% endblock %}
-          </div>
+            {%- block actions -%}{%- endblock -%}
+          </div><!-- /action -->
+        </td><!-- /td action -->
       </tr>
     </tbody>
     <tfoot>
       <tr>
         <th colspan="3" style="text-align: left; padding: 1em;">
-          {% block foot %}
+          {%- block foot -%}
           <h6>
-            <a href="/" title="Page Home"/>SILEX</a>
-            0.5.0 &copy; Philippe Billerot
+            <a href="{{ get_env(name='CARGO_PKG_REPOSITORY') | safe}}" target="_blank" title="Repository"/>{{get_env(name="CARGO_PKG_NAME")}}</a>
+            {{get_env(name="CARGO_PKG_VERSION")}} &copy; {{get_env(name="CARGO_PKG_AUTHORS")}}
           </h6>
-          {% endblock %}
+          {%- endblock -%}
         </th>
       </tr>
     </tfoot>

@@ -1,6 +1,6 @@
 //! Ouverture d'une view
 //!
-use crate::cruder::sql_crud::crud_read_all;
+use crate::cruder::sql_crud::crud_list;
 // use crate::sqlic::sql_utils::querlite;
 use crate::{
     // lexic::lex_table::{self, Element},
@@ -39,32 +39,13 @@ pub async fn list(
     let apps = unsafe { &(*ptr).applications.clone() };
     let app = apps.get(&appid).unwrap();
 
-    let mut records = Vec::new();
-
-    crud_read_all(&data.db, &data.dblite, app, &tableid, &viewid, "", "", &mut records, &mut messages).await;
-
-    // TESTS SQLITE
-    // let _reslite: HashMap<String, String> = match querlite(&data.dblite,
-    //     "
-    //     select 'text' as mytext,
-    //     122 as myinteger,
-    //     12.23 as myfloat,
-    //     datetime('now','localtime') as localtime,
-    //     CURRENT_TIMESTAMP as current,
-    //     datetime(CURRENT_TIMESTAMP,'localtime') as created_at,
-    //     strftime('%s','now') as strftime
-    //     "
-    // ).await {
-    //     Ok(t) => t,
-    //     Err(e) => {
-    //         log::error!("{:?}", e);
-    //         HashMap::new()
-    //     }
-    // };
-    // let messages = Vec::new();
-    // for message in msg_flash.iter() {
-    //     message.push(&message.level(),&message.content());
-    // }
+    let records = crud_list(
+        &data.db,
+        &data.dblite,
+        app, &tableid, &viewid, "",
+        "",
+         &mut messages
+        ).await;
 
     let mut context = tera::Context::new();
     context.insert("messages", &messages);

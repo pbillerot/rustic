@@ -96,7 +96,7 @@ async fn main() -> std::io::Result<()> {
             std::process::exit(1);
         }
     };
-    let tera = match Tera::new("templates/*.html") {
+    let tera = match Tera::new("templates/**/*.html") {
         Ok(t) => t,
         Err(e) => {
             log::error!("Parsing error(s): {}", e);
@@ -133,11 +133,34 @@ async fn main() -> std::io::Result<()> {
                     )
                     .build(),
             )
-            .route("/lexic/{action}", web::get().to(router::lexicall))
             .route("/", web::get().to(router::portail))
+            // .route("/login", web::post().to(router::login))
+            // .route("/logout", web::post().to(router::logout))
             .route("/app/{appid}", web::get().to(router::application))
             .route("/list/{appid}/{tableid}/{viewid}", web::get().to(router::list))
+            // .route("/dashboard/{appid}/{tableid}/{viewid}", web::get().to(router::dashboard))
             .route("/view/{appid}/{tableid}/{viewid}/{id}", web::get().to(router::view))
+            // .route("/add/{appid}/{tableid}/{viewid}/{formid}", web::get().to(router::add))
+            // .route("/add/{appid}/{tableid}/{viewid}/{formid}", web::post().to(router::add_post))
+            // .route("/edit/{appid}/{tableid}/{viewid}/{formid}/{id}", web::get().to(router::edit))
+            // .route("/edit/{appid}/{tableid}/{viewid}/{formid}/{id}", web::post().to(router::edit_post))
+            // .route("/delete/{appid}/{tableid}/{viewid}/{formid}/{id}", web::post().to(router::delete_post))
+            // .route("/actionv/{appid}/{tableid}/{viewid}/{action}", web::post().to(router::action_view))
+            // .route("/actionp/{appid}/{tableid}/{viewid}/{id}", web::post().to(router::action_press))
+            // .route("/actionf/{appid}/{tableid}/{viewid}/{formid}/{id}/{action}", web::post().to(router::action_form))
+            // .route("/actione/{appid}/{tableid}/{viewid}/{formid}/{id}/{action}", web::post().to(router::action_element))
+            // .route("/actionx/{appid}/{tableid}/{viewid}/{id}/{action}", web::post().to(router::action_ajax))
+            // .route("/ajax/{appid}/{tableid}/{viewid}/{formid}/{action}", web::post().to(router::edit))
+            // .route("/share/{appid}/{shareid}", web::post().to(router::share))
+            // .route("/search/{appid}/{tableid}/{viewid}/{id}", web::post().to(router::search))
+            // .route("/filter/{appid}/{tableid}/{viewid}", web::post().to(router::filter))
+            // .route("/sort/{appid}/{tableid}/{viewid}", web::post().to(router::sort))
+            // Gestion du lexique
+            .route("/lexic/action/{action}", web::get().to(router::lexicall))
+            // .route("/lexic/document", web::get().to(router::lexic))
+            // .route("/lexic/document", web::post().to(router::lexic_post))
+            // .route("/lexic/log", web::get().to(router::log))
+
         })
         .bind(("0.0.0.0", 8080))?
         .workers(match std::env::var("WORKERS") {

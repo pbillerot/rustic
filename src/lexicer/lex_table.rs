@@ -4,6 +4,10 @@ use std::collections::HashMap;
 use sqlx::{Pool, Postgres, Sqlite};
 // use actix_web::web;
 use crate::lexicer::lex_utils;
+use crate::cruder::sqler::{kerlite, kerdata};
+use crate::service;
+
+use super::macrolex;
 
 #[derive(Debug, Serialize, Deserialize, Clone)]
 pub struct Table {
@@ -112,7 +116,7 @@ pub struct Element {
     #[serde(default = "String::new")]
     pub icon_name: String, // icone d'une card par exemple
     #[serde(default = "Vec::new")]
-    pub items: Vec<Item>, // slice d'item
+    pub items: Vec<HashMap<String, String>>, // slice d'item
     #[serde(default = "String::new")]
     pub items_sql: String, // Ordre SQL qui retournera la colonne pour alimenter Items
     #[serde(default = "Jointure::new")]
@@ -148,9 +152,11 @@ pub struct Element {
     #[serde(default = "String::new")]
     pub sql_out: String, // Valeur à enregistrer dans la base de données (zone calculée par le beedule)
     #[serde(default = "String::new")]
+    pub style: String, // style de la cellule
+    #[serde(default = "String::new")]
     pub style_sqlite: String, // style de la cellule
     #[serde(default = "String::new")]
-    #[serde(rename = "type")]
+    // #[serde(rename = "type", default = "String::new")]
     pub type_element: String, // Type : amount button card chart checkbox counter date email float image list number password pdf percent tag tel text textarea time radio url
     #[serde(default = "String::new")]
     pub width: String, // largeur s m l xl xxl max 150px 360px 450px 600px 750px 100% dans view et edit	WithSum       bool              // dans une table calcule la somme des valeurs
@@ -164,25 +170,93 @@ pub struct Element {
 }
 
 impl Element {
-    // fn compute_before(&mut self, app_state:AppState ,elements: &HashMap<String, Element>) {
-    //     // Calcul des attributs par défaut :
-    //     // default_sqlite -> default
-
-    // }
-    pub fn compute(&mut self, _db: &Pool<Postgres>, _dblite: &Pool<Sqlite> ,_element_with_all_attributes: &Element, _hmap: &HashMap<String, String>) {
-        // Calcul des attributs avec les valeurs lues dans la table :
-        // class_sqlite -> class
-        // compute_sqlite -> valeur
-        // default_sqlite -> default
-        // format_sqlite -> format
-        // hide_sqlite -> hide
-        // items_sql -> items
-        // style_sqlite -> style
-        if !self.class_sqlite.is_empty() {
-            self.class = self.class_sqlite.clone();
+    /// Calcul de la valeur de l'élément et de ses propriétés à partir des données lues dans la table
+    pub async fn compute_value(&mut self,
+         _db: &Pool<Postgres>,
+         dblite: &Pool<Sqlite>,
+         hvalue: &HashMap<String, String>,
+         messages: &mut Vec<service::Message>) {
+        // on commence par la value
+        // get value lue dans la table
+        self.value = hvalue.get(&self.elid).unwrap().clone();
+        // calcul si compute_sqlite valorisée
+        if !self.compute_sqlite.is_empty() {
+            let sql = macrolex(&self.compute_sqlite, hvalue);
+            self.value = kerlite(dblite, &sql, messages).await;
+        }
+        // valeur par défaut
+        if !self.default.is_empty() {
+            self.default = macrolex(&self.default, hvalue);
+        }
+        if !self.default_sqlite.is_empty() {
+            let sql = macrolex(&self.default_sqlite, hvalue);
+            self.default = kerlite(dblite, &sql, messages).await;
+        }
+        if self.value.is_empty() {
+            self.value = self.default.clone();
         }
 
     }
+
+    pub async fn compute_prop(&mut self,
+        db: &Pool<Postgres>,
+        dblite: &Pool<Sqlite>,
+        hvalue: &HashMap<String, String>,
+        messages: &mut Vec<service::Message>) {
+       // recalcul si compute_sqlite valorisée
+       if !self.compute_sqlite.is_empty() {
+           let sql = macrolex(&self.compute_sqlite, hvalue);
+           self.value = kerlite(dblite, &sql, messages).await;
+       }
+       // valeur par défaut
+       if !self.default.is_empty() {
+           self.default = macrolex(&self.default, hvalue);
+       }
+       if !self.default_sqlite.is_empty() {
+           let sql = macrolex(&self.default_sqlite, hvalue);
+           self.default = kerlite(dblite, &sql, messages).await;
+       }
+       if self.value.is_empty() {
+           self.value = self.default.clone();
+       }
+
+       // Calcul des autres propriétés
+       if !self.label_long.is_empty() {
+           self.label_long = macrolex(&self.label_long, hvalue);
+       }
+       if !self.label_short.is_empty() {
+           self.label_short = macrolex(&self.label_short, hvalue);
+       }
+       if !self.help.is_empty() {
+           self.help = macrolex(&self.help, hvalue);
+       }
+
+       // exec des macros sqlite
+       if !self.class_sqlite.is_empty() {
+           let sql = macrolex(&self.class_sqlite, hvalue);
+           self.class = kerlite(dblite, &sql, messages).await;
+       }
+       if !self.format_sqlite.is_empty() {
+           let sql = macrolex(&self.format_sqlite, hvalue);
+           self.format = kerlite(dblite, &sql, messages).await;
+       }
+       if !self.hide_sqlite.is_empty() {
+           let sql = macrolex(&self.hide_sqlite, hvalue);
+           self.hide = !kerlite(dblite, &sql, messages).await.is_empty();
+       }
+       if !self.style_sqlite.is_empty() {
+           let sql = macrolex(&self.style_sqlite, hvalue);
+           self.style = kerlite(dblite, &sql, messages).await;
+       }
+       // items récupérés dans les données de l'application
+       if !self.items_sql.is_empty() {
+           let sql = macrolex(&self.items_sql, hvalue);
+           self.items = kerdata(db, &sql, messages).await;
+       }
+
+   }
+
+   /// fusion des propriétés éléments de la vue ou formulaire avec les élement déclarés au niveau de la table
     fn merge(&mut self, helement: &Element) {
         // let mut fusel = fullElement;
         if self.elid.is_empty() {
@@ -459,15 +533,6 @@ pub struct Form {
     // calcul
     #[serde(default = "Vec::new")]
     pub felements: Vec<Element>,
-}
-
-// ITEM de litte
-#[derive(Debug, Serialize, Deserialize, Clone, Eq, PartialEq)]
-pub struct Item {
-    #[serde(default = "String::new")]
-    pub key: String, // valeur dans la base de données
-    #[serde(default = "String::new")]
-    pub label: String, // label à afficher
 }
 
 // SETTING

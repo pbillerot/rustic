@@ -1,9 +1,9 @@
-{% extends "tpl_base.html" %}
+{%- extends "tpl_base.html" -%}
 
-{% block content %}
+{%- block content -%}
   <h1>{{portail.title}}</h1>
   <h3>Liste des applications</h3>
-  {% for app in applications %}
+  {%- for app in applications -%}
     <li><a href="/app/{{app.appid}}" title="{{ app.title }}">{{ app.title }}</a></li>
-  {% endfor %}
-{% endblock %}
+  {%- endfor -%}
+{%- endblock -%}

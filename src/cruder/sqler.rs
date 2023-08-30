@@ -1,3 +1,4 @@
+use sqlx::Postgres;
 /**
  * Modèles de données
  */
@@ -11,43 +12,62 @@ use sqlx::Column;
 use sqlx::types::chrono::Utc;
 use sqlx::{Pool, Sqlite};
 use std::collections::HashMap;
-// use crate::log::debug;
 
-pub async fn _querlite(poollite: &Pool<Sqlite>, sql: &str ) -> Result<HashMap<String, String>, String> {
+use crate::service;
 
-    let row = sqlx::query(sql).fetch_one(poollite).await
-        .map_err(|e| format!("{:?}", e))?;
-
-    let mut result: HashMap<String, String> = HashMap::new();
-    // SqliteTypeInfo(Text)
-    // SqliteTypeInfo(Int)
-    // SqliteTypeInfo(Float)
-
-    for col in row.columns() {
-        let value = match row.try_get_unchecked::<String, _>(col.ordinal()) {
-            Ok(v) => v,
-            Err(_) => {
-                match row.try_get_unchecked::<i32, _>(col.ordinal()) {
-                    Ok(v) => v.to_string(),
+/// Requête sqlite qui ne renvoie qu'une seule colonne et une seule ligne
+#[allow(dead_code)]
+pub async fn kerlite(poollite: &Pool<Sqlite>, sql: &str, messages: &mut Vec<service::Message> ) -> String {
+    let result: String = match sqlx::query(sql).fetch_one(poollite).await {
+        Ok(row) => {
+            let mut valcol = String::new();
+            for col in row.columns() {
+                // on ne renvoie que la 1ère colonne
+                let val = match row.try_get_unchecked::<String, _>(col.ordinal()) {
+                    Ok(v) => v,
                     Err(_) => {
-                        match row.try_get_unchecked::<f32, _>(col.ordinal()) {
+                        match row.try_get_unchecked::<i32, _>(col.ordinal()) {
                             Ok(v) => v.to_string(),
-                            Err(e) => {
-                                log::error!("{:?}", e);
-                                format!("{:?}", e)
-                            },
+                            Err(_) => {
+                                match row.try_get_unchecked::<f32, _>(col.ordinal()) {
+                                    Ok(v) => v.to_string(),
+                                    Err(e) => {
+                                        messages.push(service::Message::new(sql, service::MESSAGE_LEVEL_ERROR));
+                                        messages.push(service::Message::new(format!("{:?}", e).as_str(), service::MESSAGE_LEVEL_ERROR));
+                                        "".to_string()
+                                    },
+                                }
+                            }
                         }
                     }
-                }
+                };
+                valcol.push_str(&val);
             }
-        };
-        result.insert(
-            col.name().to_string(),
-            value,
-        );
-    }
-    println!("{:?}", &result);
-    Ok(result)
+            valcol
+        },
+        Err(e) => {
+            messages.push(service::Message::new(format!("{:?}", e).as_str(), service::MESSAGE_LEVEL_ERROR));
+            "".to_string()
+        }
+    };
+    result
+}
+
+/// Requête sur les données applicatives qui retourne une table de valeur
+pub async fn kerdata(pooldb: &Pool<Postgres>, sql: &str, messages: &mut Vec<service::Message> ) -> Vec<HashMap<String, String>> {
+    log::info!("{}", sql);
+    let rows = match sqlx::query(&sql).fetch_all(pooldb).await {
+        Ok(t) => t,
+        Err(e) => {
+            messages.push(service::Message::new(sql, service::MESSAGE_LEVEL_ERROR));
+            messages.push(service::Message::new(format!("{:?}", e).as_str(), service::MESSAGE_LEVEL_ERROR));
+            Vec::new()
+        }
+    };
+    // Chargement des enregistrements lus dans un tableau de valeur
+    let result = rows_to_vmap(rows);
+
+    result
 }
 
 pub fn rows_to_vmap(rows: Vec<PgRow>) -> Vec<HashMap<String, String>> {

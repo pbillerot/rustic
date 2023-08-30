@@ -7,22 +7,24 @@ setting:
 
 elements:
   joueur:
-    type: text
+    type_element: "text"
     label_long: "Joueur"
     label_short: "Joueur"
+    class: "gris"
+    class_sqlite: "select 'bold'"
     order: 30
   cumul:
-    type: number
+    type_element: "number"
     label_long: "Points"
     label_short: "Points"
     default_sqlite: "select 0"
     order: 40
     style_sqlite: "select case when {cumul} < 0 then 'background-color: red' else '' end"
   actif:
-    type: checkbox
+    type_element: "checkbox"
     label_long: "Actif"
     label_short: "Actif"
-    col_align: center
+    col_align: "center"
     order: 50
     params:
       form: factif
@@ -32,7 +34,7 @@ views:
     form_edit: fedit
     form_view: fedit
     deletable: true
-    type: table
+    type_element: table
     title: "Joueurs"
     icon_name: user
     style_sqlite: "select case when '{actif}' = '1' then 'background-color: violet' else '' end"

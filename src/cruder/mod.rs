@@ -1,3 +1,3 @@
 
-pub mod sql_utils;
+pub mod sqler;
 pub mod sql_crud;

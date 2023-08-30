@@ -6,12 +6,13 @@ use sqlx::{Pool, Postgres, Sqlite};
 use crate::lexicer::lex_application::Application;
 use crate::lexicer::lex_table::Element;
 use crate::service;
-use crate::cruder::sql_utils::rows_to_vmap;
+use crate::cruder::sqler::rows_to_vmap;
 use std::collections::HashMap;
 ///
 /// - Lecture des données de la table
 ///
-pub async fn crud_read_all(
+#[allow(unused_variables)]
+pub async fn crud_list(
     pooldb: &Pool<Postgres>,
     poolite: &Pool<Sqlite>,
     application: &Application, // le lexique de l'application
@@ -19,9 +20,8 @@ pub async fn crud_read_all(
     viewid: &str,
     id: &str,
     filter: &str, // TODO: voir si utile
-    records: &mut Vec<HashMap<String, Element>>, // en retour une table d'élément
     messages: &mut Vec<service::Message>,
-    ) {
+    ) -> Vec<HashMap<String, Element>> {
 
     // construction de l'ordre sql
     let mut sql = "SELECT ".to_string();
@@ -78,8 +78,6 @@ pub async fn crud_read_all(
         sql.push_str(format!(" WHERE ( {} = '{}' )", &table.setting.key, id).as_str());
     }
 
-    messages.push(service::Message::new(&sql, service::MESSAGE_LEVEL_INFO));
-
     let rows = match sqlx::query(&sql).fetch_all(pooldb).await {
         Ok(t) => t,
         Err(e) => {
@@ -91,16 +89,30 @@ pub async fn crud_read_all(
     let vrows = rows_to_vmap(rows);
 
     // Construction d'un tableau d'éléments avec les enregistrements
-    for hrow in vrows {
+    let mut records = Vec::new();
+    for hvalue in vrows {
         let mut hel: HashMap<String, Element> = HashMap::new();
+        // 1er tour pour calculer la value
         for vel in &view.velements {
-            let mut element = view.elements.get(&vel.elid).unwrap().clone();
-            element.compute(pooldb, poolite, vel, &hrow);
-            element.value = hrow.get(&vel.elid).unwrap().clone();
-            hel.insert(vel.elid.clone(), element);
+            let mut element = vel.clone();
+            element.compute_value(pooldb, poolite, &hvalue, messages).await;
+            hel.insert(element.elid.clone(), element);
+        }
+        // 2ème tour pour calculer les propriétés
+        // on reconstruit un hvalue actualisé avec les valeurs
+        let mut hvalue_computed = HashMap::new();
+        for vel in &view.velements {
+            hvalue_computed.insert(vel.elid.clone(), hel.get(&vel.elid).unwrap().value.clone());
+        }
+
+        for vel in &view.velements {
+            let mut element  = hel.get(&vel.elid).unwrap().clone();
+            element.compute_prop(pooldb, poolite, &hvalue_computed, messages).await;
+            hel.insert(element.elid.clone(), element);
         }
         records.push(hel);
     }
+    records
 
 }
 

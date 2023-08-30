@@ -7,23 +7,23 @@ setting:
 
 elements:
   id:
-    type: counter
+    type_element: counter
     label_long: "n°"
     label_short: "n°"
   titre:
-    type: textarea
+    type_element: textarea
     label_long: "Titre"
     label_short: "Titre"
   auteur:
-    type: text
+    type_element: text
     label_long: "Auteur"
     label_short: "Auteur"
   editeur:
-    type: text
+    type_element: text
     label_long: "Éditeur"
     label_short: "Éditeur"
   note:
-    type: radio
+    type_element: radio
     label_long: "Note"
     label_short: "Note"
     items:
@@ -38,7 +38,7 @@ elements:
       - key: "5"
         label: "5"
   commentaire:
-    type: textarea
+    type_element: textarea
     label_long: "Commentaire"
     label_short: "Commentaire"
 
@@ -47,7 +47,7 @@ views:
     form_add: fedit
     form_edit: fedit
     deletable: false
-    type: table
+    type_element: table
     title: "Books"
     icon_name: book
     order_by: "titre"

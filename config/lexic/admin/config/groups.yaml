@@ -7,11 +7,11 @@ setting:
 
 elements:
   group_id:
-    type: text
+    type_element: text
     label_long: "Groupe"
     label_short: "Groupe"
   group_note:
-    type: textarea
+    type_element: textarea
     label_long: "Note"
     label_short: "Note"
 
@@ -20,7 +20,7 @@ views:
     form_add: fedit
     form_edit: fedit
     deletable: true
-    type: card
+    type_element: card
     group: admin
     title: "Groupes Utilisateurs"
     icon_name: users

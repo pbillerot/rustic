@@ -1,44 +1,44 @@
-{% extends "tpl_base.html" %}
+{%- extends "tpl_base.html" -%}
 
-{% block title %}
+{%- block title -%}
 <span>&nbsp;<b>{{ application.title }}</b></span>
-{% endblock %}
+{%- endblock -%}
 
-{% block menu %}
-{% for tv in application.menu %}
+{%- block menu -%}
+{%- for tv in application.menu -%}
 <li><a
     href="/list/{{application.appid}}/{{tv.tableid}}/{{tv.viewid}}">{{application.tables[tv.tableid].views[tv.viewid].title}}</a>
 </li>
-{% endfor %}
-{% endblock %}
+{%- endfor -%}
+{%- endblock -%}
 
-{% block content %}
-{% set vv = application.tables[tableid].views[viewid] %}
-{% set key = application.tables[tableid].setting.key %}
+{%- block content -%}
+{%- set vv = application.tables[tableid].views[viewid] -%}
+{%- set key = application.tables[tableid].setting.key -%}
 <h1>{{vv.title}}</h1>
 <table>
   <tr>
-    {% for el in vv.velements %}
-    <th>{{el.elid}}</th>
-    {% endfor %}
+    {%- for el in vv.velements -%}
+    <th>{{el.label_short}}</th>
+    {%- endfor -%}
   </tr>
-  {% for record in records %}
+  {%- for record in records %}
   <tr>
-    {% for el in vv.velements %}
-    <td>
-      {% if el.elid == key %}
-        <a href="/view/{{application.appid}}/{{tableid}}/{{viewid}}/{{record[el.elid].value}}">{{record[el.elid].value}}</a>
-      {% else %}
-        {{record[el.elid].value}}
-      {% endif %}
-    </td>
-    {% endfor %}
+    {%- for vel in vv.velements -%}
+    {%- set el = record[vel.elid] -%}
+      {%- if el.elid == key -%}
+      <td{% if el.style != '' %} style="{{ el.style }}"{% endif %}{% if el.class != '' %} class="{{ el.class }}"{% endif %}>
+      <a href="/view/{{application.appid}}/{{tableid}}/{{viewid}}/{{record[el.elid].value | safe}}">{{el.class}}:{{record[el.elid].value}}</a></td>
+      {%- else -%}
+      {{ macros::el_td(el=record[el.elid])}}
+      {%- endif -%}
+    {%- endfor -%}
   </tr>
-  {% endfor %}
+  {%- endfor -%}
 </table>
-{% block actions %}
-{% for action in application.tables[tableid].views[viewid].actions %}
+{%- endblock -%}
+{%- block actions -%}
+{%- for action in application.tables[tableid].views[viewid].actions -%}
 <li><a href="">{{ action.label }}</a></li>
-{% endfor %}
-{% endblock %}
-{% endblock %}
+{%- endfor -%}
+{%- endblock -%}

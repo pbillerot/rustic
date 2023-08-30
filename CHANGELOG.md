@@ -9,6 +9,9 @@
 - moteur macro https://docs.rs/subst/latest/subst/
 - intégration jointure
 
+0.9.0 - 30 août 2023
+- `added` calcul des propriétés des élements
+
 0.8.1 - 28 août 2023
 - `added` view d'un enregistrement
 

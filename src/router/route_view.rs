@@ -1,6 +1,6 @@
 //! Ouverture d'une view
 //!
-use crate::cruder::sql_crud::crud_read_all;
+use crate::cruder::sql_crud::crud_list;
 // use crate::sqlic::sql_utils::querlite;
 use crate::{
     // lexic::lex_table::{self, Element},
@@ -39,9 +39,11 @@ pub async fn view(
     let apps = unsafe { &(*ptr).applications.clone() };
     let app = apps.get(&appid).unwrap();
 
-    let mut records = Vec::new();
-
-    crud_read_all(&data.db, &data.dblite, app, &tableid, &viewid, &id ,"", &mut records, &mut messages).await;
+    let mut records = crud_list(
+        &data.db,
+        &data.dblite,
+        app, &tableid, &viewid, &id
+        ,"", &mut messages).await;
 
     let mut context = tera::Context::new();
     context.insert("messages", &messages);

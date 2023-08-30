@@ -7,53 +7,53 @@ setting:
 
 elements:
   user_name:
-    type: text
+    type_element: text
     label_long: "Nom ou pseudo"
     label_short: "Nom ou pseudo"
     pattern: "[a-zA-Z0-9]+"
     required: true
   user_password:
-    type: password
+    type_element: password
     label_long: "Mot de passe"
     pattern: "[a-zA-Z0-9_-]+"
     required: true
     min_length: 3
   user_email:
-    type: email
+    type_element: email
     label_long: "Email"
     label_short: "Email"
     required: true
   user_is_admin:
-    type: checkbox
+    type_element: checkbox
     label_long: "Administrateur"
     label_short: "Administrateur"
     col_align: center
   user_groupes:
-    type: tag
+    type_element: tag
     label_long: "Groupes"
     label_short: "Groupes"
     col_align: center
     width: xl
     items_sql: "select group_id as key, group_id as label from groups order by group_id"
   _pwd_change:
-    type: button
+    type_element: button
     label_long: "Changer le mot de passe..."
     params:
       url: "/bee/edit/admin/users/vall/fpwd/{user_name}"
   _card_MDP:
-    type: card
+    type_element: card
     label_long: "Sécurité"
     icon_name: lock
     params:
       form: fmdp
   _new_password:
-    type: password
+    type_element: password
     label_long: "Nouveau mot de passe"
     pattern: "[a-zA-Z0-9_-]+"
     required: true
     min_length: 3
   _confirm_password:
-    type: password
+    type_element: password
     label_long: "Confirmer le mot de passe"
     pattern: "[a-zA-Z0-9_-]+"
     required: true

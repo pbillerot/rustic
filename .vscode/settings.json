@@ -2,5 +2,10 @@
     "rust-analyzer.linkedProjects": [
         "./Cargo.toml"
     ],
+    "rust-analyzer.runnableEnv": {
+        "CARGO_PKG_REPOSITORY": "/",
+        "CARGO_PKG_VERSION": "0.0.0",
+        "CARGO_PKG_AUTHORS": "pbillerot"
+    },
     "rust-analyzer.showUnlinkedFileNotification": false
 }
