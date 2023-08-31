@@ -91,11 +91,15 @@ pub async fn crud_list(
     // Construction d'un tableau d'éléments avec les enregistrements
     let mut records = Vec::new();
     for hvalue in vrows {
+        // récup de la valeur de la clé de l'enregistrement
+        let key_value = hvalue.get(&table.setting.key).unwrap();
+        // init de la table des éléments
         let mut hel: HashMap<String, Element> = HashMap::new();
         // 1er tour pour calculer la value
         for vel in &view.velements {
             let mut element = vel.clone();
             element.compute_value(pooldb, poolite, &hvalue, messages).await;
+            element.key_value = key_value.clone();
             hel.insert(element.elid.clone(), element);
         }
         // 2ème tour pour calculer les propriétés
@@ -116,3 +120,87 @@ pub async fn crud_list(
 
 }
 
+pub async fn crud_view(
+    pooldb: &Pool<Postgres>,
+    poolite: &Pool<Sqlite>,
+    application: &Application, // le lexique de l'application
+    tableid: &str,
+    formid: &str,
+    id: &str,
+    messages: &mut Vec<service::Message>,
+    ) -> Vec<HashMap<String, Element>> {
+
+    // construction de l'ordre sql
+    let mut sql = "SELECT ".to_string();
+    // on prend les colonnes définies dans la view.velements
+    let table = application.tables.get(tableid).unwrap();
+    let form = table.forms.get(formid).unwrap();
+    let mut bstart = true;
+    let mut joins: Vec<String> = Vec::new();
+    for element in &form.velements {
+        if element.hide {
+            continue;
+        }
+        if element.elid.starts_with("_") {
+            continue;
+        }
+        if bstart {
+            bstart = false;
+        } else {
+            sql.push_str(", ");
+        }
+        if !element.jointure.column.is_empty() {
+            sql.push_str(format!("{} as {}", &element.jointure.column, &element.elid).as_str());
+            joins.push(element.jointure.join.clone());
+        } else {
+            sql.push_str(format!("{}.{} as {}", &tableid, &element.elid, &element.elid).as_str());
+        }
+    }
+    sql.push_str(format!(" FROM {}", &tableid).as_str());
+    if !joins.is_empty() {
+        for join in joins {
+            sql.push_str(format!(" {}", &join).as_str());
+        }
+    }
+    sql.push_str(format!(" WHERE ( {} = '{}' )", &table.setting.key, id).as_str());
+
+    let rows = match sqlx::query(&sql).fetch_all(pooldb).await {
+        Ok(t) => t,
+        Err(e) => {
+            messages.push(service::Message::new(format!("{:?}", &e).as_str(), service::MESSAGE_LEVEL_ERROR));
+            Vec::new()
+        }
+    };
+    // Chargement des enregistrements lus dans un tableau de valeur
+    let vrows = rows_to_vmap(rows);
+
+    // Construction d'un tableau d'éléments avec les enregistrements
+    let mut records = Vec::new();
+    for hvalue in vrows {
+        // récup de la valeur de la clé de l'enregistrement
+        let key_value = hvalue.get(&table.setting.key).unwrap();
+        // init de la table des éléments
+        let mut hel: HashMap<String, Element> = HashMap::new();
+        // 1er tour pour calculer la value
+        for vel in &form.velements {
+            let mut element = vel.clone();
+            element.compute_value(pooldb, poolite, &hvalue, messages).await;
+            element.key_value = key_value.clone();
+            hel.insert(element.elid.clone(), element);
+        }
+        // 2ème tour pour calculer les propriétés
+        // on reconstruit un hvalue actualisé avec les valeurs
+        let mut hvalue_computed = HashMap::new();
+        for vel in &form.velements {
+            hvalue_computed.insert(vel.elid.clone(), hel.get(&vel.elid).unwrap().value.clone());
+        }
+        for vel in &form.velements {
+            let mut element  = hel.get(&vel.elid).unwrap().clone();
+            element.compute_prop(pooldb, poolite, &hvalue_computed, messages).await;
+            hel.insert(element.elid.clone(), element);
+        }
+        records.push(hel);
+    }
+    records
+
+}

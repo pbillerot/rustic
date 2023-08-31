@@ -2,7 +2,6 @@
 setting:
   alias_db: books
   key: id
-  col_display: titre
   icon_name: "book"
 
 elements:

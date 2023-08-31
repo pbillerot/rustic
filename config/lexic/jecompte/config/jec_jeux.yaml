@@ -2,7 +2,6 @@
 setting:
   alias_db: jecompte
   key: id
-  col_display: id
   icon_name: "th list"
 
 elements:

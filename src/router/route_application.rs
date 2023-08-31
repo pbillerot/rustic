@@ -38,6 +38,7 @@ pub async fn application(
     context.insert("messages", &messages);
     context.insert("portail", unsafe { &(*ptr).portail });
     context.insert("application", &app);
+    context.insert("appid", &appid);
     let html = data.template.render("tpl_application.html", &context).unwrap();
 
     Ok(Html(html))

@@ -2,15 +2,16 @@
 setting:
   alias_db: admin
   key: group_id
-  col_display: group_id
   icon_name: "users"
 
 elements:
   group_id:
+    order: 10
     type_element: text
     label_long: "Groupe"
     label_short: "Groupe"
   group_note:
+    order: 20
     type_element: textarea
     label_long: "Note"
     label_short: "Note"

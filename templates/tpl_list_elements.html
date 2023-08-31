@@ -1,0 +1,17 @@
+
+{# Affichage d'une cellule avec la value de l'élémnt correspondant #}
+{%- macro list_elements(el) -%}
+{%- if el.type_element == "number" -%}
+<td {% if el.style %}style="{{ el.style }}"{% else %}style="text-align: center;"{% endif %}
+{% if el.class %} class="{{ el.class }}"{% endif %}>{{el.value}}</td>
+{%- elif el.type_element == "checkbox" -%}
+<td style="text-align: center;">[{{el.value}}]</td>
+{%- elif el.type_element == "tag" -%}
+<td {% if el.style %}style="{{ el.style }}"{% endif %}{% if el.class %} class="{{ el.class }}"{% endif %}>
+    {%- for item in el.value | split(pat=",") -%}[{{item}}]&nbsp;{%- endfor -%}
+</td>
+{%- else -%}
+<td {% if el.style %}style="{{ el.style }}"{% endif %}{% if el.class %} class="{{ el.class }}"{% endif %}>{{el.value}}</td>
+{%- endif -%}
+{%- endmacro list_elements -%}
+

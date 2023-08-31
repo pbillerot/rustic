@@ -2,7 +2,6 @@
 setting:
   alias_db: jecompte
   key: joueur
-  col_display: joueur
   icon_name: "user"
 
 elements:

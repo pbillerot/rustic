@@ -1,4 +1,3 @@
-{% import "tpl_macros.html" as macros %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -27,11 +26,12 @@
           </div><!-- /menu -->
         </td><!-- /td menu -->
         <td style="vertical-align: top; padding: 1em;">
+          <!-- content -->
           <div id="content">
-            {%- for message in messages -%}
+            {% for message in messages -%}
             <div>{{message.level}}:{{message.content}}</div>
-            {%- endfor -%}
-            {%- block content -%}<p>Placeholder content</p>{%- endblock -%}
+            {%- endfor %}
+            {% block content -%}<p>Placeholder content</p>{%- endblock %}
           </div><!-- /content -->
         </td><!-- /td content -->
         <td style="vertical-align: top; background-color: aliceblue; width:10em; padding: 1em;">

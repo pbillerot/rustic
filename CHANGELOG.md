@@ -6,8 +6,12 @@
 - ajout csrf -> pas évident
 - question AtomicPtr::fetch_update : la mémoire de l'ancien pointeur sera-t-elle libérée après la fin des requests en cours ?
 - static files
-- moteur macro https://docs.rs/subst/latest/subst/
-- intégration jointure
+- un tpl par type_element list view edit
+
+0.9.1 - 31 août 2023
+- `deleted` table.setting.col_display supprimé
+- `added` template view dans le formulaire form_view
+- `added` macro template pour afficher les éléments
 
 0.9.0 - 30 août 2023
 - `added` calcul des propriétés des élements
@@ -97,3 +101,10 @@
 `removed` *pour les fonctionnalités désormais supprimées.*
 `fixed` *pour les corrections de bugs.*
 `security` *en cas de vulnérabilités.*
+
+## Évolution du distionnaire / Beedule
+- type_element type_view type_form
+- remplacer les noms de champs xxx-yyy en xxx_yyy
+- table.setting.col_display supprimé
+- view.form_view nécessaire pour visualiser un enregistrement
+- si form_view lien vers form_edit si défini

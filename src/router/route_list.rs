@@ -38,6 +38,8 @@ pub async fn list(
     let ptr = data.plexic.load(Ordering::Relaxed);
     let apps = unsafe { &(*ptr).applications.clone() };
     let app = apps.get(&appid).unwrap();
+    let table = app.tables.get(&tableid).unwrap();
+    let view = table.views.get(&viewid).unwrap();
 
     let records = crud_list(
         &data.db,
@@ -51,6 +53,9 @@ pub async fn list(
     context.insert("messages", &messages);
     context.insert("portail", unsafe { &(*ptr).portail });
     context.insert("application", &app);
+    context.insert("table", &table);
+    context.insert("view", &view);
+    context.insert("appid", &appid);
     context.insert("tableid", &tableid);
     context.insert("viewid", &viewid);
     context.insert("records", &records);

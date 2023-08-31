@@ -60,12 +60,12 @@ impl Table {
                     Some(t) => {
                         el.elid = key.clone();
                         el.merge(t);
-                        form.felements.push(el);
+                        form.velements.push(el);
                     },
                     None => continue, // un form.element peut ne pas exister dans table.elements
                 };
             }
-            form.felements.sort_by(|a, b| a.order.cmp(&b.order));
+            form.velements.sort_by(|a, b| a.order.cmp(&b.order));
         }
 
         Ok(table)
@@ -167,6 +167,8 @@ pub struct Element {
     // calcul
     #[serde(default = "String::new")]
     pub value: String, // valeur récupérée dans la table des données
+    #[serde(default = "String::new")]
+    pub key_value: String, // valeur de la clé de l'enregistrement correspondant
 }
 
 impl Element {
@@ -178,7 +180,9 @@ impl Element {
          messages: &mut Vec<service::Message>) {
         // on commence par la value
         // get value lue dans la table
-        self.value = hvalue.get(&self.elid).unwrap().clone();
+        if !self.elid.starts_with("_") {
+            self.value = hvalue.get(&self.elid).unwrap().clone();
+        }
         // calcul si compute_sqlite valorisée
         if !self.compute_sqlite.is_empty() {
             let sql = macrolex(&self.compute_sqlite, hvalue);
@@ -441,39 +445,6 @@ pub struct View {
     #[serde(default = "Vec::new")]
     pub velements: Vec<Element>,
 }
-// impl View {
-//     pub fn new() -> View {
-//         View {
-//             action_press: Action::new(),
-//             actions: Vec::new(),
-//             card: CardList::new(),
-//             class_sqlite: String::new(),
-//             deletable: false,
-//             elements: HashMap::new(),
-//             filters: Vec::new(),
-//             footer_sql: String::new(),
-//             form_add: String::new(),
-//             form_edit: String::new(),
-//             form_view: String::new(),
-//             group: String::new(),
-//             hide: false,
-//             hide_on_mobile: false,
-//             icon_name: String::new(),
-//             limit: 0,
-//             order_by: String::new(),
-//             post_sql: Vec::new(),
-//             search: String::new(),
-//             style_sqlite: String::new(),
-//             title: String::new(),
-//             type_view: String::new(),
-//             where_sql: String::new(),
-//             width: String::new(),
-//             with_line_number: false,
-//             with_sum: false,
-//             velements: Vec::new(),
-//         }
-//     }
-// }
 
 impl Clone for View {
     fn clone(&self) -> View {
@@ -532,7 +503,7 @@ pub struct Form {
     pub post_sql: Vec<String>, // Ordre exécutée après la validation si contrôle OK
     // calcul
     #[serde(default = "Vec::new")]
-    pub felements: Vec<Element>,
+    pub velements: Vec<Element>,
 }
 
 // SETTING
@@ -543,8 +514,6 @@ pub struct Setting {
     #[serde(default = "String::new")]
     pub key: String,
     #[serde(default = "String::new")]
-    pub col_display: String,
-    #[serde(default = "String::new")]
     pub icon_name: String,
 }
 impl Setting {
@@ -552,7 +521,6 @@ impl Setting {
         Setting {
             alias_db: String::new(),
             key: String::new(),
-            col_display: String::new(),
             icon_name: String::new(),
         }
     }

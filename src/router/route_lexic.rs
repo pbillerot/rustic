@@ -42,6 +42,7 @@ pub async fn lexicall(info: web::Path<Info>, data: web::Data<AppState>) -> impl 
                     log::info!("New lexic ok");
                     Some(Box::into_raw(Box::new(t.clone())))
                 });
+                // TODO faut-il libérer la mémoire associée à l'ancien pointeur ?
             },
             Err(e) => {
                 log::error!("Error loading lexic {:?}", e);
