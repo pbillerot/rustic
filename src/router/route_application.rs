@@ -16,7 +16,9 @@ use tera::Context;
 
 use std::sync::atomic::Ordering;
 use crate::AppState;
-use crate::service;
+
+use super::MESSAGE_LEVEL_INFO;
+use super::Message;
 
 // #[get("/app/{appid}")]
 pub async fn application(
@@ -26,7 +28,7 @@ pub async fn application(
 ) -> Result<impl Responder> {
     // log::info!("Session {:?} {:?} {:?}", session.status(), session.entries(), path);
     let mut messages = Vec::new();
-    messages.push(service::Message::new("app:Tout va bien", service::MESSAGE_LEVEL_INFO));
+    messages.push(Message::new("app:Tout va bien", MESSAGE_LEVEL_INFO));
 
 
     let appid = path.into_inner();

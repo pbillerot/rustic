@@ -92,8 +92,6 @@ curl -X POST -d '{"message": "This is a tweet"}' -H "Content-type: application/j
 # Forms
 - https://www.lpalmieri.com/posts/session-based-authentication-in-rust/
 - https://dev.to/chaudharypraveen98/form-validation-in-rust-404l
-- https://lib.rs/crates/actix-form-data
-- https://github.com/actix/examples/blob/master/forms/form/src/main.rs
 - https://github.com/Keats/validator
 - ko pb dépendances https://github.com/edward-shen/actix-csrf
 - https://kvnallsn.github.io/actix-web-database-identity/actix_web/middleware/csrf/index.html

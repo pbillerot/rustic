@@ -1,10 +1,10 @@
 //! Ouverture d'une view
 //!
-use crate::cruder::sql_crud::crud_list;
+use crate::cruder::sql_crud::crud_read;
 // use crate::sqlic::sql_utils::querlite;
 use crate::{
     // lexic::lex_table::{self, Element},
-    AppState
+    AppState,
 };
 use actix_session::Session;
 use actix_web::{
@@ -25,11 +25,9 @@ use std::{
 
 use super::Message;
 
-
-// cuerl http://0.0.0.0:8080/
-// #[get("/list/{appid}/{tableid}/{viewid}")]
-pub async fn list(
-    path: Path<(String, String, String)>,
+// #[get("/edit/{appid}/{tableid}/{viewid}/{formid}/{id}")]
+pub async fn edit(
+    path: Path<(String, String, String, String, String)>,
     data: web::Data<AppState>,
     session: Session,
     // msg: Option<ReqData<servic::sr_data::Msg>>,
@@ -37,20 +35,19 @@ pub async fn list(
 
     let mut messages = Vec::new();
 
-    let (appid, tableid, viewid) = path.into_inner();
+    let (appid, tableid, viewid, formid, id) = path.into_inner();
     let ptr = data.plexic.load(Ordering::Relaxed);
     let apps = unsafe { &(*ptr).applications.clone() };
-    let app = apps.get(&appid).unwrap();
-    let table = app.tables.get(&tableid).unwrap();
+    let application = apps.get(&appid).unwrap();
+    let table = application.tables.get(&tableid).unwrap();
     let view = table.views.get(&viewid).unwrap();
+    let form = table.forms.get(&formid).unwrap();
 
-    let records = crud_list(
+    let mut records = crud_read(
         &data.db,
         &data.dblite,
-        app, &tableid, &viewid, "",
-        "",
-        &mut messages
-        ).await;
+        application, table, &form.velements, &id,
+        &mut messages).await;
 
     let mut context = tera::Context::new();
 
@@ -66,18 +63,21 @@ pub async fn list(
     } else {
         context.insert("messages", &messages);
     }
-
     context.insert("portail", unsafe { &(*ptr).portail });
-    context.insert("application", &app);
+    context.insert("application", &application);
     context.insert("table", &table);
     context.insert("view", &view);
+    context.insert("form", &form);
     context.insert("appid", &appid);
     context.insert("tableid", &tableid);
     context.insert("viewid", &viewid);
-    context.insert("records", &records);
+    context.insert("formid", &formid);
+    context.insert("id", &id);
     context.insert("key", &table.setting.key);
+    context.insert("record", &records.pop());
 
-    let html = data.template.render("tpl_list.html", &context).unwrap();
+    let html = data.template.render("tpl_edit.html", &context).unwrap();
 
     Ok(Html(html))
 }
+

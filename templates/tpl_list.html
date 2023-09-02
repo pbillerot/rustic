@@ -12,22 +12,32 @@
 </li>
 {%- endfor -%}
 {%- endblock -%}
-
+{%- block boutons -%}
+<span style="float: right;">
+  {%- if view.form_add -%}<a href="/add/{{appid}}/{{tableid}}/{{viewid}}/{{view.form_add}}" title="Ajouter">
+    <button>+</button></a>
+  {%- endif -%}
+</span>
+{%- endblock -%}
 {%- block content -%}
 <h1>{{view.title}}</h1>
 <table>
   <tr>
-    {%- for el in view.velements -%}
     {%- if view.form_view or view.form_edit -%}<th></th>{%- endif -%}
+    {%- for el in view.velements -%}
     <th>{{el.label_short}}</th>
     {%- endfor -%}
   </tr>
   {%- for record in records %}
   <tr>
     {%- if view.form_view -%}
-    <td><a href="/view/{{appid}}/{{tableid}}/{{viewid}}/{{view.form_view}}/{{record[application.tables[tableid].setting.key].key_value}}" title="Visualier">[V]</a></td>
+    <td><a href="/view/{{appid}}/{{tableid}}/{{viewid}}/{{view.form_view}}/{{record[application.tables[tableid].setting.key].key_value}}" title="Visualier...">
+      <button>V</button></a>
+    </td>
     {%- elif view.form_edit -%}
-    <td><a href="/edit/{{appid}}/{{tableid}}/{{viewid}}/{{view.form_edit}}/{{record[application.tables[tableid].setting.key].key_value}}" title="Éditer">[E]</a></td>
+    <td><a href="/edit/{{appid}}/{{tableid}}/{{viewid}}/{{view.form_edit}}/{{record[application.tables[tableid].setting.key].key_value}}" title="Modifier...">
+      <button>M</button></a>
+    </td>
     {%- endif -%}
     {%- for vel in view.velements -%}
       {{ macros::list_elements(el=record[vel.elid]) }}
@@ -38,6 +48,6 @@
 {%- endblock -%}
 {%- block actions -%}
 {%- for action in application.tables[tableid].views[viewid].actions -%}
-<li><a href="">{{ action.label }}</a></li>
+<li><a href="/actionv/{{appid}}/{{tableid}}/{{viewid}}/{{loop.index0}}">{{ action.label }}</a></li>
 {%- endfor -%}
 {%- endblock -%}

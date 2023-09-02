@@ -1,0 +1,42 @@
+{%- extends "tpl_base.html" -%}
+{% import "tpl_edit_elements.html" as macros %}
+{%- block title -%}
+<span>&nbsp;<b>{{ application.title }}</b></span>
+{%- endblock -%}
+
+{%- block menu -%}
+{%- for tv in application.menu -%}
+<li><a href="/list/{{appid}}/{{tv.tableid}}/{{tv.viewid}}">{{application.tables[tv.tableid].views[tv.viewid].title}}</a>
+</li>
+{%- endfor -%}
+{%- endblock -%}
+
+{%- block navigation -%}
+<span style="float: left; margin-left: 1em;"><a href="/list/{{appid}}/{{tableid}}/{{viewid}}"><button><- retour
+        <b>{{view.title}}</b> </button></a></span>
+{%- endblock -%}
+
+{%- block boutons -%}
+<span style="float: right;">
+  <button onclick="document.getElementById('myform').submit();">Enregistrer</button></a>
+</span>
+{%- endblock -%}
+
+{%- block content -%}
+<h1>{{form.title}}</h1>
+<form id="myform" action="/update/{{appid}}/{{tableid}}/{{viewid}}/{{formid}}/{{id}}" method="post">
+  <table>
+    <tr>
+      <td>
+        <table>
+          {%- for vel in form.velements -%}
+          <tr>
+            {{ macros::edit_elements(el=record[vel.elid]) }}
+          </tr>
+          {%- endfor -%}
+        </table>
+      </td>
+    </tr>
+  </table>
+</form>
+{%- endblock -%}

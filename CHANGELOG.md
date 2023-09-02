@@ -8,6 +8,15 @@
 - static files
 - un tpl par type_element list view edit
 
+0.10.0 - 2 septembre 2023
+- `added` boutons view edit add
+- `added` macro template pour afficher les éléments
+- `added` messages dans la session pour récupérer tous les messages créés dans les contrôleurs
+
+0.9.2 - 1er septembre 2023
+- `added` boutons view edit add
+- `added` macro template pour afficher les éléments
+
 0.9.1 - 31 août 2023
 - `deleted` table.setting.col_display supprimé
 - `added` template view dans le formulaire form_view

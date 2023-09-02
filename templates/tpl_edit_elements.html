@@ -1,0 +1,57 @@
+{# Affichage d'une cellule avec la value de l'élémnt correspondant #}
+{%- macro edit_elements(el) -%}
+{%- if el.hide -%}
+
+{%- elif el.type_element == "button" -%}
+<td></td>
+<td {% if el.style %}style="{{ el.style }}" {% endif %}{% if el.class %} class="{{ el.class }}" {% endif %}>
+    <button onclick="window.open('{{el.params.url | safe}}', '_self');" {%- if el.read_only -%}
+        disabled{%-endif-%}>{{el.label_long}}</button>
+</td>
+{%- elif el.type_element == "checkbox" -%}
+<td><label for="{{el.elid}}">{{el.label_long}}</label></td>
+<td {% if el.style %}style="{{ el.style }}" {% endif %}{% if el.class %} class="{{ el.class }}" {% endif %}>
+    <input id="{{el.elid}}" name="{{el.elid}}" type="checkbox" {% if el.value=="1" %} checked{% endif %} {%- if
+        el.read_only -%} disabled{%-endif-%}></input>
+</td>
+{%- elif el.type_element == "number" -%}
+<td><label for="{{el.elid}}">{{el.label_long}}</label></td>
+<td {% if el.style %}style="{{ el.style }}" {% else %}style="text-align: right;" {% endif %} {% if el.class %}
+    class="{{ el.class }}" {% endif %}>
+    <input id="{{el.elid}}" name="{{el.elid}}" type="number" value="{{el.value}}" {%- if el.elid==key or el.read_only
+        -%} disabled{%-endif-%}></input>
+</td>
+{%- elif el.type_element == "tag" -%}
+<td><label for="{{el.elid}}">{{el.label_long}}</label></td>
+<td>
+    <select multiple name="{{el.elid}}" id="{{el.elid}}" {% if el.style %}style="{{ el.style }}" {% endif %}{% if
+        el.class %} class="{{ el.class }}" {% endif %}>
+        {%- for item in el.items -%}
+        {%- if item.key in el.value -%}
+        <option value="{{item.key}}" selected>{{item.label}}</option>
+        {%- else -%}
+        <option value="{{item.key}}">{{item.label}}</option>
+        {%- endif -%}
+        {%- endfor -%}
+    </select>
+</td>
+{%- elif el.type_element == "textarea" -%}
+<td><label for="{{el.elid}}">{{el.label_long}}</label></td>
+<td {% if el.style %}style="{{ el.style }}" {% endif %}{% if el.class %} class="{{ el.class }}" {% endif %}>
+    <textarea id="{{el.elid}}" name="{{el.elid}}" rows="5" cols="33" {%- if el.read_only -%}
+        disabled{%-endif-%}>{{el.value}}</textarea>
+</td>
+{%- elif el.type_element == "password" -%}
+<td><label for="{{el.elid}}">{{el.label_long}}</label></td>
+<td {% if el.style %}style="{{ el.style }}" {% endif %}{% if el.class %} class="{{ el.class }}" {% endif %}>
+    <input id="{{el.elid}}" name="{{el.elid}}" type="password" value="
+    {{el.value}}" {%- if el.elid==key or el.read_only -%} disabled{%-endif-%}></input>
+</td>
+{%- else -%}
+<td><label for="{{el.elid}}">{{el.label_long}}</label></td>
+<td {% if el.style %}style="{{ el.style }}" {% endif %}{% if el.class %} class="{{ el.class }}" {% endif %}>
+    <input id="{{el.elid}}" name="{{el.elid}}" type="text" value="
+    {{el.value}}" {%- if el.elid==key or el.read_only -%} disabled{%-endif-%}></input>
+</td>
+{%- endif -%}
+{%- endmacro edit_elements -%}

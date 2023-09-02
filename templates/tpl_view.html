@@ -1,19 +1,29 @@
 {%- extends "tpl_base.html" -%}
 {% import "tpl_view_elements.html" as macros %}
 {%- block title -%}
-<span>&nbsp;<b>{{ application.title }}</b></span>
+<span><b>{{ application.title }}</b></span>
 {%- endblock -%}
 
 {%- block menu -%}
 {%- for tv in application.menu -%}
-<li><a
-    href="/list/{{appid}}/{{tv.tableid}}/{{tv.viewid}}">{{application.tables[tv.tableid].views[tv.viewid].title}}</a>
+<li><a href="/list/{{appid}}/{{tv.tableid}}/{{tv.viewid}}">{{application.tables[tv.tableid].views[tv.viewid].title}}</a>
 </li>
 {%- endfor -%}
 {%- endblock -%}
 
 {%- block navigation -%}
-<span style="float: left;"><a href="/list/{{appid}}/{{tableid}}/{{viewid}}">[ <- ]</a></span>
+<span style="float: left; margin-left: 1em;">
+  <a href="/list/{{appid}}/{{tableid}}/{{viewid}}">
+    <button><- retour <b>{{view.title}}</button></b></button>
+  </a></span>
+{%- endblock -%}
+
+{%- block boutons -%}
+<span style="float: right;">
+  {%- if view.form_edit -%}<a href="/edit/{{appid}}/{{tableid}}/{{viewid}}/{{view.form_edit}}/{{id}}" title="Modifier">
+    <button>Modifier</button></a>
+  {%- endif -%}
+</span>
 {%- endblock -%}
 
 {%- block content -%}
@@ -22,12 +32,12 @@
   <tr>
     <td>
       <table>
-      {%- for vel in form.velements -%}
-      <tr>
-        {{ macros::view_elements(el=record[vel.elid]) }}
-      </tr>
-      {%- endfor -%}
-    </table>
+        {%- for vel in form.velements -%}
+        <tr>
+          {{ macros::view_elements(el=record[vel.elid]) }}
+        </tr>
+        {%- endfor -%}
+      </table>
     </td>
   </tr>
 </table>

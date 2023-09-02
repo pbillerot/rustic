@@ -1,11 +1,11 @@
 use serde::{Deserialize, Serialize};
 use serde_yaml::{self};
-use std::collections::HashMap;
 use sqlx::{Pool, Postgres, Sqlite};
+use std::collections::HashMap;
 // use actix_web::web;
+use crate::cruder::sqler::{kerdata, kerlite};
 use crate::lexicer::lex_utils;
-use crate::cruder::sqler::{kerlite, kerdata};
-use crate::service;
+use crate::router::Message;
 
 use super::macrolex;
 
@@ -45,7 +45,7 @@ impl Table {
                         el.elid = key.clone();
                         el.merge(t);
                         view.velements.push(el);
-                    },
+                    }
                     None => continue, // un view.element peut ne pas exister dans table.elements
                 };
             }
@@ -61,7 +61,7 @@ impl Table {
                         el.elid = key.clone();
                         el.merge(t);
                         form.velements.push(el);
-                    },
+                    }
                     None => continue, // un form.element peut ne pas exister dans table.elements
                 };
             }
@@ -78,11 +78,11 @@ pub struct Element {
     #[serde(default = "String::new")]
     pub elid: String,
     #[serde(default = "Vec::new")]
-    pub actions: Vec<Action>,             // bouton d'actions
+    pub actions: Vec<Action>, // bouton d'actions
     #[serde(default = "HashMap::new")]
-    pub args: HashMap<String, String>,    // Args pour passer des arguments à une vue
+    pub args: HashMap<String, String>, // Args pour passer des arguments à une vue
     #[serde(default = "String::new")]
-    pub ajax_sql: String,                  // query sql pour ramenener des données dans le formulaire
+    pub ajax_sql: String, // query sql pour ramenener des données dans le formulaire
     #[serde(default = "String::new")]
     pub class: String, // class semantic
     #[serde(default = "String::new")]
@@ -100,13 +100,13 @@ pub struct Element {
     #[serde(default = "String::new")]
     pub default_sqlite: String, // Ordre SQL qui retournera la colonne pour alimenter Default
     #[serde(default = "String::new")]
-    pub format: String,  // pattern du display
+    pub format: String, // pattern du display
     #[serde(default = "String::new")]
-    pub format_sqlite: String,  // select strftime('%H:%M:%S', {Milliseconds}/1000, 'unixepoch')
+    pub format_sqlite: String, // select strftime('%H:%M:%S', {Milliseconds}/1000, 'unixepoch')
     #[serde(default = "String::new")]
     pub group: String, // Groupe autorisé à accéder à cette rubrique - Si owner c'est l'enregistreement qui sera protégé
     #[serde(default = "String::new")]
-    pub help: String,  // TODO aide sur la rubrique
+    pub help: String, // TODO aide sur la rubrique
     #[serde(default = "lex_utils::default_bool")]
     pub hide: bool, // TODO cachée si condition
     #[serde(default = "String::new")]
@@ -126,15 +126,15 @@ pub struct Element {
     #[serde(default = "String::new")]
     pub label_short: String, // Label dans une vue
     #[serde(default = "lex_utils::default_i32")]
-    pub max: i32,      // TODO valeur max
+    pub max: i32, // TODO valeur max
     #[serde(default = "lex_utils::default_i32")]
     pub max_length: i32, // TODO longeur max
     #[serde(default = "lex_utils::default_i32")]
-    pub min: i32,      // TODO valeur min
+    pub min: i32, // TODO valeur min
     #[serde(default = "lex_utils::default_i32")]
     pub min_length: i32, // TODO longueur min
     #[serde(default = "lex_utils::default_i32")]
-    pub order: i32,    // Ordre de l'élément dans une vue ou formulaire
+    pub order: i32, // Ordre de l'élément dans une vue ou formulaire
     #[serde(default = "Params::new")]
     pub params: Params, // paramètres optionnels
     #[serde(default = "String::new")]
@@ -173,11 +173,12 @@ pub struct Element {
 
 impl Element {
     /// Calcul de la valeur de l'élément et de ses propriétés à partir des données lues dans la table
-    pub async fn compute_value(&mut self,
-         _db: &Pool<Postgres>,
-         dblite: &Pool<Sqlite>,
-         hvalue: &HashMap<String, String>,
-         messages: &mut Vec<service::Message>) {
+    pub async fn compute_value(
+        &mut self,
+        poolite: &Pool<Sqlite>,
+        hvalue: &HashMap<String, String>,
+        messages: &mut Vec<Message>,
+    ) {
         // on commence par la value
         // get value lue dans la table
         if !self.elid.starts_with("_") {
@@ -186,7 +187,29 @@ impl Element {
         // calcul si compute_sqlite valorisée
         if !self.compute_sqlite.is_empty() {
             let sql = macrolex(&self.compute_sqlite, hvalue);
-            self.value = kerlite(dblite, &sql, messages).await;
+            self.value = kerlite(poolite, &sql, messages).await;
+        }
+        if self.value.is_empty() && !self.default_sqlite.is_empty() {
+            let sql = macrolex(&self.default_sqlite, hvalue);
+            self.value = kerlite(poolite, &sql, messages).await;
+        }
+        // valeur par défaut
+        if self.value.is_empty() && !self.default.is_empty() {
+            self.default = macrolex(&self.default, hvalue);
+        }
+    }
+
+    pub async fn compute_prop(
+        &mut self,
+        pooldb: &Pool<Postgres>,
+        poolite: &Pool<Sqlite>,
+        hvalue: &HashMap<String, String>,
+        messages: &mut Vec<Message>,
+    ) {
+        // recalcul si compute_sqlite valorisée
+        if !self.compute_sqlite.is_empty() {
+            let sql = macrolex(&self.compute_sqlite, hvalue);
+            self.value = kerlite(poolite, &sql, messages).await;
         }
         // valeur par défaut
         if !self.default.is_empty() {
@@ -194,73 +217,51 @@ impl Element {
         }
         if !self.default_sqlite.is_empty() {
             let sql = macrolex(&self.default_sqlite, hvalue);
-            self.default = kerlite(dblite, &sql, messages).await;
+            self.default = kerlite(poolite, &sql, messages).await;
         }
         if self.value.is_empty() {
             self.value = self.default.clone();
         }
 
+        // Calcul des autres propriétés
+        if !self.label_long.is_empty() {
+            self.label_long = macrolex(&self.label_long, hvalue);
+        }
+        if !self.label_short.is_empty() {
+            self.label_short = macrolex(&self.label_short, hvalue);
+        }
+        if !self.help.is_empty() {
+            self.help = macrolex(&self.help, hvalue);
+        }
+        if !self.params.url.is_empty() {
+            self.params.url = macrolex(&self.params.url, hvalue);
+        }
+
+        // exec des macros sqlite
+        if !self.class_sqlite.is_empty() {
+            let sql = macrolex(&self.class_sqlite, hvalue);
+            self.class = kerlite(poolite, &sql, messages).await;
+        }
+        if !self.format_sqlite.is_empty() {
+            let sql = macrolex(&self.format_sqlite, hvalue);
+            self.format = kerlite(poolite, &sql, messages).await;
+        }
+        if !self.hide_sqlite.is_empty() {
+            let sql = macrolex(&self.hide_sqlite, hvalue);
+            self.hide = !kerlite(poolite, &sql, messages).await.is_empty();
+        }
+        if !self.style_sqlite.is_empty() {
+            let sql = macrolex(&self.style_sqlite, hvalue);
+            self.style = kerlite(poolite, &sql, messages).await;
+        }
+        // items récupérés dans les données de l'application
+        if !self.items_sql.is_empty() {
+            let sql = macrolex(&self.items_sql, hvalue);
+            self.items = kerdata(pooldb, &sql, messages).await;
+        }
     }
 
-    pub async fn compute_prop(&mut self,
-        db: &Pool<Postgres>,
-        dblite: &Pool<Sqlite>,
-        hvalue: &HashMap<String, String>,
-        messages: &mut Vec<service::Message>) {
-       // recalcul si compute_sqlite valorisée
-       if !self.compute_sqlite.is_empty() {
-           let sql = macrolex(&self.compute_sqlite, hvalue);
-           self.value = kerlite(dblite, &sql, messages).await;
-       }
-       // valeur par défaut
-       if !self.default.is_empty() {
-           self.default = macrolex(&self.default, hvalue);
-       }
-       if !self.default_sqlite.is_empty() {
-           let sql = macrolex(&self.default_sqlite, hvalue);
-           self.default = kerlite(dblite, &sql, messages).await;
-       }
-       if self.value.is_empty() {
-           self.value = self.default.clone();
-       }
-
-       // Calcul des autres propriétés
-       if !self.label_long.is_empty() {
-           self.label_long = macrolex(&self.label_long, hvalue);
-       }
-       if !self.label_short.is_empty() {
-           self.label_short = macrolex(&self.label_short, hvalue);
-       }
-       if !self.help.is_empty() {
-           self.help = macrolex(&self.help, hvalue);
-       }
-
-       // exec des macros sqlite
-       if !self.class_sqlite.is_empty() {
-           let sql = macrolex(&self.class_sqlite, hvalue);
-           self.class = kerlite(dblite, &sql, messages).await;
-       }
-       if !self.format_sqlite.is_empty() {
-           let sql = macrolex(&self.format_sqlite, hvalue);
-           self.format = kerlite(dblite, &sql, messages).await;
-       }
-       if !self.hide_sqlite.is_empty() {
-           let sql = macrolex(&self.hide_sqlite, hvalue);
-           self.hide = !kerlite(dblite, &sql, messages).await.is_empty();
-       }
-       if !self.style_sqlite.is_empty() {
-           let sql = macrolex(&self.style_sqlite, hvalue);
-           self.style = kerlite(dblite, &sql, messages).await;
-       }
-       // items récupérés dans les données de l'application
-       if !self.items_sql.is_empty() {
-           let sql = macrolex(&self.items_sql, hvalue);
-           self.items = kerdata(db, &sql, messages).await;
-       }
-
-   }
-
-   /// fusion des propriétés éléments de la vue ou formulaire avec les élement déclarés au niveau de la table
+    /// fusion des propriétés éléments de la vue ou formulaire avec les élement déclarés au niveau de la table
     fn merge(&mut self, helement: &Element) {
         // let mut fusel = fullElement;
         if self.elid.is_empty() {
@@ -380,7 +381,6 @@ impl Element {
         // if self.with_sum != fel.with_sum {
         //     self.with_sum = fel.with_sum;
         // }
-
     }
 }
 
@@ -394,49 +394,49 @@ pub struct View {
     #[serde(default = "Vec::new")]
     pub actions: Vec<Action>, // Action sur la vue (ordres sql)
     #[serde(default = "CardList::new")]
-    pub card: CardList,       // Masque html d'une ligne dans la vue
+    pub card: CardList, // Masque html d'une ligne dans la vue
     #[serde(default = "String::new")]
     pub class_sqlite: String, // couleur theme de la ligne
     #[serde(default = "lex_utils::default_bool")]
-    pub deletable: bool,      // Suppression fiche autorisée
+    pub deletable: bool, // Suppression fiche autorisée
     #[serde(default = "HashMap::new")]
     pub elements: HashMap<String, Element>, // Eléments à récupérer de la base de données
     #[serde(default = "Vec::new")]
     pub filters: Vec<String>, // liste de nom d'élément sur la vue
     #[serde(default = "String::new")]
-    pub footer_sql: String,   // requête sur la table courante
+    pub footer_sql: String, // requête sur la table courante
     #[serde(default = "String::new")]
-    pub form_add: String,     // Formulaire d'ajout
+    pub form_add: String, // Formulaire d'ajout
     #[serde(default = "String::new")]
-    pub form_edit: String,    // Formulaire d'édition
+    pub form_edit: String, // Formulaire d'édition
     #[serde(default = "String::new")]
-    pub form_view: String,    // Masque de visualisation d'un enregistrement
+    pub form_view: String, // Masque de visualisation d'un enregistrement
     #[serde(default = "String::new")]
-    pub group: String,        // groupe qui peut accéder à la vue
+    pub group: String, // groupe qui peut accéder à la vue
     #[serde(default = "lex_utils::default_bool")]
-    pub hide: bool,           // Vue cachée dans le menu
+    pub hide: bool, // Vue cachée dans le menu
     #[serde(default = "lex_utils::default_bool")]
     pub hide_on_mobile: bool, // Vue cachée dur mobile
     #[serde(default = "String::new")]
-    pub icon_name: String,    // nom de l'icone
+    pub icon_name: String, // nom de l'icone
     #[serde(default = "lex_utils::default_i32")]
-    pub limit: i32,           // pour limiter le nbre de ligne dans la vue
+    pub limit: i32, // pour limiter le nbre de ligne dans la vue
     #[serde(default = "String::new")]
-    pub order_by: String,     // Tri des données SQL
+    pub order_by: String, // Tri des données SQL
     #[serde(default = "Vec::new")]
     pub post_sql: Vec<String>, // Ordre exécutée après la suppression si OK
     #[serde(default = "String::new")]
-    pub search: String,       // calculé sql
+    pub search: String, // calculé sql
     #[serde(default = "String::new")]
     pub style_sqlite: String, // style de la ligne
     #[serde(default = "String::new")]
-    pub title: String,        // Titre de la vue
+    pub title: String, // Titre de la vue
     #[serde(default = "String::new")]
-    pub type_view: String,    // type de vue : card(default),image,table
+    pub type_view: String, // type de vue : card(default),image,table
     #[serde(default = "String::new")]
-    pub where_sql: String,    // Condition SQL
+    pub where_sql: String, // Condition SQL
     #[serde(default = "String::new")]
-    pub width: String,        // largeur s m l xl xxl max
+    pub width: String, // largeur s m l xl xxl max
     #[serde(default = "lex_utils::default_bool")]
     pub with_line_number: bool, // list.table n° de ligne en 1ère colonne
     #[serde(default = "lex_utils::default_bool")]
@@ -673,7 +673,7 @@ impl CardList {
 #[derive(Debug, Serialize, Deserialize, Clone, Eq, PartialEq)]
 pub struct Jointure {
     #[serde(default = "String::new")]
-    pub join: String,   // la commande du genre : left outer join on field = field
+    pub join: String, // la commande du genre : left outer join on field = field
     #[serde(default = "String::new")]
     pub column: String, // colonne retournée par la jointure
 }

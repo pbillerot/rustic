@@ -29,7 +29,7 @@ elements:
     order: 50
     type_element: checkbox
     label_long: "Administrateur"
-    label_short: "Administrateur"
+    label_short: "Admin"
     col_align: center
   user_groupes:
     order: 60
@@ -44,7 +44,7 @@ elements:
     type_element: button
     label_long: "Changer le mot de passe..."
     params:
-      url: "/bee/edit/admin/users/vall/fpwd/{user_name}"
+      url: "/edit/admin/users/vall/fpwd/{user_name}"
   _card_MDP:
     order: 200
     type_element: card
@@ -132,6 +132,8 @@ forms:
         order: 10
       user_email:
         order: 20
+      user_groupes:
+        order: 60
   fview:
     title: "Fiche Compte"
     group: admin

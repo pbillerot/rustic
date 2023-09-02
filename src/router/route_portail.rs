@@ -21,15 +21,16 @@ use std::sync::atomic::Ordering;
 
 // use crate::service;
 use crate::lexicer::lex_application;
-use crate::service;
 use crate::AppState;
+
+use super::Message;
 
 // #[get("/")]
 pub async fn portail(data: web::Data<AppState>) -> Result<impl Responder, Error> {
-    // log::info!("Session {:?} {:?}", session.status(), session.entries());
+
     let ptr = data.plexic.load(Ordering::Relaxed);
-    let mut messages = Vec::new();
-    messages.push(service::Message::new("port:Tout va bien", service::MESSAGE_LEVEL_INFO));
+
+    let messages: Vec<Message> = Vec::new();
 
     let appids = unsafe { (*ptr).portail.appids.clone() };
     let apps: &std::collections::HashMap<String, lex_application::Application> =

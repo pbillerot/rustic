@@ -1,5 +1,6 @@
 use std::future::{ready, Ready};
 
+use actix_session::SessionExt;
 // use actix_session::SessionExt;
 use actix_web::{
     body::EitherBody,
@@ -60,8 +61,8 @@ where
     fn call(&self, request: ServiceRequest) -> Self::Future {
         // Change this to see the change in outcome in the browser.
         // Usually this boolean would be acquired from a password check or other auth verification.
-        // let session = request.get_session();
-        // log::info!("Session {:?} {:?}", session.status(), session.entries());
+        let session = request.get_session();
+        log::info!("Session {:?} {:?}", session.status(), session.entries());
 
         // if let Some(messages) = session.get::<Vec<Message>>("messages").unwrap() {
         //     for message in messages {
