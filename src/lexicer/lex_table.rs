@@ -179,7 +179,6 @@ impl Element {
         hvalue: &HashMap<String, String>,
         messages: &mut Vec<Message>,
     ) {
-        // on commence par la value
         // get value lue dans la table
         if !self.elid.starts_with("_") {
             self.value = hvalue.get(&self.elid).unwrap().clone();

@@ -6,7 +6,10 @@
 - ajout csrf -> pas évident
 - question AtomicPtr::fetch_update : la mémoire de l'ancien pointeur sera-t-elle libérée après la fin des requests en cours ?
 - static files
-- un tpl par type_element list view edit
+- tag récup sélection
+
+0.11.0 - 3 septembre 2023
+- `added` update d'un article
 
 0.10.0 - 2 septembre 2023
 - `added` boutons view edit add

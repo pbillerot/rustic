@@ -6,7 +6,6 @@ use actix_session::Session;
 use actix_web::{HttpResponse, web};
 use actix_web::http::header::LOCATION;
 use actix_web::web::Path;
-use std::collections::HashMap;
 use std::{
     // collections::HashMap,
     sync::atomic::Ordering
@@ -16,7 +15,7 @@ use super::Message;
 // #[post("/update/{appid}/{tableid}/{viewid}/{formid}/{id}")]
 pub async fn update(
     path: Path<(String, String, String, String, String)>,
-    web::Form(form_posted): web::Form<HashMap<String, String>>,
+    web::Form(form_posted): web::Form<Vec<(String, String)>>,
     data: web::Data<AppState>,
     session: Session,
 ) -> HttpResponse {
@@ -31,7 +30,7 @@ pub async fn update(
     // let view = table.views.get(&viewid).unwrap();
     let form = table.forms.get(&formid).unwrap();
 
-    let result = crud_update(&data.db, &table, &form.velements, &id, &form_posted, &mut messages).await;
+    let result = crud_update(&data.db, &data.dblite, &table, &form.velements, &id, &form_posted, &mut messages).await;
 
     if let Some(mut messages_session) = session.get::<Vec<Message>>("messages").unwrap() {
         // ajout des messages du contrôleur à ceux de la session

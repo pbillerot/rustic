@@ -24,6 +24,9 @@ pub use self::route_edit::edit; // curl http://0.0.0.0:8080//edit/appid/tableid/
 mod route_update;
 pub use self::route_update::update; // curl http://0.0.0.0:8080//update/appid/tableid/viewid/formid/id
 
+// mod route_add;
+// pub use self::route_add::add; // curl http://0.0.0.0:8080//update/appid/tableid/viewid/formid/id
+
 #[allow(dead_code)]
 pub const MESSAGE_LEVEL_INFO: i32 = 0;
 #[allow(dead_code)]

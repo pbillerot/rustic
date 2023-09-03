@@ -141,7 +141,7 @@ async fn main() -> std::io::Result<()> {
             // .route("/dashboard/{appid}/{tableid}/{viewid}", web::get().to(router::dashboard))
             .route("/view/{appid}/{tableid}/{viewid}/{formid}/{id}", web::get().to(router::view))
             // .route("/add/{appid}/{tableid}/{viewid}/{formid}", web::get().to(router::add))
-            // .route("/add/{appid}/{tableid}/{viewid}/{formid}", web::post().to(router::add_post))
+            // .route("/add/{appid}/{tableid}/{viewid}/{formid}", web::post().to(router::add))
             .route("/edit/{appid}/{tableid}/{viewid}/{formid}/{id}", web::get().to(router::edit))
             .route("/update/{appid}/{tableid}/{viewid}/{formid}/{id}", web::post().to(router::update))
             // .route("/delete/{appid}/{tableid}/{viewid}/{formid}/{id}", web::post().to(router::delete_post))
