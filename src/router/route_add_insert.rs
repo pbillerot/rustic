@@ -1,7 +1,7 @@
 //! Ouverture d'une view
 //!
 use crate::AppState;
-use crate::cruder::sql_crud::crud_update;
+use crate::cruder::update::crud_update;
 use actix_session::Session;
 use actix_web::{HttpResponse, web};
 use actix_web::http::header::LOCATION;
@@ -13,7 +13,7 @@ use std::{
 
 use super::Message;
 // #[post("/update/{appid}/{tableid}/{viewid}/{formid}/{id}")]
-pub async fn update(
+pub async fn add_insert(
     path: Path<(String, String, String, String, String)>,
     web::Form(form_posted): web::Form<Vec<(String, String)>>,
     data: web::Data<AppState>,

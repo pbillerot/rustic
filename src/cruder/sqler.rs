@@ -56,7 +56,7 @@ pub async fn kerlite(poollite: &Pool<Sqlite>, sql: &str, messages: &mut Vec<Mess
 
 /// Requête sur les données applicatives qui retourne une table de valeur
 pub async fn kerdata(pooldb: &Pool<Postgres>, sql: &str, messages: &mut Vec<Message> ) -> Vec<HashMap<String, String>> {
-    log::info!("{}", sql);
+    // log::info!("{}", sql);
     let rows = match sqlx::query(&sql).fetch_all(pooldb).await {
         Ok(t) => t,
         Err(e) => {

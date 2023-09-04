@@ -6,7 +6,11 @@
 - ajout csrf -> pas évident
 - question AtomicPtr::fetch_update : la mémoire de l'ancien pointeur sera-t-elle libérée après la fin des requests en cours ?
 - static files
-- tag récup sélection
+- bouton coller le presse-papier
+- historique navigation
+
+0.11.1 - 3 septembre 2023
+- `added` renommage des mod et fn
 
 0.11.0 - 3 septembre 2023
 - `added` update d'un article
@@ -120,3 +124,4 @@
 - table.setting.col_display supprimé
 - view.form_view nécessaire pour visualiser un enregistrement
 - si form_view lien vers form_edit si défini
+- suppression element.compute_sqlite

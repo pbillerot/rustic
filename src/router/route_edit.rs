@@ -1,10 +1,8 @@
 //! Ouverture d'une view
 //!
-use crate::cruder::sql_crud::crud_read;
-// use crate::sqlic::sql_utils::querlite;
 use crate::{
     // lexic::lex_table::{self, Element},
-    AppState,
+    AppState, cruder::read::crud_read,
 };
 use actix_session::Session;
 use actix_web::{

@@ -1,5 +1,22 @@
 # Liens divers et variés sur le projet
 
+
+- main
+    - appstate
+    - cnx postgres sqlite
+    - load lexic lex_portail...application...table
+    - déclaration des routes
+- routes    router                              cruder                                  tpl_base
+- get                                                                               tpl_portail
+- get                                                                               tpl_application
+- get   route_views.rs          view        list.rs     crud_list   record_elements tpl_view        tpl_view_elements
+- get   route_form.rs           form        read.rs     crud_read   record_elements tpl_form        tpl_form_elements
+- get   route_edit.rs           edit        read.rs     crud_read   record_elements tpl_edit        tpl_edit_element
+- get   route_add.rs            add                                 record_elements tpl_add         tpl_edit_element
+- post  route_edit_update.rs    edit_update update.rs   crud_update
+- post  route_add_insert.rs     add_insert  insert.rs   crud_insert
+
+
 ## Cargo
 - cargo install cargo-watch
 - cargo watch -x run

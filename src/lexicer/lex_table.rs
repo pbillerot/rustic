@@ -91,8 +91,6 @@ pub struct Element {
     pub col_align: String, //
     #[serde(default = "lex_utils::default_bool")]
     pub col_no_wrap: bool, // nowrap de la colonne
-    #[serde(default = "String::new")]
-    pub compute_sqlite: String, // formule de calcul de Value en SQL dans VIEW EDIT ADD (pas dans LIST)
     #[serde(default = "HashMap::new")]
     pub dataset: HashMap<String, String>, // Dataset pour un Chartjs ou pour passer des arguments à une vue ou à une "ajax-sql"
     #[serde(default = "String::new")]
@@ -183,18 +181,13 @@ impl Element {
         if !self.elid.starts_with("_") {
             self.value = hvalue.get(&self.elid).unwrap().clone();
         }
-        // calcul si compute_sqlite valorisée
-        if !self.compute_sqlite.is_empty() {
-            let sql = macrolex(&self.compute_sqlite, hvalue);
-            self.value = kerlite(poolite, &sql, messages).await;
-        }
+        // valeur par défaut
         if self.value.is_empty() && !self.default_sqlite.is_empty() {
             let sql = macrolex(&self.default_sqlite, hvalue);
             self.value = kerlite(poolite, &sql, messages).await;
         }
-        // valeur par défaut
         if self.value.is_empty() && !self.default.is_empty() {
-            self.default = macrolex(&self.default, hvalue);
+            self.value = macrolex(&self.default, hvalue);
         }
     }
 
@@ -205,11 +198,6 @@ impl Element {
         hvalue: &HashMap<String, String>,
         messages: &mut Vec<Message>,
     ) {
-        // recalcul si compute_sqlite valorisée
-        if !self.compute_sqlite.is_empty() {
-            let sql = macrolex(&self.compute_sqlite, hvalue);
-            self.value = kerlite(poolite, &sql, messages).await;
-        }
         // valeur par défaut
         if !self.default.is_empty() {
             self.default = macrolex(&self.default, hvalue);
@@ -222,7 +210,14 @@ impl Element {
             self.value = self.default.clone();
         }
 
-        // Calcul des autres propriétés
+        // Calcul des propriétés en fonction du contexte
+        match self.type_element.as_str() {
+            "counter" => {
+                self.read_only = true
+            }
+            _ => {}
+        }
+        // Macrolex des autres propriétés
         if !self.label_long.is_empty() {
             self.label_long = macrolex(&self.label_long, hvalue);
         }
@@ -236,7 +231,7 @@ impl Element {
             self.params.url = macrolex(&self.params.url, hvalue);
         }
 
-        // exec des macros sqlite
+        // macrolex suivi de kerlite
         if !self.class_sqlite.is_empty() {
             let sql = macrolex(&self.class_sqlite, hvalue);
             self.class = kerlite(poolite, &sql, messages).await;
@@ -280,12 +275,6 @@ impl Element {
         }
         if self.col_align != helement.col_align {
             self.col_align = helement.col_align.clone();
-        }
-        // if self.col_no_wrap != fel.col_no_wrap {
-        //     self.col_no_wrap = fel.col_no_wrap.clone();
-        // }
-        if self.compute_sqlite != helement.compute_sqlite {
-            self.compute_sqlite = helement.compute_sqlite.clone();
         }
         if self.dataset.is_empty() {
             self.dataset = helement.dataset.clone();

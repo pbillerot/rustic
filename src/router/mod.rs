@@ -12,20 +12,23 @@ pub use self::route_portail::portail; // curl http://0.0.0.0:8080/
 mod route_application;
 pub use self::route_application::application; // curl http://0.0.0.0:8080/app/appid
 
-mod route_list;
-pub use self::route_list::list; // curl http://0.0.0.0:8080/list/appid/tableid/viewid
-
 mod route_view;
-pub use self::route_view::view; // curl http://0.0.0.0:8080//view/appid/tableid/viewid/formid/id
+pub use self::route_view::view; // curl http://0.0.0.0:8080/list/appid/tableid/viewid
+
+mod route_form;
+pub use self::route_form::form; // curl http://0.0.0.0:8080//view/appid/tableid/viewid/formid/id
 
 mod route_edit;
 pub use self::route_edit::edit; // curl http://0.0.0.0:8080//edit/appid/tableid/viewid/formid/id
 
-mod route_update;
-pub use self::route_update::update; // curl http://0.0.0.0:8080//update/appid/tableid/viewid/formid/id
+mod route_edit_update;
+pub use self::route_edit_update::edit_update; // curl http://0.0.0.0:8080//update/appid/tableid/viewid/formid/id
 
-// mod route_add;
-// pub use self::route_add::add; // curl http://0.0.0.0:8080//update/appid/tableid/viewid/formid/id
+mod route_add;
+pub use self::route_add::add; // curl http://0.0.0.0:8080//update/appid/tableid/viewid/formid
+
+mod route_add_insert;
+pub use self::route_add_insert::add_insert; // curl http://0.0.0.0:8080//update/appid/tableid/viewid/formid
 
 #[allow(dead_code)]
 pub const MESSAGE_LEVEL_INFO: i32 = 0;

@@ -2,7 +2,7 @@
 //!
 use crate::{
     // lexic::lex_table::{self, Element},
-    AppState,
+    AppState, cruder::records_elements
 };
 use actix_session::Session;
 use actix_web::{
@@ -23,7 +23,7 @@ use std::{
 
 use super::Message;
 
-// #[get("/edit/{appid}/{tableid}/{viewid}/{formid}")]
+// #[get("/add/{appid}/{tableid}/{viewid}/{formid}")]
 pub async fn add(
     path: Path<(String, String, String, String)>,
     data: web::Data<AppState>,
@@ -31,9 +31,10 @@ pub async fn add(
     // msg: Option<ReqData<servic::sr_data::Msg>>,
 ) -> Result<impl Responder> {
 
-    let mut messages = Vec::new();
+    let mut messages: Vec<Message> = Vec::new();
 
     let (appid, tableid, viewid, formid) = path.into_inner();
+    let id = ""; // c'est un ajout
     let ptr = data.plexic.load(Ordering::Relaxed);
     let apps = unsafe { &(*ptr).applications.clone() };
     let application = apps.get(&appid).unwrap();
@@ -41,17 +42,16 @@ pub async fn add(
     let view = table.views.get(&viewid).unwrap();
     let form = table.forms.get(&formid).unwrap();
 
-    let records = records_elements(
-        pooldb,
-        poolite,
-        &"",
+    let mut records = records_elements(
+        &data.db,
+        &data.dblite,
+        &"", // pas de lecture dans la bd
         &application,
-        velements,
+        &form.velements,
         table,
-        messages,
+        &mut messages,
     )
     .await;
-
 
     let mut context = tera::Context::new();
 
@@ -80,7 +80,7 @@ pub async fn add(
     context.insert("key", &table.setting.key);
     context.insert("record", &records.pop());
 
-    let html = data.template.render("tpl_edit.html", &context).unwrap();
+    let html = data.template.render("tpl_add.html", &context).unwrap();
 
     Ok(Html(html))
 }
