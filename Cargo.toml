@@ -13,6 +13,7 @@ repository = "https://github.com/pbillerot/silex"
 actix-session = { version = "0.7.2", features = ["cookie-session"] }
 actix-settings = "0.6.0"
 actix-web = "4"
+actix-web-flash-messages = { version = "0.4.2", features = ["sessions"] }
 actix-web-lab = "0.19.1"
 chrono = { version = "0.4", features = ["serde"] }
 cookie = "0.17.0"

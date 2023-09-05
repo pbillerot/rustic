@@ -14,6 +14,7 @@ use actix_web::{
     Responder,
     Result, HttpRequest, //HttpRequest,
 };
+use actix_web_flash_messages::{IncomingFlashMessages, FlashMessage};
 use actix_web_lab::respond::Html;
 use std::{
     // collections::HashMap,
@@ -27,6 +28,7 @@ pub async fn edit(
     path: Path<(String, String, String, String, String)>,
     data: web::Data<AppState>,
     req: HttpRequest,
+    flash: IncomingFlashMessages
 ) -> Result<impl Responder> {
 
     let mut messages = Messages::get_from_request(&req);
@@ -44,6 +46,11 @@ pub async fn edit(
         &data.dblite,
         application, table, &form.velements, &id,
         &mut messages).await;
+
+    FlashMessage::info("route_edit").send();
+    for message in flash.iter() {
+        println!("{} - {}", message.content(), message.level());
+    }
 
     let mut context = tera::Context::new();
     context.insert("messages", &messages);

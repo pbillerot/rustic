@@ -1,4 +1,9 @@
 use actix_web::{middleware, App, HttpServer, web, cookie::{self, Key}};
+use actix_web_flash_messages::{
+    FlashMessagesFramework, Level,
+};
+use actix_web_flash_messages::storage::SessionMessageStore;
+
 use sqlx::{postgres::PgPoolOptions, Pool, Postgres, Sqlite, SqlitePool};
 
 use chrono::Local;
@@ -123,13 +128,20 @@ async fn main() -> std::io::Result<()> {
             // contrôle de le session utilisateur
             .wrap(service::srv_session::CheckSession)
 
+            // message flash
+            .wrap(FlashMessagesFramework::builder(SessionMessageStore::default())
+            .minimum_level(Level::Error)
+            .build())
+
             // activation de actix-session
             .wrap(
                 SessionMiddleware::builder(CookieSessionStore::default(), Key::from(&[0; 64]))
-                    .cookie_secure(false) // à true en https
+                    .cookie_secure(true) // à true en https
+                    .cookie_http_only(true)
+                    .cookie_path("/".to_string())
                     // customize session and cookie expiration
                     .session_lifecycle(
-                        PersistentSession::default().session_ttl(cookie::time::Duration::minutes(1)),
+                        PersistentSession::default().session_ttl(cookie::time::Duration::minutes(10)),
                     )
                     .build(),
             )

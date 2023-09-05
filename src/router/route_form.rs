@@ -15,6 +15,7 @@ use actix_web::{
     Responder,
     Result, HttpRequest,
 };
+use actix_web_flash_messages::{FlashMessage, IncomingFlashMessages};
 use actix_web_lab::respond::Html;
 use std::{
     // collections::HashMap,
@@ -28,6 +29,7 @@ pub async fn form(
     path: Path<(String, String, String, String, String)>,
     data: web::Data<AppState>,
     req: HttpRequest,
+    flash: IncomingFlashMessages
 ) -> Result<impl Responder> {
 
     let mut messages = Messages::get_from_request(&req);
@@ -45,6 +47,12 @@ pub async fn form(
         &data.dblite,
         application, table, &form.velements, &id,
         &mut messages).await;
+
+    FlashMessage::info("route_form").send();
+
+    for message in flash.iter() {
+        println!("{} - {}", message.content(), message.level());
+    }
 
     let mut context = tera::Context::new();
     context.insert("messages", &messages);

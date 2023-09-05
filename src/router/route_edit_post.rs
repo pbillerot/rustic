@@ -5,6 +5,7 @@ use crate::cruder::update::crud_update;
 use actix_web::{HttpResponse, web, HttpRequest};
 use actix_web::http::header::LOCATION;
 use actix_web::web::Path;
+use actix_web_flash_messages::FlashMessage;
 use std::{
     // collections::HashMap,
     sync::atomic::Ordering
@@ -39,20 +40,16 @@ pub async fn edit_post(
     // for message in messages.items {
     //     println!("----> {:?}:{:?}", message.level, message.content);
     // }
+    FlashMessage::info("route_edit_post").send();
 
     if result {
-        let mut response = HttpResponse::SeeOther();
-        response.extensions_mut().insert(messages.clone());
-        response.insert_header((LOCATION, format!("/form/{appid}/{tableid}/{viewid}/{formid}/{id}")));
-        response.finish()
+        HttpResponse::SeeOther()
+        .insert_header((LOCATION, format!("/form/{appid}/{tableid}/{viewid}/{formid}/{id}")))
+        .finish()
     } else {
-        let mut response = HttpResponse::SeeOther();
-        response.extensions_mut().insert(messages.clone());
-        response.insert_header((LOCATION, format!("/edit/{appid}/{tableid}/{viewid}/{formid}/{id}")));
-        response.finish()
-        // HttpResponse::SeeOther()
-        // .insert_header((LOCATION, format!("/edit/{appid}/{tableid}/{viewid}/{formid}/{id}")))
-        // .finish()
+        HttpResponse::SeeOther()
+        .insert_header((LOCATION, format!("/edit/{appid}/{tableid}/{viewid}/{formid}/{id}")))
+        .finish()
     }
 }
 

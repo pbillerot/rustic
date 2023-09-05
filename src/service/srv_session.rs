@@ -1,5 +1,6 @@
 use std::future::{ready, Ready};
 
+use actix_session::SessionExt;
 use actix_web::{
     body::EitherBody,
     dev::{self, Service, ServiceRequest, ServiceResponse, Transform},
@@ -59,8 +60,8 @@ where
     fn call(&self, req: ServiceRequest) -> Self::Future {
         // Change this to see the change in outcome in the browser.
         // Usually this boolean would be acquired from a password check or other auth verification.
-        // let session = request.get_session();
-        // log::info!("Session {:?} {:?}", session.status(), session.entries());
+        let session = req.get_session();
+        log::info!("Session {:?}", session.entries());
 
         let mut messages = Messages::get_from_request(&req.request());
         for message in &messages.items {
