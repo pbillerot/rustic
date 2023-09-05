@@ -4,7 +4,7 @@
 use sqlx::{Pool, Postgres, Sqlite};
 
 use crate::lexicer::lex_table::{Element, Table};
-use crate::router::{Message, MESSAGE_LEVEL_ERROR, MESSAGE_LEVEL_INFO};
+use crate::router::Messages;
 use std::collections::HashMap;
 ///
 /// - Lecture des données de la table
@@ -18,7 +18,7 @@ pub async fn crud_insert(
     velements: &Vec<Element>,
     id: &str,
     form_posted: &Vec<(String, String)>,
-    messages: &mut Vec<Message>,
+    messages: &mut Messages,
 ) -> bool {
     // Transformation de form_posted Vec(key, value) en Hashtable
     // sachant key ne sera unique pour les "select multiple" === tag
@@ -68,9 +68,7 @@ pub async fn crud_insert(
                 };
             }
         }
-        element
-            .compute_prop(pooldb, poolite, &hvalue, messages)
-            .await;
+        element.compute_prop(pooldb, poolite, &hvalue, messages).await;
         element.key_value = id.to_string();
         // construction du sql
         if element.elid == table.setting.key {
@@ -93,17 +91,11 @@ pub async fn crud_insert(
 
     let result = match sqlx::query(&sql).execute(pooldb).await {
         Ok(_) => {
-            messages.push(Message::new(
-                format!("Mise à jour ok").as_str(),
-                MESSAGE_LEVEL_INFO,
-            ));
+            messages.info(format!("Mise à jour ok").as_str());
             true
         }
         Err(e) => {
-            messages.push(Message::new(
-                format!("{:?}", &e).as_str(),
-                MESSAGE_LEVEL_ERROR,
-            ));
+            messages.error(format!("{:?}", &e).as_str());
             false
         }
     };

@@ -5,7 +5,7 @@ use std::collections::HashMap;
 // use actix_web::web;
 use crate::cruder::sqler::{kerdata, kerlite};
 use crate::lexicer::lex_utils;
-use crate::router::Message;
+use crate::router::Messages;
 
 use super::macrolex;
 
@@ -175,7 +175,7 @@ impl Element {
         &mut self,
         poolite: &Pool<Sqlite>,
         hvalue: &HashMap<String, String>,
-        messages: &mut Vec<Message>,
+        messages: &mut Messages,
     ) {
         // get value lue dans la table
         if !self.elid.starts_with("_") {
@@ -196,7 +196,7 @@ impl Element {
         pooldb: &Pool<Postgres>,
         poolite: &Pool<Sqlite>,
         hvalue: &HashMap<String, String>,
-        messages: &mut Vec<Message>,
+        messages: &mut Messages,
     ) {
         // valeur par défaut
         if !self.default.is_empty() {

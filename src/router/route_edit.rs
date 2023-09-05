@@ -4,7 +4,6 @@ use crate::{
     // lexic::lex_table::{self, Element},
     AppState, cruder::read::crud_read,
 };
-use actix_session::Session;
 use actix_web::{
     // get,
     // delete,
@@ -13,7 +12,7 @@ use actix_web::{
     web,
     web::Path,
     Responder,
-    Result,
+    Result, HttpRequest, //HttpRequest,
 };
 use actix_web_lab::respond::Html;
 use std::{
@@ -21,17 +20,16 @@ use std::{
     sync::atomic::Ordering
 };
 
-use super::Message;
+use super::Messages;
 
 // #[get("/edit/{appid}/{tableid}/{viewid}/{formid}/{id}")]
 pub async fn edit(
     path: Path<(String, String, String, String, String)>,
     data: web::Data<AppState>,
-    session: Session,
-    // msg: Option<ReqData<servic::sr_data::Msg>>,
+    req: HttpRequest,
 ) -> Result<impl Responder> {
 
-    let mut messages = Vec::new();
+    let mut messages = Messages::get_from_request(&req);
 
     let (appid, tableid, viewid, formid, id) = path.into_inner();
     let ptr = data.plexic.load(Ordering::Relaxed);
@@ -48,19 +46,7 @@ pub async fn edit(
         &mut messages).await;
 
     let mut context = tera::Context::new();
-
-    if let Some(mut messages_session) = session.get::<Vec<Message>>("messages").unwrap() {
-        // ajout des messages du contrôleur à ceux de la session
-        for message in messages {
-            messages_session.push(message.clone());
-        }
-        // copie des messages dans le contexte du template
-        context.insert("messages", &messages_session);
-        // suppression des messages de la session car il seront consommés (affichés) dans le template
-        session.remove("messages").unwrap();
-    } else {
-        context.insert("messages", &messages);
-    }
+    context.insert("messages", &messages);
     context.insert("portail", unsafe { &(*ptr).portail });
     context.insert("application", &application);
     context.insert("table", &table);
@@ -73,9 +59,13 @@ pub async fn edit(
     context.insert("id", &id);
     context.insert("key", &table.setting.key);
     context.insert("record", &records.pop());
+    // context.insert("referer", &req.headers().get("referer").unwrap().to_str().ok());
+    // println!("extension = {:?}", req.extensions().get::<String>());
+
 
     let html = data.template.render("tpl_edit.html", &context).unwrap();
 
     Ok(Html(html))
+
 }
 

@@ -10,7 +10,7 @@ use actix_web::{
     web,
     // web::ReqData,
     Responder,
-    Result,
+    Result, HttpRequest,
 };
 // use log::info;
 // use actix_session::Session;
@@ -23,14 +23,16 @@ use std::sync::atomic::Ordering;
 use crate::lexicer::lex_application;
 use crate::AppState;
 
-use super::Message;
+use super::Messages;
 
 // #[get("/")]
-pub async fn portail(data: web::Data<AppState>) -> Result<impl Responder, Error> {
+pub async fn portail(data: web::Data<AppState>,
+    req: HttpRequest,
+    ) -> Result<impl Responder, Error> {
 
     let ptr = data.plexic.load(Ordering::Relaxed);
 
-    let messages: Vec<Message> = Vec::new();
+    let messages = Messages::get_from_request(&req);
 
     let appids = unsafe { (*ptr).portail.appids.clone() };
     let apps: &std::collections::HashMap<String, lex_application::Application> =

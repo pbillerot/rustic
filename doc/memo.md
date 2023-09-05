@@ -13,8 +13,8 @@
 - get   route_form.rs           form        read.rs     crud_read   record_elements tpl_form        tpl_form_elements
 - get   route_edit.rs           edit        read.rs     crud_read   record_elements tpl_edit        tpl_edit_element
 - get   route_add.rs            add                                 record_elements tpl_add         tpl_edit_element
-- post  route_edit_update.rs    edit_update update.rs   crud_update
-- post  route_add_insert.rs     add_insert  insert.rs   crud_insert
+- post  route_edit_post.rs      edit_post   update.rs   crud_update
+- post  route_add_post.rs       add_post    insert.rs   crud_insert
 
 
 ## Cargo
@@ -38,6 +38,8 @@
 - https://docs.rs/actix-web/latest/actix_web/index.html
 - https://actix.rs/docs
 - https://github.com/TechEmpower/FrameworkBenchmarks/tree/master/frameworks/Rust/actix
+- https://www.lpalmieri.com/posts/session-based-authentication-in-rust/
+- https://turreta.com/blog/2020/06/11/working-with-actix-web-http-requests/
 
 ## Middleware
 - https://github.com/actix/examples/tree/master/middleware
@@ -107,7 +109,6 @@ curl http://localhost:8080/tweets
 curl -X POST -d '{"message": "This is a tweet"}' -H "Content-type: application/json" http://localhost:8080/tweets
 
 # Forms
-- https://www.lpalmieri.com/posts/session-based-authentication-in-rust/
 - https://dev.to/chaudharypraveen98/form-validation-in-rust-404l
 - https://github.com/Keats/validator
 - ko pb dépendances https://github.com/edward-shen/actix-csrf

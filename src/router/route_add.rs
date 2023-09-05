@@ -4,7 +4,6 @@ use crate::{
     // lexic::lex_table::{self, Element},
     AppState, cruder::records_elements
 };
-use actix_session::Session;
 use actix_web::{
     // get,
     // delete,
@@ -13,7 +12,7 @@ use actix_web::{
     web,
     web::Path,
     Responder,
-    Result,
+    Result, HttpRequest,
 };
 use actix_web_lab::respond::Html;
 use std::{
@@ -21,17 +20,18 @@ use std::{
     sync::atomic::Ordering
 };
 
-use super::Message;
+use super::Messages;
+
 
 // #[get("/add/{appid}/{tableid}/{viewid}/{formid}")]
 pub async fn add(
     path: Path<(String, String, String, String)>,
     data: web::Data<AppState>,
-    session: Session,
-    // msg: Option<ReqData<servic::sr_data::Msg>>,
+    // session: Session,
+    req: HttpRequest,
 ) -> Result<impl Responder> {
 
-    let mut messages: Vec<Message> = Vec::new();
+    let mut messages = Messages::get_from_request(&req);
 
     let (appid, tableid, viewid, formid) = path.into_inner();
     let id = ""; // c'est un ajout
@@ -54,19 +54,7 @@ pub async fn add(
     .await;
 
     let mut context = tera::Context::new();
-
-    if let Some(mut messages_session) = session.get::<Vec<Message>>("messages").unwrap() {
-        // ajout des messages du contrôleur à ceux de la session
-        for message in messages {
-            messages_session.push(message.clone());
-        }
-        // copie des messages dans le contexte du template
-        context.insert("messages", &messages_session);
-        // suppression des messages de la session car il seront consommés (affichés) dans le template
-        session.remove("messages").unwrap();
-    } else {
-        context.insert("messages", &messages);
-    }
+    context.insert("messages", &messages);
     context.insert("portail", unsafe { &(*ptr).portail });
     context.insert("application", &application);
     context.insert("table", &table);

@@ -4,7 +4,7 @@
 use sqlx::{Pool, Postgres, Sqlite};
 
 use crate::lexicer::lex_table::{Element, Table};
-use crate::router::{Message, MESSAGE_LEVEL_ERROR, MESSAGE_LEVEL_INFO, MESSAGE_LEVEL_DEBUG};
+use crate::router::Messages;
 use std::collections::HashMap;
 ///
 /// - Lecture des données de la table
@@ -18,7 +18,7 @@ pub async fn crud_update(
     velements: &Vec<Element>,
     id: &str,
     form_posted: &Vec<(String, String)>,
-    messages: &mut Vec<Message>,
+    messages: &mut Messages,
 ) -> bool {
     // Transformation de form_posted Vec(key, value) en Hashtable
     // sachant key ne sera unique pour les "select multiple" === tag
@@ -42,10 +42,7 @@ pub async fn crud_update(
         }
     }
     hvalue.insert(key, val.clone());
-    messages.push(Message::new(
-        format!("{:?}", &hvalue).as_str(),
-        MESSAGE_LEVEL_DEBUG,
-    ));
+    messages.debug(format!("{:?}", &hvalue).as_str());
 
     // valorisation des éléments du formulaire avec les champs du formulaire
     // construction de l'order sql
@@ -97,24 +94,15 @@ pub async fn crud_update(
         sql.push_str(format!("{} = '{}'", &element.elid, element.value.replace("'", "''")).as_str());
     }
     sql.push_str(format!(" WHERE ( {} = '{}' )", &table.setting.key, &id).as_str());
-    messages.push(Message::new(
-        format!("{:?}", &sql).as_str(),
-        MESSAGE_LEVEL_DEBUG,
-    ));
+    messages.debug(format!("{:?}", &sql).as_str());
 
     let result = match sqlx::query(&sql).execute(pooldb).await {
         Ok(_) => {
-            messages.push(Message::new(
-                format!("Mise à jour ok").as_str(),
-                MESSAGE_LEVEL_INFO,
-            ));
+            messages.info(format!("Mise à jour ok").as_str());
             true
         }
         Err(e) => {
-            messages.push(Message::new(
-                format!("{:?}", &e).as_str(),
-                MESSAGE_LEVEL_ERROR,
-            ));
+            messages.error(format!("{:?}", &e).as_str());
             false
         }
     };

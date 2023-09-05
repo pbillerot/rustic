@@ -9,6 +9,9 @@
 - bouton coller le presse-papier
 - historique navigation
 
+0.11.2 - 5 septembre 2023
+- `changed` messages stockés dans les extensions de la requête - non concluant car non transmis dans la response
+
 0.11.1 - 3 septembre 2023
 - `added` renommage des mod et fn
 

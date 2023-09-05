@@ -7,7 +7,7 @@ use actix_web::{
     web,
     web::Path,
     Responder,
-    Result,
+    Result, HttpRequest,
 };
 // use log::info;
 // use actix_session::Session;
@@ -17,18 +17,16 @@ use tera::Context;
 use std::sync::atomic::Ordering;
 use crate::AppState;
 
-use super::MESSAGE_LEVEL_INFO;
-use super::Message;
+use super::Messages;
 
 // #[get("/app/{appid}")]
 pub async fn application(
     path: Path<String>,
     data: web::Data<AppState>,
-    // msg: Option<ReqData<servic::sr_data::Msg>>,
+    req: HttpRequest,
 ) -> Result<impl Responder> {
-    // log::info!("Session {:?} {:?} {:?}", session.status(), session.entries(), path);
-    let mut messages = Vec::new();
-    messages.push(Message::new("app:Tout va bien", MESSAGE_LEVEL_INFO));
+
+    let messages = Messages::get_from_request(&req);
 
 
     let appid = path.into_inner();

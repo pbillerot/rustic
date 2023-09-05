@@ -13,12 +13,12 @@ use sqlx::types::chrono::Utc;
 use sqlx::{Pool, Sqlite};
 use std::collections::HashMap;
 
-use crate::router::MESSAGE_LEVEL_ERROR;
-use crate::router::Message;
+use crate::router::Messages;
+
 
 /// Requête sqlite qui ne renvoie qu'une seule colonne et une seule ligne
 #[allow(dead_code)]
-pub async fn kerlite(poollite: &Pool<Sqlite>, sql: &str, messages: &mut Vec<Message> ) -> String {
+pub async fn kerlite(poollite: &Pool<Sqlite>, sql: &str, messages: &mut Messages ) -> String {
     let result: String = match sqlx::query(sql).fetch_one(poollite).await {
         Ok(row) => {
             let mut valcol = String::new();
@@ -33,8 +33,8 @@ pub async fn kerlite(poollite: &Pool<Sqlite>, sql: &str, messages: &mut Vec<Mess
                                 match row.try_get_unchecked::<f32, _>(col.ordinal()) {
                                     Ok(v) => v.to_string(),
                                     Err(e) => {
-                                        messages.push(Message::new(sql, MESSAGE_LEVEL_ERROR));
-                                        messages.push(Message::new(format!("{:?}", e).as_str(), MESSAGE_LEVEL_ERROR));
+                                        messages.error(sql);
+                                        messages.error(format!("{:?}", e).as_str());
                                         "".to_string()
                                     },
                                 }
@@ -47,7 +47,7 @@ pub async fn kerlite(poollite: &Pool<Sqlite>, sql: &str, messages: &mut Vec<Mess
             valcol
         },
         Err(e) => {
-            messages.push(Message::new(format!("{:?}", e).as_str(), MESSAGE_LEVEL_ERROR));
+            messages.error(format!("{:?}", e).as_str());
             "".to_string()
         }
     };
@@ -55,13 +55,13 @@ pub async fn kerlite(poollite: &Pool<Sqlite>, sql: &str, messages: &mut Vec<Mess
 }
 
 /// Requête sur les données applicatives qui retourne une table de valeur
-pub async fn kerdata(pooldb: &Pool<Postgres>, sql: &str, messages: &mut Vec<Message> ) -> Vec<HashMap<String, String>> {
+pub async fn kerdata(pooldb: &Pool<Postgres>, sql: &str, messages: &mut Messages ) -> Vec<HashMap<String, String>> {
     // log::info!("{}", sql);
     let rows = match sqlx::query(&sql).fetch_all(pooldb).await {
         Ok(t) => t,
         Err(e) => {
-            messages.push(Message::new(sql, MESSAGE_LEVEL_ERROR));
-            messages.push(Message::new(format!("{:?}", e).as_str(), MESSAGE_LEVEL_ERROR));
+            messages.error(sql);
+            messages.error(format!("{:?}", e).as_str());
             Vec::new()
         }
     };

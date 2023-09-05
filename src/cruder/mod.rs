@@ -2,7 +2,7 @@ use std::collections::HashMap;
 
 use sqlx::{Postgres, Pool, Sqlite};
 
-use crate::{lexicer::{lex_application::Application, lex_table::{Element, Table}}, router::{Message, MESSAGE_LEVEL_ERROR}};
+use crate::{lexicer::{lex_application::Application, lex_table::{Element, Table}}, router::Messages};
 
 use self::sqler::rows_to_vmap;
 
@@ -23,7 +23,7 @@ pub async fn records_elements(
     application: &Application,
     velements: &Vec<Element>,
     table: &Table,
-    messages: &mut Vec<Message>,
+    messages: &mut Messages,
 ) -> Vec<HashMap<String, Element>> {
 
     let mut records = Vec::new();
@@ -39,10 +39,7 @@ pub async fn records_elements(
         let rows = match sqlx::query(&sql).fetch_all(pooldb).await {
             Ok(t) => t,
             Err(e) => {
-                messages.push(Message::new(
-                    format!("{:?}", &e).as_str(),
-                    MESSAGE_LEVEL_ERROR,
-                ));
+                messages.error(format!("{:?}", &e).as_str());
                 Vec::new()
             }
         };

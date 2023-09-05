@@ -5,7 +5,7 @@ use sqlx::{Pool, Postgres, Sqlite};
 
 use crate::lexicer::lex_application::Application;
 use crate::lexicer::lex_table::Element;
-use crate::router::Message;
+use crate::router::Messages;
 use std::collections::HashMap;
 
 use super::records_elements;
@@ -20,7 +20,7 @@ pub async fn crud_list(
     tableid: &str,
     viewid: &str,
     id: &str,
-    messages: &mut Vec<Message>,
+    messages: &mut Messages,
 ) -> Vec<HashMap<String, Element>> {
     // construction de l'ordre sql
     let mut sql = "SELECT ".to_string();
