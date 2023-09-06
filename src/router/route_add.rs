@@ -2,8 +2,9 @@
 //!
 use crate::{
     // lexic::lex_table::{self, Element},
-    AppState, cruder::records_elements
+    AppState, cruder::records_elements, middler::{flash::FlashMessage, clear_flash, get_flash}
 };
+use actix_session::Session;
 use actix_web::{
     // get,
     // delete,
@@ -12,9 +13,9 @@ use actix_web::{
     web,
     web::Path,
     Responder,
-    Result, HttpResponse
+    Result
 };
-use actix_web_flash_messages::IncomingFlashMessages;
+use actix_web_lab::respond::Html;
 // use actix_web_lab::respond::Html;
 use std::{
     // collections::HashMap,
@@ -25,7 +26,7 @@ use std::{
 pub async fn add(
     path: Path<(String, String, String, String)>,
     data: web::Data<AppState>,
-    flash: IncomingFlashMessages
+    session: Session,
 ) -> Result<impl Responder> {
 
     let (appid, tableid, viewid, formid) = path.into_inner();
@@ -37,18 +38,30 @@ pub async fn add(
     let view = table.views.get(&viewid).unwrap();
     let form = table.forms.get(&formid).unwrap();
 
-    let mut records = records_elements(
+    let mut context = tera::Context::new();
+    let mut messages: Vec<FlashMessage> = Vec::new();
+
+    match records_elements(
         &data.db,
         &data.dblite,
         &"", // pas de lecture dans la bd
         &application,
         &form.velements,
         table,
-    )
-    .await;
+    ).await {
+        Ok(mut records) => {
+            context.insert("record", &records.pop());
+        },
+        Err(e) => {
+            messages.push(FlashMessage::error(format!("{e:?}").as_str()));
+            context.insert("record", &vec![{}]);
+        }
+    };
 
-    let mut context = tera::Context::new();
-    context.insert("messages", &flash);
+    if let Some(flash) = get_flash(&session)? {
+        messages.push(flash);
+    }
+    context.insert("messages", &messages);
     context.insert("portail", unsafe { &(*ptr).portail });
     context.insert("application", &application);
     context.insert("table", &table);
@@ -60,10 +73,12 @@ pub async fn add(
     context.insert("formid", &formid);
     context.insert("id", &id);
     context.insert("key", &table.setting.key);
-    context.insert("record", &records.pop());
+
+    clear_flash(&session);
 
     let html = data.template.render("tpl_add.html", &context).unwrap();
 
-    Ok(HttpResponse::Ok().body(html))
+    Ok(Html(html))
+
 }
 

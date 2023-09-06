@@ -1,4 +1,5 @@
 //! Ouverture d'une application
+use actix_session::Session;
 use actix_web::{
     // get,
     // delete,
@@ -7,19 +8,18 @@ use actix_web::{
     web,
     web::Path,
     Responder,
-    Result, HttpResponse,
+    Result,
 };
-use actix_web_flash_messages::IncomingFlashMessages;
-use tera::Context;
+use actix_web_lab::respond::Html;
 
 use std::sync::atomic::Ordering;
-use crate::AppState;
+use crate::{AppState, middler::{flash::FlashMessage, clear_flash, get_flash}};
 
 // #[get("/app/{appid}")]
 pub async fn application(
     path: Path<String>,
     data: web::Data<AppState>,
-    flash: IncomingFlashMessages
+    session: Session,
 ) -> Result<impl Responder> {
 
     let appid = path.into_inner();
@@ -27,12 +27,18 @@ pub async fn application(
     let apps = unsafe {&(*ptr).applications.clone()};
     let app = apps.get(&appid).unwrap();
 
-    let mut context = Context::new();
-    context.insert("messages", &flash);
+    let mut messages: Vec<FlashMessage> = Vec::new();
+    if let Some(flash) = get_flash(&session)? {
+        messages.push(flash);
+    }
+    clear_flash(&session);
+
+    let mut context = tera::Context::new();
+    context.insert("messages", &messages);
     context.insert("portail", unsafe { &(*ptr).portail });
     context.insert("application", &app);
     context.insert("appid", &appid);
     let html = data.template.render("tpl_application.html", &context).unwrap();
 
-    Ok(HttpResponse::Ok().body(html))
+    Ok(Html(html))
 }

@@ -2,8 +2,9 @@
 //!
 use crate::{
     // lexic::lex_table::{self, Element},
-    AppState, cruder::read::crud_read,
+    AppState, cruder::read::crud_read, middler::{flash::FlashMessage, clear_flash, get_flash},
 };
+use actix_session::Session;
 use actix_web::{
     // get,
     // delete,
@@ -12,9 +13,9 @@ use actix_web::{
     web,
     web::Path,
     Responder,
-    Result, HttpResponse,
+    Result,
 };
-use actix_web_flash_messages::{IncomingFlashMessages, FlashMessage};
+use actix_web_lab::respond::Html;
 // use actix_web_lab::respond::Html;
 use std::{
     // collections::HashMap,
@@ -25,7 +26,7 @@ use std::{
 pub async fn edit(
     path: Path<(String, String, String, String, String)>,
     data: web::Data<AppState>,
-    flash: IncomingFlashMessages
+    session: Session,
 ) -> Result<impl Responder> {
 
     let (appid, tableid, viewid, formid, id) = path.into_inner();
@@ -36,19 +37,25 @@ pub async fn edit(
     let view = table.views.get(&viewid).unwrap();
     let form = table.forms.get(&formid).unwrap();
 
-    let mut records = crud_read(
-        &data.db,
-        &data.dblite,
-        application, table, &form.velements, &id,
-        ).await;
-
-    FlashMessage::info("route_edit").send();
-    for message in flash.iter() {
-        println!("FLASHHHHHHHHHHH {} - {}", message.content(), message.level());
-    }
-
     let mut context = tera::Context::new();
-    context.insert("messages", &flash);
+    let mut messages: Vec<FlashMessage> = Vec::new();
+
+    match crud_read(&data.db, &data.dblite, application, table, &form.velements, &id,).await {
+        Ok(mut records) => {
+            context.insert("record", &records.pop());
+        },
+        Err(e) => {
+            messages.push(FlashMessage::error(format!("{e:?}").as_str()));
+            context.insert("record", &vec![{}]);
+        }
+    };
+
+    if let Some(flash) = get_flash(&session)? {
+        messages.push(flash);
+    }
+    clear_flash(&session);
+
+    context.insert("messages", &messages);
     context.insert("portail", unsafe { &(*ptr).portail });
     context.insert("application", &application);
     context.insert("table", &table);
@@ -60,14 +67,10 @@ pub async fn edit(
     context.insert("formid", &formid);
     context.insert("id", &id);
     context.insert("key", &table.setting.key);
-    context.insert("record", &records.pop());
-    // context.insert("referer", &req.headers().get("referer").unwrap().to_str().ok());
-    // println!("extension = {:?}", req.extensions().get::<String>());
-
 
     let html = data.template.render("tpl_edit.html", &context).unwrap();
 
-    Ok(HttpResponse::Ok().body(html))
+    Ok(Html(html))
 
 }
 

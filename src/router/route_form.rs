@@ -3,8 +3,9 @@
 // use crate::sqlic::sql_utils::querlite;
 use crate::{
     // lexic::lex_table::{self, Element},
-    AppState, cruder::read::crud_read,
+    AppState, cruder::read::crud_read, middler::{flash::FlashMessage, clear_flash, get_flash},
 };
+use actix_session::Session;
 use actix_web::{
     // get,
     // delete,
@@ -13,10 +14,9 @@ use actix_web::{
     web,
     web::Path,
     Responder,
-    Result, HttpResponse,
+    Result
 };
-use actix_web_flash_messages::{FlashMessage, IncomingFlashMessages};
-
+use actix_web_lab::respond::Html;
 use std::{
     // collections::HashMap,
     sync::atomic::Ordering
@@ -26,7 +26,7 @@ use std::{
 pub async fn form(
     path: Path<(String, String, String, String, String)>,
     data: web::Data<AppState>,
-    flash: IncomingFlashMessages
+    session: Session,
 ) -> Result<impl Responder> {
 
     let (appid, tableid, viewid, formid, id) = path.into_inner();
@@ -37,20 +37,29 @@ pub async fn form(
     let view = table.views.get(&viewid).unwrap();
     let form = table.forms.get(&formid).unwrap();
 
-    let mut records = crud_read(
+    let mut context = tera::Context::new();
+    let mut messages: Vec<FlashMessage> = Vec::new();
+
+    match crud_read(
         &data.db,
         &data.dblite,
         application, table, &form.velements, &id,
-        ).await;
+    ).await {
+        Ok(mut records) => {
+            context.insert("record", &records.pop());
+        },
+        Err(e) => {
+            messages.push(FlashMessage::error(format!("{e:?}").as_str()));
+            context.insert("record", &vec![{}]);
+        }
+    };
 
-    FlashMessage::info("route_form").send();
-
-    for message in flash.iter() {
-        println!("FLASHHHHHHHHHHH {} - {}", message.content(), message.level());
+    if let Some(flash) = get_flash(&session)? {
+        messages.push(flash);
     }
+    clear_flash(&session);
 
-    let mut context = tera::Context::new();
-    context.insert("messages", &flash);
+    context.insert("messages", &messages);
     context.insert("portail", unsafe { &(*ptr).portail });
     context.insert("application", &application);
     context.insert("table", &table);
@@ -62,9 +71,9 @@ pub async fn form(
     context.insert("formid", &formid);
     context.insert("id", &id);
     context.insert("key", &table.setting.key);
-    context.insert("record", &records.pop());
 
     let html = data.template.render("tpl_form.html", &context).unwrap();
 
-    Ok(HttpResponse::Ok().body(html))
+    Ok(Html(html))
+
 }

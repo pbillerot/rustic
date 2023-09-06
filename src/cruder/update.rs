@@ -1,8 +1,7 @@
-use actix_web_flash_messages::FlashMessage;
 ///
 /// CRUD sur les données
 ///
-use sqlx::{Pool, Postgres, Sqlite};
+use sqlx::{Pool, Postgres, Sqlite, Error};
 
 use crate::lexicer::lex_table::{Element, Table};
 use std::collections::HashMap;
@@ -17,7 +16,7 @@ pub async fn crud_update(
     velements: &Vec<Element>,
     id: &str,
     form_posted: &Vec<(String, String)>,
-) -> bool {
+) -> Result<String, Error> {
     // Transformation de form_posted Vec(key, value) en Hashtable
     // sachant key ne sera unique pour les "select multiple" === tag
     let mut hvalue: HashMap<String, String> = HashMap::new();
@@ -66,9 +65,7 @@ pub async fn crud_update(
                 };
             }
         }
-        element
-            .compute_prop(pooldb, poolite, &hvalue)
-            .await;
+        element.compute_prop(pooldb, poolite, &hvalue).await?;
         element.key_value = id.to_string();
         // construction du sql
         if element.elid == table.setting.key {
@@ -91,19 +88,10 @@ pub async fn crud_update(
         sql.push_str(format!("{} = '{}'", &element.elid, element.value.replace("'", "''")).as_str());
     }
     sql.push_str(format!(" WHERE ( {} = '{}' )", &table.setting.key, &id).as_str());
-    FlashMessage::info(&sql).send();
 
-    let result = match sqlx::query(&sql).execute(pooldb).await {
-        Ok(_) => {
-            FlashMessage::info("Mise à jour ok").send();
-            true
-        }
-        Err(e) => {
-            FlashMessage::info(format!("{:?}", e)).send();
-            false
-        }
-    };
+    let result = sqlx::query(&sql).execute(pooldb).await?;
 
-    result
+    Ok(format!("[{sql:?}] {result:?}"))
+
 }
 

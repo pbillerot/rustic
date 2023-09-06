@@ -9,6 +9,10 @@
 - bouton coller le presse-papier
 - historique navigation
 
+0.12.0 - 6 septembre 2023
+- `deleted` actix-web-flash-messages qui ne fonctionnait pas
+- `added` ajout du flashMessage dans la session
+
 0.11.3 - 5 septembre 2023
 - `changed` messages gérés par actix-web-flash-messages - non concluant
 

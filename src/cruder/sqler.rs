@@ -1,4 +1,4 @@
-use actix_web_flash_messages::FlashMessage;
+use sqlx::Error;
 use sqlx::Postgres;
 /**
  * Modèles de données
@@ -16,57 +16,47 @@ use std::collections::HashMap;
 
 /// Requête sqlite qui ne renvoie qu'une seule colonne et une seule ligne
 #[allow(dead_code)]
-pub async fn kerlite(poollite: &Pool<Sqlite>, sql: &str ) -> String {
-    let result: String = match sqlx::query(sql).fetch_one(poollite).await {
-        Ok(row) => {
-            let mut valcol = String::new();
-            for col in row.columns() {
-                // on ne renvoie que la 1ère colonne
-                let val = match row.try_get_unchecked::<String, _>(col.ordinal()) {
-                    Ok(v) => v,
+pub async fn kerlite(poollite: &Pool<Sqlite>, sql: &str ) -> Result<String, Error> {
+    let row = sqlx::query(sql).fetch_one(poollite).await?;
+    let mut valcol = String::new();
+    for col in row.columns() {
+        // on ne renvoie que la 1ère colonne
+        let val = match row.try_get_unchecked::<String, _>(col.ordinal()) {
+            Ok(v) => v,
+            Err(_) => {
+                match row.try_get_unchecked::<i32, _>(col.ordinal()) {
+                    Ok(v) => v.to_string(),
                     Err(_) => {
-                        match row.try_get_unchecked::<i32, _>(col.ordinal()) {
+                        match row.try_get_unchecked::<f32, _>(col.ordinal()) {
                             Ok(v) => v.to_string(),
                             Err(_) => {
-                                match row.try_get_unchecked::<f32, _>(col.ordinal()) {
-                                    Ok(v) => v.to_string(),
-                                    Err(e) => {
-                                        FlashMessage::error(sql).send();
-                                        FlashMessage::info(format!("{:?}", e)).send();
-                                        "".to_string()
-                                    },
-                                }
-                            }
+                                // FlashMessage::error(format!("{:?}", e).as_str());
+                                "".to_string()
+                            },
                         }
                     }
-                };
-                valcol.push_str(&val);
+                }
             }
-            valcol
-        },
-        Err(e) => {
-            FlashMessage::info(format!("{:?}", e)).send();
-            "".to_string()
-        }
-    };
-    result
+        };
+        valcol.push_str(&val);
+    }
+    Ok(valcol)
 }
 
 /// Requête sur les données applicatives qui retourne une table de valeur
-pub async fn kerdata(pooldb: &Pool<Postgres>, sql: &str ) -> Vec<HashMap<String, String>> {
+pub async fn kerdata(pooldb: &Pool<Postgres>, sql: &str ) -> Result<Vec<HashMap<String, String>>, Error> {
     // log::info!("{}", sql);
-    let rows = match sqlx::query(&sql).fetch_all(pooldb).await {
-        Ok(t) => t,
-        Err(e) => {
-            FlashMessage::info(sql).send();
-            FlashMessage::info(format!("{:?}", e)).send();
-            Vec::new()
-        }
-    };
+    let rows = sqlx::query(&sql).fetch_all(pooldb).await?;
+    //     Ok(t) => t,
+    //     Err(e) => {
+    //         Err(FlashMessage::error(format!("{:?}", e).as_str()))
+    //     }
+    // };
+
     // Chargement des enregistrements lus dans un tableau de valeur
     let result = rows_to_vmap(rows);
 
-    result
+    Ok(result)
 }
 
 pub fn rows_to_vmap(rows: Vec<PgRow>) -> Vec<HashMap<String, String>> {

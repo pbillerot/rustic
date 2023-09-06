@@ -1,6 +1,7 @@
 //! Page d'accueil de Silex
 //! Ouverture du portail
 
+use actix_session::Session;
 use actix_web::{
     // get,
     Error,
@@ -10,20 +11,21 @@ use actix_web::{
     web,
     // web::ReqData,
     Responder,
-    Result, HttpResponse
+    Result,
 };
-use actix_web_flash_messages::IncomingFlashMessages;
-use tera::Context;
+use actix_web_lab::respond::Html;
 
 use std::sync::atomic::Ordering;
 
 // use crate::service;
 use crate::lexicer::lex_application;
 use crate::AppState;
+use crate::middler::{clear_flash, get_flash};
+use crate::middler::flash::FlashMessage;
 
 // #[get("/")]
 pub async fn portail(data: web::Data<AppState>,
-    flash: IncomingFlashMessages
+    session: Session,
     ) -> Result<impl Responder, Error> {
 
     let ptr = data.plexic.load(Ordering::Relaxed);
@@ -37,11 +39,18 @@ pub async fn portail(data: web::Data<AppState>,
         vapp.push(&app);
     }
 
-    let mut context = Context::new();
-    context.insert("messages", &flash);
+    let mut messages: Vec<FlashMessage> = Vec::new();
+    if let Some(flash) = get_flash(&session)? {
+        messages.push(flash);
+    }
+    clear_flash(&session);
+
+    let mut context = tera::Context::new();
+    context.insert("messages", &messages);
     context.insert("portail", unsafe { &(*ptr).portail });
     context.insert("applications", &vapp);
     let html = data.template.render("tpl_portail.html", &context).unwrap();
 
-    Ok(HttpResponse::Ok().body(html))
+    Ok(Html(html))
+
 }

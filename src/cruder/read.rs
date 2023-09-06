@@ -1,7 +1,7 @@
 ///
 /// CRUD sur les données
 ///
-use sqlx::{Pool, Postgres, Sqlite};
+use sqlx::{Pool, Postgres, Sqlite, Error};
 
 use crate::lexicer::lex_application::Application;
 use crate::lexicer::lex_table::{Element, Table};
@@ -20,7 +20,7 @@ pub async fn crud_read(
     table: &Table, // le lexique de l'application
     velements: &Vec<Element>,
     id: &str,
-) -> Vec<HashMap<String, Element>> {
+) -> Result<Vec<HashMap<String, Element>>, Error> {
     // construction de l'ordre sql
     let mut sql = "SELECT ".to_string();
     // on prend les colonnes définies dans la view.velements
@@ -62,8 +62,8 @@ pub async fn crud_read(
         &application,
         velements,
         table,
-    )
-    .await;
-    records
+    ).await?;
+
+    Ok(records)
 }
 

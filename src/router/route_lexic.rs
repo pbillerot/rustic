@@ -19,6 +19,7 @@ use actix_web::{
 use crate::AppState;
 use crate::lexicer;
 
+
 #[derive(Debug)]
 
 #[derive(Deserialize, Serialize)]
@@ -27,7 +28,9 @@ pub struct Info {
 }
 
 // #[get("/lexic/{action}")]
-pub async fn lexicall(info: web::Path<Info>, data: web::Data<AppState>) -> impl Responder {
+pub async fn lexicall(info: web::Path<Info>,
+    data: web::Data<AppState>,
+) -> impl Responder {
     // println!("{:?}", info);
     if info.action == "refresh" {
         log::info!("On Lexic action [{}] ...", info.action);

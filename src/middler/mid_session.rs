@@ -10,9 +10,9 @@ use actix_web::{
 };
 use futures_util::future::LocalBoxFuture;
 
-pub struct CheckSession;
+pub struct SilexSession;
 
-impl<S, B> Transform<S, ServiceRequest> for CheckSession
+impl<S, B> Transform<S, ServiceRequest> for SilexSession
 where
     S: Service<ServiceRequest, Response = ServiceResponse<B>, Error = Error>,
     S::Future: 'static,
@@ -21,18 +21,18 @@ where
     type Response = ServiceResponse<EitherBody<B>>;
     type Error = Error;
     type InitError = ();
-    type Transform = CheckSessionMiddleware<S>;
+    type Transform = SilexSessionMiddleware<S>;
     type Future = Ready<Result<Self::Transform, Self::InitError>>;
 
     fn new_transform(&self, service: S) -> Self::Future {
-        ready(Ok(CheckSessionMiddleware { service }))
+        ready(Ok(SilexSessionMiddleware { service }))
     }
 }
-pub struct CheckSessionMiddleware<S> {
+pub struct SilexSessionMiddleware<S> {
     service: S,
 }
 
-impl<S, B> Service<ServiceRequest> for CheckSessionMiddleware<S>
+impl<S, B> Service<ServiceRequest> for SilexSessionMiddleware<S>
 where
     S: Service<ServiceRequest, Response = ServiceResponse<B>, Error = Error>,
     S::Future: 'static,
@@ -65,7 +65,7 @@ where
             session.insert("silex", "0.9.2").unwrap();
             log::info!("set Silex = {:?}", session.entries());
         }
-        // log::info!("Session {:?}", session.entries());
+        log::info!("Session {:?}", session.entries());
         //
         // let mut messages = Messages::get_from_request(&req.request());
         // for message in &messages.items {

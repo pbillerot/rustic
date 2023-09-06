@@ -1,6 +1,6 @@
 use serde::{Deserialize, Serialize};
 use serde_yaml::{self};
-use sqlx::{Pool, Postgres, Sqlite};
+use sqlx::{Pool, Postgres, Sqlite, Error};
 use std::collections::HashMap;
 // use actix_web::web;
 use crate::cruder::sqler::{kerdata, kerlite};
@@ -174,7 +174,7 @@ impl Element {
         &mut self,
         poolite: &Pool<Sqlite>,
         hvalue: &HashMap<String, String>,
-    ) {
+    ) -> Result<&mut Self, Error>{
         // get value lue dans la table
         if !self.elid.starts_with("_") {
             self.value = hvalue.get(&self.elid).unwrap().clone();
@@ -182,11 +182,12 @@ impl Element {
         // valeur par défaut
         if self.value.is_empty() && !self.default_sqlite.is_empty() {
             let sql = macrolex(&self.default_sqlite, hvalue);
-            self.value = kerlite(poolite, &sql).await;
+            self.value = kerlite(poolite, &sql).await?;
         }
         if self.value.is_empty() && !self.default.is_empty() {
             self.value = macrolex(&self.default, hvalue);
         }
+        Ok(self)
     }
 
     pub async fn compute_prop(
@@ -194,14 +195,14 @@ impl Element {
         pooldb: &Pool<Postgres>,
         poolite: &Pool<Sqlite>,
         hvalue: &HashMap<String, String>,
-    ) {
+    ) -> Result<&mut Self, Error>{
         // valeur par défaut
         if !self.default.is_empty() {
             self.default = macrolex(&self.default, hvalue);
         }
         if !self.default_sqlite.is_empty() {
             let sql = macrolex(&self.default_sqlite, hvalue);
-            self.default = kerlite(poolite, &sql).await;
+            self.default = kerlite(poolite, &sql).await?;
         }
         if self.value.is_empty() {
             self.value = self.default.clone();
@@ -231,25 +232,27 @@ impl Element {
         // macrolex suivi de kerlite
         if !self.class_sqlite.is_empty() {
             let sql = macrolex(&self.class_sqlite, hvalue);
-            self.class = kerlite(poolite, &sql).await;
+            self.class = kerlite(poolite, &sql).await?;
         }
         if !self.format_sqlite.is_empty() {
             let sql = macrolex(&self.format_sqlite, hvalue);
-            self.format = kerlite(poolite, &sql).await;
+            self.format = kerlite(poolite, &sql).await?;
         }
         if !self.hide_sqlite.is_empty() {
             let sql = macrolex(&self.hide_sqlite, hvalue);
-            self.hide = !kerlite(poolite, &sql).await.is_empty();
+            self.hide = !kerlite(poolite, &sql).await?.is_empty();
         }
         if !self.style_sqlite.is_empty() {
             let sql = macrolex(&self.style_sqlite, hvalue);
-            self.style = kerlite(poolite, &sql).await;
+            self.style = kerlite(poolite, &sql).await?;
         }
         // items récupérés dans les données de l'application
         if !self.items_sql.is_empty() {
             let sql = macrolex(&self.items_sql, hvalue);
-            self.items = kerdata(pooldb, &sql).await;
+            self.items = kerdata(pooldb, &sql).await?;
         }
+        Ok(self)
+
     }
 
     /// fusion des propriétés éléments de la vue ou formulaire avec les élement déclarés au niveau de la table

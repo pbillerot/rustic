@@ -1,8 +1,4 @@
 use actix_web::{middleware, App, HttpServer, web, cookie::Key};
-use actix_web_flash_messages::{
-    FlashMessagesFramework, Level,
-};
-use actix_web_flash_messages::storage::SessionMessageStore;
 
 use sqlx::{postgres::PgPoolOptions, Pool, Postgres, Sqlite, SqlitePool};
 
@@ -22,7 +18,7 @@ use dotenv;
 // mod constants;
 mod lexicer;
 mod router;
-mod service;
+mod middler;
 mod cruder;
 
 #[derive(Clone)]
@@ -126,12 +122,7 @@ async fn main() -> std::io::Result<()> {
             .wrap(middleware::Logger::default())
 
             // contrôle de le session utilisateur
-            .wrap(service::srv_session::CheckSession)
-
-            // message flash
-            .wrap(FlashMessagesFramework::builder(SessionMessageStore::default())
-            .minimum_level(Level::Error)
-            .build())
+            .wrap(middler::mid_session::SilexSession)
 
             // activation de actix-session
             .wrap(

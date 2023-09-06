@@ -1,6 +1,6 @@
 [package]
 name = "silex"
-version = "0.11.3"
+version = "0.12.0"
 edition = "2021"
 authors = ["Philippe Billerot"]
 documentation = ""
@@ -13,7 +13,8 @@ repository = "https://github.com/pbillerot/silex"
 actix-session = { version = "0.7.2", features = ["cookie-session"] }
 # actix-settings = "0.6.0"
 actix-web = { version = "4", default-features = false, features = ["cookies", "secure-cookies", "macros"] }
-actix-web-flash-messages = { version = "0.4.2", features = ["sessions"] }
+actix-web-lab = "0.19.1"
+# actix-web-flash-messages = { version = "0.4.2", features = ["sessions"] }
 chrono = { version = "0.4", features = ["serde"] }
 cookie = "0.17.0"
 dotenv = "0.15.0"

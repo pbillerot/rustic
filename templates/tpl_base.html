@@ -28,8 +28,8 @@
         <td style="vertical-align: top; padding: 1em;">
           <!-- content -->
           <div id="content">
-            {% for key, message in messages -%}
-            <div>{{key}}:{{message}}</div>
+            {% for flash in messages -%}
+            <div>{{flash.kind}}:{{flash.message}}</div>
             {%- endfor %}
             {% block content -%}<p>Placeholder content</p>{%- endblock %}
           </div><!-- /content -->

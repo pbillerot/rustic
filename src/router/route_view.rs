@@ -2,8 +2,9 @@
 //!
 use crate::{
     // lexic::lex_table::{self, Element},
-    AppState, cruder::list::crud_list
+    AppState, cruder::list::crud_list, middler::{flash::FlashMessage, clear_flash, get_flash}
 };
+use actix_session::Session;
 use actix_web::{
     // get,
     // delete,
@@ -12,9 +13,9 @@ use actix_web::{
     web,
     web::Path,
     Responder,
-    Result, HttpResponse
+    Result,
 };
-use actix_web_flash_messages::IncomingFlashMessages;
+use actix_web_lab::respond::Html;
 use std::{
     // collections::HashMap,
     sync::atomic::Ordering
@@ -25,7 +26,7 @@ use std::{
 pub async fn view(
     path: Path<(String, String, String)>,
     data: web::Data<AppState>,
-    flash: IncomingFlashMessages
+    session: Session,
 ) -> Result<impl Responder> {
 
     let (appid, tableid, viewid) = path.into_inner();
@@ -35,14 +36,29 @@ pub async fn view(
     let table = app.tables.get(&tableid).unwrap();
     let view = table.views.get(&viewid).unwrap();
 
-    let records = crud_list(
+    let mut context = tera::Context::new();
+    let mut messages: Vec<FlashMessage> = Vec::new();
+
+    match crud_list(
         &data.db,
         &data.dblite,
         app, &tableid, &viewid, "",
-        ).await;
+    ).await {
+        Ok(records) => {
+            context.insert("records", &records);
+        },
+        Err(e) => {
+            messages.push(FlashMessage::error(format!("{e:?}").as_str()));
+            context.insert("records", &vec![{}]);
+        }
+    };
 
-    let mut context = tera::Context::new();
-    context.insert("messages", &flash);
+    if let Some(flash) = get_flash(&session)? {
+        messages.push(flash);
+    }
+    clear_flash(&session);
+
+    context.insert("messages", &messages);
     context.insert("portail", unsafe { &(*ptr).portail });
     context.insert("application", &app);
     context.insert("table", &table);
@@ -50,10 +66,9 @@ pub async fn view(
     context.insert("appid", &appid);
     context.insert("tableid", &tableid);
     context.insert("viewid", &viewid);
-    context.insert("records", &records);
     context.insert("key", &table.setting.key);
 
     let html = data.template.render("tpl_view.html", &context).unwrap();
 
-    Ok(HttpResponse::Ok().body(html))
+    Ok(Html(html))
 }
