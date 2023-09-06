@@ -10,8 +10,6 @@ use actix_web::{
 };
 use futures_util::future::LocalBoxFuture;
 
-use crate::router::Messages;
-
 pub struct CheckSession;
 
 impl<S, B> Transform<S, ServiceRequest> for CheckSession
@@ -59,47 +57,22 @@ where
 
     fn call(&self, req: ServiceRequest) -> Self::Future {
         // Change this to see the change in outcome in the browser.
-        // Usually this boolean would be acquired from a password check or other auth verification.
+
         let session = req.get_session();
-        log::info!("Session {:?}", session.entries());
-
-        let mut messages = Messages::get_from_request(&req.request());
-        for message in &messages.items {
-            println!("----> {:?}:{:?}", message.level, message.content);
+        if let Some(silex) = session.get::<String>("silex").unwrap() {
+            log::info!("Silex = {:?}", silex);
+        } else {
+            session.insert("silex", "0.9.2").unwrap();
+            log::info!("set Silex = {:?}", session.entries());
         }
-        messages.info("Service Request...");
-        messages.save_in_request(req.request());
-
-        // req.headers_mut().insert(
-        //     header::HeaderName::from_static("SILEX_PARENT"),
-        //     header::HeaderValue::from_static("/view")
-        // );
-
-        // let headers = req.headers();
-        // if let Some(referer) = headers.get(HeaderName::from_static("referer")) {
-        //     println!("{:?}", referer);
-        //     let v = referer.to_str().unwrap();
-        //     req.extensions_mut().insert(v.to_string());
-        //     // headers.insert(HeaderName::from_static("silex_parent"),
-        //     // HeaderValue::from_static(v));
-        // };
-
-        // headers.insert(HeaderName::from_lowercase(b"silex_parent").unwrap(),
-        //     HeaderValue::from_static("/view")
-        // );
-
-        // for header in req.headers().into_iter() {
-        //     println!("{:?} = {:?}", header.0, header.1);
+        // log::info!("Session {:?}", session.entries());
+        //
+        // let mut messages = Messages::get_from_request(&req.request());
+        // for message in &messages.items {
+        //     println!("----> {:?}:{:?}", message.level, message.content);
         // }
-        // println!("service referer = {:?}", req.headers().get("referer").unwrap().to_str().ok());
-
-
-        // println!("{:?}", req.head().uri);
-        // println!("{:?}", req.uri());
-        // println!("{:?}", req.path());
-
-        // let path = request.path();
-        // println!("path = {:?}", request.path());
+        // messages.info("Service Request...");
+        // messages.save_in_request(req.request());
 
         // if let Some(is_logged_in) = session.get::<bool>("is_logged").unwrap() {
         //     if !is_logged_in  && request.path() != "/login" {

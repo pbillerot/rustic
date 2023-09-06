@@ -1,3 +1,4 @@
+use actix_web_flash_messages::FlashMessage;
 use sqlx::Postgres;
 /**
  * Modèles de données
@@ -13,12 +14,9 @@ use sqlx::types::chrono::Utc;
 use sqlx::{Pool, Sqlite};
 use std::collections::HashMap;
 
-use crate::router::Messages;
-
-
 /// Requête sqlite qui ne renvoie qu'une seule colonne et une seule ligne
 #[allow(dead_code)]
-pub async fn kerlite(poollite: &Pool<Sqlite>, sql: &str, messages: &mut Messages ) -> String {
+pub async fn kerlite(poollite: &Pool<Sqlite>, sql: &str ) -> String {
     let result: String = match sqlx::query(sql).fetch_one(poollite).await {
         Ok(row) => {
             let mut valcol = String::new();
@@ -33,8 +31,8 @@ pub async fn kerlite(poollite: &Pool<Sqlite>, sql: &str, messages: &mut Messages
                                 match row.try_get_unchecked::<f32, _>(col.ordinal()) {
                                     Ok(v) => v.to_string(),
                                     Err(e) => {
-                                        messages.error(sql);
-                                        messages.error(format!("{:?}", e).as_str());
+                                        FlashMessage::error(sql).send();
+                                        FlashMessage::info(format!("{:?}", e)).send();
                                         "".to_string()
                                     },
                                 }
@@ -47,7 +45,7 @@ pub async fn kerlite(poollite: &Pool<Sqlite>, sql: &str, messages: &mut Messages
             valcol
         },
         Err(e) => {
-            messages.error(format!("{:?}", e).as_str());
+            FlashMessage::info(format!("{:?}", e)).send();
             "".to_string()
         }
     };
@@ -55,13 +53,13 @@ pub async fn kerlite(poollite: &Pool<Sqlite>, sql: &str, messages: &mut Messages
 }
 
 /// Requête sur les données applicatives qui retourne une table de valeur
-pub async fn kerdata(pooldb: &Pool<Postgres>, sql: &str, messages: &mut Messages ) -> Vec<HashMap<String, String>> {
+pub async fn kerdata(pooldb: &Pool<Postgres>, sql: &str ) -> Vec<HashMap<String, String>> {
     // log::info!("{}", sql);
     let rows = match sqlx::query(&sql).fetch_all(pooldb).await {
         Ok(t) => t,
         Err(e) => {
-            messages.error(sql);
-            messages.error(format!("{:?}", e).as_str());
+            FlashMessage::info(sql).send();
+            FlashMessage::info(format!("{:?}", e)).send();
             Vec::new()
         }
     };

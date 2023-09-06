@@ -12,26 +12,21 @@ use actix_web::{
     web,
     web::Path,
     Responder,
-    Result, HttpRequest,
+    Result, HttpResponse
 };
-use actix_web_lab::respond::Html;
+use actix_web_flash_messages::IncomingFlashMessages;
+// use actix_web_lab::respond::Html;
 use std::{
     // collections::HashMap,
     sync::atomic::Ordering
 };
 
-use super::Messages;
-
-
 // #[get("/add/{appid}/{tableid}/{viewid}/{formid}")]
 pub async fn add(
     path: Path<(String, String, String, String)>,
     data: web::Data<AppState>,
-    // session: Session,
-    req: HttpRequest,
+    flash: IncomingFlashMessages
 ) -> Result<impl Responder> {
-
-    let mut messages = Messages::get_from_request(&req);
 
     let (appid, tableid, viewid, formid) = path.into_inner();
     let id = ""; // c'est un ajout
@@ -49,12 +44,11 @@ pub async fn add(
         &application,
         &form.velements,
         table,
-        &mut messages,
     )
     .await;
 
     let mut context = tera::Context::new();
-    context.insert("messages", &messages);
+    context.insert("messages", &flash);
     context.insert("portail", unsafe { &(*ptr).portail });
     context.insert("application", &application);
     context.insert("table", &table);
@@ -70,6 +64,6 @@ pub async fn add(
 
     let html = data.template.render("tpl_add.html", &context).unwrap();
 
-    Ok(Html(html))
+    Ok(HttpResponse::Ok().body(html))
 }
 

@@ -12,26 +12,21 @@ use actix_web::{
     web,
     web::Path,
     Responder,
-    Result, HttpRequest,
+    Result, HttpResponse
 };
-use actix_web_lab::respond::Html;
+use actix_web_flash_messages::IncomingFlashMessages;
 use std::{
     // collections::HashMap,
     sync::atomic::Ordering
 };
-
-use super::Messages;
-
 
 // cuerl http://0.0.0.0:8080/
 // #[get("/view/{appid}/{tableid}/{viewid}")]
 pub async fn view(
     path: Path<(String, String, String)>,
     data: web::Data<AppState>,
-    req: HttpRequest,
+    flash: IncomingFlashMessages
 ) -> Result<impl Responder> {
-
-    let mut messages = Messages::get_from_request(&req);
 
     let (appid, tableid, viewid) = path.into_inner();
     let ptr = data.plexic.load(Ordering::Relaxed);
@@ -44,11 +39,10 @@ pub async fn view(
         &data.db,
         &data.dblite,
         app, &tableid, &viewid, "",
-        &mut messages
         ).await;
 
     let mut context = tera::Context::new();
-    context.insert("messages", &messages);
+    context.insert("messages", &flash);
     context.insert("portail", unsafe { &(*ptr).portail });
     context.insert("application", &app);
     context.insert("table", &table);
@@ -61,5 +55,5 @@ pub async fn view(
 
     let html = data.template.render("tpl_view.html", &context).unwrap();
 
-    Ok(Html(html))
+    Ok(HttpResponse::Ok().body(html))
 }

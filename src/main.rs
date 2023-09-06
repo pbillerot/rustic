@@ -1,4 +1,4 @@
-use actix_web::{middleware, App, HttpServer, web, cookie::{self, Key}};
+use actix_web::{middleware, App, HttpServer, web, cookie::Key};
 use actix_web_flash_messages::{
     FlashMessagesFramework, Level,
 };
@@ -13,7 +13,7 @@ use std::sync::atomic::AtomicPtr;
 // use std::sync::atomic::Ordering;
 // use std::sync::Mutex;
 use actix_session::{
-    config::PersistentSession, storage::CookieSessionStore, SessionMiddleware,
+    storage::CookieSessionStore, SessionMiddleware,
 };
 use tera::Tera;
 
@@ -135,16 +135,18 @@ async fn main() -> std::io::Result<()> {
 
             // activation de actix-session
             .wrap(
-                SessionMiddleware::builder(CookieSessionStore::default(), Key::from(&[0; 64]))
-                    .cookie_secure(true) // à true en https
+                SessionMiddleware::builder(CookieSessionStore::default(), Key::generate())
+                    .cookie_name("_session".to_string())
+                    .cookie_secure(false) // à true en https
                     .cookie_http_only(true)
                     .cookie_path("/".to_string())
                     // customize session and cookie expiration
-                    .session_lifecycle(
-                        PersistentSession::default().session_ttl(cookie::time::Duration::minutes(10)),
-                    )
+                    // .session_lifecycle(
+                    //     PersistentSession::default().session_ttl(cookie::time::Duration::minutes(10)),
+                    // )
                     .build(),
             )
+
             .route("/", web::get().to(router::portail))
             // .route("/login", web::post().to(router::login))
             // .route("/logout", web::post().to(router::logout))

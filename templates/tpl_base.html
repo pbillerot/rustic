@@ -28,8 +28,8 @@
         <td style="vertical-align: top; padding: 1em;">
           <!-- content -->
           <div id="content">
-            {% for message in messages.items -%}
-            <div>{{message.level}}:{{message.content}}</div>
+            {% for key, message in messages -%}
+            <div>{{key}}:{{message}}</div>
             {%- endfor %}
             {% block content -%}<p>Placeholder content</p>{%- endblock %}
           </div><!-- /content -->

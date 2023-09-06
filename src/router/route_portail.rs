@@ -10,11 +10,9 @@ use actix_web::{
     web,
     // web::ReqData,
     Responder,
-    Result, HttpRequest,
+    Result, HttpResponse
 };
-// use log::info;
-// use actix_session::Session;
-use actix_web_lab::respond::Html;
+use actix_web_flash_messages::IncomingFlashMessages;
 use tera::Context;
 
 use std::sync::atomic::Ordering;
@@ -23,16 +21,12 @@ use std::sync::atomic::Ordering;
 use crate::lexicer::lex_application;
 use crate::AppState;
 
-use super::Messages;
-
 // #[get("/")]
 pub async fn portail(data: web::Data<AppState>,
-    req: HttpRequest,
+    flash: IncomingFlashMessages
     ) -> Result<impl Responder, Error> {
 
     let ptr = data.plexic.load(Ordering::Relaxed);
-
-    let messages = Messages::get_from_request(&req);
 
     let appids = unsafe { (*ptr).portail.appids.clone() };
     let apps: &std::collections::HashMap<String, lex_application::Application> =
@@ -44,10 +38,10 @@ pub async fn portail(data: web::Data<AppState>,
     }
 
     let mut context = Context::new();
-    context.insert("messages", &messages);
+    context.insert("messages", &flash);
     context.insert("portail", unsafe { &(*ptr).portail });
     context.insert("applications", &vapp);
     let html = data.template.render("tpl_portail.html", &context).unwrap();
 
-    Ok(Html(html))
+    Ok(HttpResponse::Ok().body(html))
 }

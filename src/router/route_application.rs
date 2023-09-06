@@ -7,27 +7,20 @@ use actix_web::{
     web,
     web::Path,
     Responder,
-    Result, HttpRequest,
+    Result, HttpResponse,
 };
-// use log::info;
-// use actix_session::Session;
-use actix_web_lab::respond::Html;
+use actix_web_flash_messages::IncomingFlashMessages;
 use tera::Context;
 
 use std::sync::atomic::Ordering;
 use crate::AppState;
 
-use super::Messages;
-
 // #[get("/app/{appid}")]
 pub async fn application(
     path: Path<String>,
     data: web::Data<AppState>,
-    req: HttpRequest,
+    flash: IncomingFlashMessages
 ) -> Result<impl Responder> {
-
-    let messages = Messages::get_from_request(&req);
-
 
     let appid = path.into_inner();
     let ptr = data.plexic.load(Ordering::Relaxed);
@@ -35,11 +28,11 @@ pub async fn application(
     let app = apps.get(&appid).unwrap();
 
     let mut context = Context::new();
-    context.insert("messages", &messages);
+    context.insert("messages", &flash);
     context.insert("portail", unsafe { &(*ptr).portail });
     context.insert("application", &app);
     context.insert("appid", &appid);
     let html = data.template.render("tpl_application.html", &context).unwrap();
 
-    Ok(Html(html))
+    Ok(HttpResponse::Ok().body(html))
 }

@@ -5,7 +5,6 @@ use std::collections::HashMap;
 // use actix_web::web;
 use crate::cruder::sqler::{kerdata, kerlite};
 use crate::lexicer::lex_utils;
-use crate::router::Messages;
 
 use super::macrolex;
 
@@ -175,7 +174,6 @@ impl Element {
         &mut self,
         poolite: &Pool<Sqlite>,
         hvalue: &HashMap<String, String>,
-        messages: &mut Messages,
     ) {
         // get value lue dans la table
         if !self.elid.starts_with("_") {
@@ -184,7 +182,7 @@ impl Element {
         // valeur par défaut
         if self.value.is_empty() && !self.default_sqlite.is_empty() {
             let sql = macrolex(&self.default_sqlite, hvalue);
-            self.value = kerlite(poolite, &sql, messages).await;
+            self.value = kerlite(poolite, &sql).await;
         }
         if self.value.is_empty() && !self.default.is_empty() {
             self.value = macrolex(&self.default, hvalue);
@@ -196,7 +194,6 @@ impl Element {
         pooldb: &Pool<Postgres>,
         poolite: &Pool<Sqlite>,
         hvalue: &HashMap<String, String>,
-        messages: &mut Messages,
     ) {
         // valeur par défaut
         if !self.default.is_empty() {
@@ -204,7 +201,7 @@ impl Element {
         }
         if !self.default_sqlite.is_empty() {
             let sql = macrolex(&self.default_sqlite, hvalue);
-            self.default = kerlite(poolite, &sql, messages).await;
+            self.default = kerlite(poolite, &sql).await;
         }
         if self.value.is_empty() {
             self.value = self.default.clone();
@@ -234,24 +231,24 @@ impl Element {
         // macrolex suivi de kerlite
         if !self.class_sqlite.is_empty() {
             let sql = macrolex(&self.class_sqlite, hvalue);
-            self.class = kerlite(poolite, &sql, messages).await;
+            self.class = kerlite(poolite, &sql).await;
         }
         if !self.format_sqlite.is_empty() {
             let sql = macrolex(&self.format_sqlite, hvalue);
-            self.format = kerlite(poolite, &sql, messages).await;
+            self.format = kerlite(poolite, &sql).await;
         }
         if !self.hide_sqlite.is_empty() {
             let sql = macrolex(&self.hide_sqlite, hvalue);
-            self.hide = !kerlite(poolite, &sql, messages).await.is_empty();
+            self.hide = !kerlite(poolite, &sql).await.is_empty();
         }
         if !self.style_sqlite.is_empty() {
             let sql = macrolex(&self.style_sqlite, hvalue);
-            self.style = kerlite(poolite, &sql, messages).await;
+            self.style = kerlite(poolite, &sql).await;
         }
         // items récupérés dans les données de l'application
         if !self.items_sql.is_empty() {
             let sql = macrolex(&self.items_sql, hvalue);
-            self.items = kerdata(pooldb, &sql, messages).await;
+            self.items = kerdata(pooldb, &sql).await;
         }
     }
 

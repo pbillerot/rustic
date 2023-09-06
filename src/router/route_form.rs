@@ -13,26 +13,21 @@ use actix_web::{
     web,
     web::Path,
     Responder,
-    Result, HttpRequest,
+    Result, HttpResponse,
 };
 use actix_web_flash_messages::{FlashMessage, IncomingFlashMessages};
-use actix_web_lab::respond::Html;
+
 use std::{
     // collections::HashMap,
     sync::atomic::Ordering
 };
 
-use super::Messages;
-
 // #[get("/form/{appid}/{tableid}/{viewid}/{formid}/{id}")]
 pub async fn form(
     path: Path<(String, String, String, String, String)>,
     data: web::Data<AppState>,
-    req: HttpRequest,
     flash: IncomingFlashMessages
 ) -> Result<impl Responder> {
-
-    let mut messages = Messages::get_from_request(&req);
 
     let (appid, tableid, viewid, formid, id) = path.into_inner();
     let ptr = data.plexic.load(Ordering::Relaxed);
@@ -46,16 +41,16 @@ pub async fn form(
         &data.db,
         &data.dblite,
         application, table, &form.velements, &id,
-        &mut messages).await;
+        ).await;
 
     FlashMessage::info("route_form").send();
 
     for message in flash.iter() {
-        println!("{} - {}", message.content(), message.level());
+        println!("FLASHHHHHHHHHHH {} - {}", message.content(), message.level());
     }
 
     let mut context = tera::Context::new();
-    context.insert("messages", &messages);
+    context.insert("messages", &flash);
     context.insert("portail", unsafe { &(*ptr).portail });
     context.insert("application", &application);
     context.insert("table", &table);
@@ -71,5 +66,5 @@ pub async fn form(
 
     let html = data.template.render("tpl_form.html", &context).unwrap();
 
-    Ok(Html(html))
+    Ok(HttpResponse::Ok().body(html))
 }

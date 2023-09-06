@@ -1,15 +1,14 @@
+use actix_web_flash_messages::FlashMessage;
 ///
 /// CRUD sur les données
 ///
 use sqlx::{Pool, Postgres, Sqlite};
 
 use crate::lexicer::lex_table::{Element, Table};
-use crate::router::Messages;
 use std::collections::HashMap;
 ///
 /// - Lecture des données de la table
 ///
-#[allow(unused_variables)]
 /// Retourne une table d'éléments en fonction des éléments fournis dans le vecteur velements
 pub async fn crud_update(
     pooldb: &Pool<Postgres>,
@@ -18,7 +17,6 @@ pub async fn crud_update(
     velements: &Vec<Element>,
     id: &str,
     form_posted: &Vec<(String, String)>,
-    messages: &mut Messages,
 ) -> bool {
     // Transformation de form_posted Vec(key, value) en Hashtable
     // sachant key ne sera unique pour les "select multiple" === tag
@@ -42,7 +40,6 @@ pub async fn crud_update(
         }
     }
     hvalue.insert(key, val.clone());
-    messages.debug(format!("{:?}", &hvalue).as_str());
 
     // valorisation des éléments du formulaire avec les champs du formulaire
     // construction de l'order sql
@@ -70,7 +67,7 @@ pub async fn crud_update(
             }
         }
         element
-            .compute_prop(pooldb, poolite, &hvalue, messages)
+            .compute_prop(pooldb, poolite, &hvalue)
             .await;
         element.key_value = id.to_string();
         // construction du sql
@@ -94,15 +91,15 @@ pub async fn crud_update(
         sql.push_str(format!("{} = '{}'", &element.elid, element.value.replace("'", "''")).as_str());
     }
     sql.push_str(format!(" WHERE ( {} = '{}' )", &table.setting.key, &id).as_str());
-    messages.debug(format!("{:?}", &sql).as_str());
+    FlashMessage::info(&sql).send();
 
     let result = match sqlx::query(&sql).execute(pooldb).await {
         Ok(_) => {
-            messages.info(format!("Mise à jour ok").as_str());
+            FlashMessage::info("Mise à jour ok").send();
             true
         }
         Err(e) => {
-            messages.error(format!("{:?}", &e).as_str());
+            FlashMessage::info(format!("{:?}", e)).send();
             false
         }
     };

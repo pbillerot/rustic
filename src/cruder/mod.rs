@@ -1,11 +1,11 @@
 use std::collections::HashMap;
 
+use actix_web_flash_messages::FlashMessage;
 use sqlx::{Postgres, Pool, Sqlite};
 
-use crate::{lexicer::{lex_application::Application, lex_table::{Element, Table}}, router::Messages};
+use crate::lexicer::{lex_application::Application, lex_table::{Element, Table}};
 
 use self::sqler::rows_to_vmap;
-
 
 pub mod sqler;
 
@@ -23,7 +23,6 @@ pub async fn records_elements(
     application: &Application,
     velements: &Vec<Element>,
     table: &Table,
-    messages: &mut Messages,
 ) -> Vec<HashMap<String, Element>> {
 
     let mut records = Vec::new();
@@ -39,7 +38,7 @@ pub async fn records_elements(
         let rows = match sqlx::query(&sql).fetch_all(pooldb).await {
             Ok(t) => t,
             Err(e) => {
-                messages.error(format!("{:?}", &e).as_str());
+                FlashMessage::info(format!("{:?}", e)).send();
                 Vec::new()
             }
         };
@@ -60,7 +59,7 @@ pub async fn records_elements(
         // TODO
         for vel in velements {
             let mut element = vel.clone();
-            element.compute_value(poolite, &hvalue, messages).await;
+            element.compute_value(poolite, &hvalue).await;
             element.key_value = key_value.clone();
             hel.insert(vel.elid.clone(), element);
         }
@@ -77,7 +76,7 @@ pub async fn records_elements(
         // calcul des autres propriétés
         for vel in velements {
             let mut element = hel.get(&vel.elid).unwrap().clone();
-            element.compute_prop(pooldb, poolite, &hvalue_computed, messages).await;
+            element.compute_prop(pooldb, poolite, &hvalue_computed).await;
             if vel.elid == table.setting.key {
                 element.read_only = true;
             }
