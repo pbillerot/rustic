@@ -31,7 +31,9 @@
         <table>
           {%- for vel in form.velements -%}
           <tr>
+            {%- if record[vel.elid] -%}
             {{ macros::edit_elements(el=record[vel.elid]) }}
+            {%- endif -%}
           </tr>
           {%- endfor -%}
         </table>

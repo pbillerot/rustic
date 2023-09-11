@@ -1,14 +1,13 @@
 ///
 /// CRUD sur les données
 ///
-use sqlx::{Pool, Postgres, Sqlite, Error};
+use sqlx::{Pool, Postgres, Sqlite};
 
 use crate::lexicer::lex_table::{Element, Table};
 use std::collections::HashMap;
 ///
-/// - Lecture des données de la table
+/// - Mise à jour d'un article
 ///
-/// Retourne une table d'éléments en fonction des éléments fournis dans le vecteur velements
 pub async fn crud_update(
     pooldb: &Pool<Postgres>,
     poolite: &Pool<Sqlite>,
@@ -16,7 +15,7 @@ pub async fn crud_update(
     velements: &Vec<Element>,
     id: &str,
     form_posted: &Vec<(String, String)>,
-) -> Result<String, Error> {
+) -> Result<String, String> {
     // Transformation de form_posted Vec(key, value) en Hashtable
     // sachant key ne sera unique pour les "select multiple" === tag
     let mut hvalue: HashMap<String, String> = HashMap::new();
@@ -89,7 +88,14 @@ pub async fn crud_update(
     }
     sql.push_str(format!(" WHERE ( {} = '{}' )", &table.setting.key, &id).as_str());
 
-    let result = sqlx::query(&sql).execute(pooldb).await?;
+    let result = match sqlx::query(&sql).execute(pooldb).await {
+        Ok(r) => r,
+        Err(e) => {
+            let msg = format!("{sql:?} : {e:?}");
+            log::error!("{msg}");
+            return Err(msg)
+        }
+    };
 
     Ok(format!("[{sql:?}] {result:?}"))
 

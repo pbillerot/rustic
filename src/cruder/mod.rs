@@ -1,6 +1,6 @@
 use std::collections::HashMap;
 
-use sqlx::{Postgres, Pool, Sqlite, Error};
+use sqlx::{Postgres, Pool, Sqlite};
 
 use crate::lexicer::{lex_application::Application, lex_table::{Element, Table}};
 
@@ -12,6 +12,7 @@ pub mod insert;
 pub mod list;
 pub mod read;
 pub mod update;
+pub mod delete;
 
 /// chargement d'un tableau d'éléments correspondant à la requête sql
 /// ou d'un tableau minimum (cas d'un ajout)
@@ -22,19 +23,26 @@ pub async fn records_elements(
     application: &Application,
     velements: &Vec<Element>,
     table: &Table,
-) -> Result<Vec<HashMap<String, Element>>, Error> {
+) -> Result<Vec<HashMap<String, Element>>, String> {
 
     let mut records = Vec::new();
     let mut vrows: Vec<HashMap<String, String>> = Vec::new();
     if sql.is_empty() {
         // construction d'un vrows vide
+        let mut hcols: HashMap<String, String> = HashMap::new();
         for vel in velements {
-            let mut hvalue: HashMap<String, String> = HashMap::new();
-            hvalue.insert(vel.elid.clone(), vel.value.clone());
-            vrows.push(hvalue);
+            hcols.insert(vel.elid.clone(), "".to_string());
         }
+        vrows.push(hcols);
     } else {
-        let rows = sqlx::query(&sql).fetch_all(pooldb).await?;
+        let rows = match sqlx::query(&sql).fetch_all(pooldb).await {
+            Ok(r) => r,
+            Err(e) => {
+                let msg = format!("{sql:?} : {e:?}");
+                log::error!("{msg}");
+                return Err(msg)
+            }
+        };
         // Chargement des enregistrements dans un tableau de valeur
         vrows = rows_to_vmap(rows);
     }
@@ -70,7 +78,10 @@ pub async fn records_elements(
         for vel in velements {
             let mut element = hel.get(&vel.elid).unwrap().clone();
             element.compute_prop(pooldb, poolite, &hvalue_computed).await?;
-            if vel.elid == table.setting.key {
+            if vel.elid == table.setting.key && !sql.is_empty() {
+                element.read_only = true;
+            }
+            if vel.type_element == "counter" {
                 element.read_only = true;
             }
             hel.insert(element.elid.clone(), element);

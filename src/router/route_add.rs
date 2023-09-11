@@ -53,6 +53,7 @@ pub async fn add(
             context.insert("record", &records.pop());
         },
         Err(e) => {
+            log::error!("{:?}", format!("{e:?}"));
             messages.push(FlashMessage::error(format!("{e:?}").as_str()));
             context.insert("record", &vec![{}]);
         }

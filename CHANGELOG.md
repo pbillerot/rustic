@@ -7,7 +7,13 @@
 - question AtomicPtr::fetch_update : la mémoire de l'ancien pointeur sera-t-elle libérée après la fin des requests en cours ?
 - static files
 - bouton coller le presse-papier
-- historique navigation
+- arg nécessaire dans l'url si view dans un formulaire pour mémoriser le retour
+
+0.13.0 - 11 septembre 2023
+- `changed` formulaire de visualisation obligatoire pour visualiser un article
+- `changed` erreurs retournées au controlleur qui se chargera de les publier dans le flash_message
+- `added` suppression d'un article
+
 
 0.12.0 - 6 septembre 2023
 - `deleted` actix-web-flash-messages qui ne fonctionnait pas
@@ -135,3 +141,4 @@
 - view.form_view nécessaire pour visualiser un enregistrement
 - si form_view lien vers form_edit si défini
 - suppression element.compute_sqlite
+- form_view obligatoire pour visualiser un enregistrement

@@ -149,7 +149,7 @@ async fn main() -> std::io::Result<()> {
             .route("/edit/{appid}/{tableid}/{viewid}/{formid}/{id}", web::get().to(router::edit))
             .route("/update/{appid}/{tableid}/{viewid}/{formid}/{id}", web::post().to(router::edit_post))
             .route("/insert/{appid}/{tableid}/{viewid}/{formid}", web::post().to(router::add_post))
-            // .route("/delete/{appid}/{tableid}/{viewid}/{formid}/{id}", web::post().to(router::delete_post))
+            .route("/delete/{appid}/{tableid}/{viewid}/{id}", web::post().to(router::delete_post))
             // .route("/actionv/{appid}/{tableid}/{viewid}/{iaction}", web::post().to(router::action_view))
             // .route("/actionp/{appid}/{tableid}/{viewid}/{id}", web::post().to(router::action_press))
             // .route("/actionf/{appid}/{tableid}/{viewid}/{formid}/{id}/{action}", web::post().to(router::action_form))

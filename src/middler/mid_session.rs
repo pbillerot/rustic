@@ -1,6 +1,6 @@
 use std::future::{ready, Ready};
 
-use actix_session::SessionExt;
+// use actix_session::SessionExt;
 use actix_web::{
     body::EitherBody,
     dev::{self, Service, ServiceRequest, ServiceResponse, Transform},
@@ -58,14 +58,16 @@ where
     fn call(&self, req: ServiceRequest) -> Self::Future {
         // Change this to see the change in outcome in the browser.
 
-        let session = req.get_session();
-        if let Some(silex) = session.get::<String>("silex").unwrap() {
-            log::info!("Silex = {:?}", silex);
-        } else {
-            session.insert("silex", "0.9.2").unwrap();
-            log::info!("set Silex = {:?}", session.entries());
-        }
-        log::info!("Session {:?}", session.entries());
+        // let referer = req.request().headers()
+
+        // let session = req.get_session();
+        // if let Some(silex) = session.get::<String>("silex").unwrap() {
+        //     log::info!("Silex = {:?}", silex);
+        // } else {
+        //     session.insert("silex", "0.9.2").unwrap();
+        //     log::info!("set Silex = {:?}", session.entries());
+        // }
+        // log::info!("Session {:?}", session.entries());
         //
         // let mut messages = Messages::get_from_request(&req.request());
         // for message in &messages.items {

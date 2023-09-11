@@ -1,6 +1,6 @@
 use serde::{Deserialize, Serialize};
 use serde_yaml::{self};
-use sqlx::{Pool, Postgres, Sqlite, Error};
+use sqlx::{Pool, Postgres, Sqlite};
 use std::collections::HashMap;
 // use actix_web::web;
 use crate::cruder::sqler::{kerdata, kerlite};
@@ -174,10 +174,16 @@ impl Element {
         &mut self,
         poolite: &Pool<Sqlite>,
         hvalue: &HashMap<String, String>,
-    ) -> Result<&mut Self, Error>{
-        // get value lue dans la table
+    ) -> Result<&mut Self, String>{
+        // get value dans la table
         if !self.elid.starts_with("_") {
-            self.value = hvalue.get(&self.elid).unwrap().clone();
+            match hvalue.get(&self.elid) {
+                Some(v) => self.value = v.clone(),
+                None => {
+                    return Err(format!("Colonne {} non trouvée", self.elid))
+                }
+            }
+            // self.value = hvalue.get(&self.elid).unwrap().clone();
         }
         // valeur par défaut
         if self.value.is_empty() && !self.default_sqlite.is_empty() {
@@ -195,7 +201,7 @@ impl Element {
         pooldb: &Pool<Postgres>,
         poolite: &Pool<Sqlite>,
         hvalue: &HashMap<String, String>,
-    ) -> Result<&mut Self, Error>{
+    ) -> Result<&mut Self, String>{
         // valeur par défaut
         if !self.default.is_empty() {
             self.default = macrolex(&self.default, hvalue);

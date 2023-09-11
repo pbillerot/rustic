@@ -1,7 +1,7 @@
 ///
 /// CRUD sur les données
 ///
-use sqlx::{Pool, Postgres, Sqlite, Error};
+use sqlx::{Pool, Postgres, Sqlite};
 
 use crate::lexicer::lex_application::Application;
 use crate::lexicer::lex_table::{Element, Table};
@@ -11,7 +11,6 @@ use super::records_elements;
 ///
 /// - Lecture des données de la table
 ///
-#[allow(unused_variables)]
 /// Retourne une table d'éléments en fonction des éléments fournis dans le vecteur velements
 pub async fn crud_read(
     pooldb: &Pool<Postgres>,
@@ -20,7 +19,7 @@ pub async fn crud_read(
     table: &Table, // le lexique de l'application
     velements: &Vec<Element>,
     id: &str,
-) -> Result<Vec<HashMap<String, Element>>, Error> {
+) -> Result<Vec<HashMap<String, Element>>, String> {
     // construction de l'ordre sql
     let mut sql = "SELECT ".to_string();
     // on prend les colonnes définies dans la view.velements
@@ -55,14 +54,21 @@ pub async fn crud_read(
     }
     sql.push_str(format!(" WHERE ( {} = '{}' )", &table.setting.key, id).as_str());
 
-    let records = records_elements(
+    let records = match records_elements(
         pooldb,
         poolite,
         &sql,
         &application,
         velements,
         table,
-    ).await?;
+    ).await {
+        Ok(r) => r,
+        Err(e) => {
+            let msg = format!("{sql:?} : {e:?}");
+            log::error!("{msg}");
+            return Err(msg)
+        }
+    };
 
     Ok(records)
 }

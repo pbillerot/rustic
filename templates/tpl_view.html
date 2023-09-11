@@ -34,10 +34,6 @@
     <td><a href="/form/{{appid}}/{{tableid}}/{{viewid}}/{{view.form_view}}/{{record[application.tables[tableid].setting.key].key_value}}" title="Visualier...">
       <button>V</button></a>
     </td>
-    {%- elif view.form_edit -%}
-    <td><a href="/edit/{{appid}}/{{tableid}}/{{viewid}}/{{view.form_edit}}/{{record[application.tables[tableid].setting.key].key_value}}" title="Modifier...">
-      <button>M</button></a>
-    </td>
     {%- endif -%}
     {%- for vel in view.velements -%}
       {{ macros::view_elements(el=record[vel.elid]) }}

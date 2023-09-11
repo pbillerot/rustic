@@ -20,6 +20,7 @@ views:
   vall:
     form_add: fedit
     form_edit: fedit
+    form_view: fedit
     deletable: true
     type_element: card
     group: admin

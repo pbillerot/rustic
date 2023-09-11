@@ -23,6 +23,8 @@
   {%- if view.form_edit -%}<a href="/edit/{{appid}}/{{tableid}}/{{viewid}}/{{view.form_edit}}/{{id}}" title="Modifier">
     <button>Modifier</button></a>
   {%- endif -%}
+  {%- if view.deletable -%}&nbsp;<button onclick="if (window.confirm('Veuillez confirmer la suppression de cet article')) { document.forms['myform'].submit(); }">Supprimer...</button>
+  {%- endif -%}
 </span>
 {%- endblock -%}
 
@@ -41,4 +43,16 @@
     </td>
   </tr>
 </table>
+{%- endblock -%}
+{%- block actions -%}
+<!-- Actions du formulaire -->
+{%- for action in application.tables[tableid].forms[formid].actions -%}
+<li><a href="/actionf/{{appid}}/{{tableid}}/{{viewid}}/{{loop.index0}}">{{ action.label }}</a></li>
+{%- endfor -%}
+{%- endblock -%}
+{%- block forms -%}
+{%- if view.deletable -%}
+<form id="myform" action="/delete/{{appid}}/{{tableid}}/{{viewid}}/{{id}}" method="post">
+</form>
+{%- endif -%}
 {%- endblock -%}

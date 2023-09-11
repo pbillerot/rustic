@@ -1,4 +1,3 @@
-use sqlx::Error;
 use sqlx::Postgres;
 /**
  * Modèles de données
@@ -16,8 +15,14 @@ use std::collections::HashMap;
 
 /// Requête sqlite qui ne renvoie qu'une seule colonne et une seule ligne
 #[allow(dead_code)]
-pub async fn kerlite(poollite: &Pool<Sqlite>, sql: &str ) -> Result<String, Error> {
-    let row = sqlx::query(sql).fetch_one(poollite).await?;
+pub async fn kerlite(poollite: &Pool<Sqlite>, sql: &str ) -> Result<String, String> {
+    let row = match sqlx::query(sql).fetch_one(poollite).await {
+        Ok(r) => r,
+        Err(e) => {
+            let msg = format!("{sql} : {e:?}");
+            return Err(msg)
+        }
+    };
     let mut valcol = String::new();
     for col in row.columns() {
         // on ne renvoie que la 1ère colonne
@@ -30,7 +35,6 @@ pub async fn kerlite(poollite: &Pool<Sqlite>, sql: &str ) -> Result<String, Erro
                         match row.try_get_unchecked::<f32, _>(col.ordinal()) {
                             Ok(v) => v.to_string(),
                             Err(_) => {
-                                // FlashMessage::error(format!("{:?}", e).as_str());
                                 "".to_string()
                             },
                         }
@@ -44,14 +48,16 @@ pub async fn kerlite(poollite: &Pool<Sqlite>, sql: &str ) -> Result<String, Erro
 }
 
 /// Requête sur les données applicatives qui retourne une table de valeur
-pub async fn kerdata(pooldb: &Pool<Postgres>, sql: &str ) -> Result<Vec<HashMap<String, String>>, Error> {
+pub async fn kerdata(pooldb: &Pool<Postgres>, sql: &str ) -> Result<Vec<HashMap<String, String>>, String> {
     // log::info!("{}", sql);
-    let rows = sqlx::query(&sql).fetch_all(pooldb).await?;
-    //     Ok(t) => t,
-    //     Err(e) => {
-    //         Err(FlashMessage::error(format!("{:?}", e).as_str()))
-    //     }
-    // };
+    let rows = match sqlx::query(&sql).fetch_all(pooldb).await {
+        Ok(t) => t,
+        Err(e) => {
+            let msg = format!("{sql:?} : {e:?}");
+            log::error!("{msg}");
+            return Err(msg)
+        }
+    };
 
     // Chargement des enregistrements lus dans un tableau de valeur
     let result = rows_to_vmap(rows);
