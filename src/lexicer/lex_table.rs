@@ -97,6 +97,8 @@ pub struct Element {
     #[serde(default = "String::new")]
     pub default_sqlite: String, // Ordre SQL qui retournera la colonne pour alimenter Default
     #[serde(default = "String::new")]
+    pub filter: String, // pattern du display
+    #[serde(default = "String::new")]
     pub format: String, // pattern du display
     #[serde(default = "String::new")]
     pub format_sqlite: String, // select strftime('%H:%M:%S', {Milliseconds}/1000, 'unixepoch')
@@ -152,8 +154,9 @@ pub struct Element {
     pub style: String, // style de la cellule
     #[serde(default = "String::new")]
     pub style_sqlite: String, // style de la cellule
+    #[serde(default = "lex_utils::default_f64")]
+    pub sum: f64, // somme des valeurs de la colonne de la table
     #[serde(default = "String::new")]
-    // #[serde(rename = "type", default = "String::new")]
     pub type_element: String, // Type : amount button card chart checkbox counter date email float image list number password pdf percent tag tel text textarea time radio url
     #[serde(default = "String::new")]
     pub width: String, // largeur s m l xl xxl max 150px 360px 450px 600px 750px 100% dans view et edit	WithSum       bool              // dans une table calcule la somme des valeurs
@@ -390,6 +393,8 @@ pub struct View {
     #[serde(default = "CardList::new")]
     pub card: CardList, // Masque html d'une ligne dans la vue
     #[serde(default = "String::new")]
+    pub class: String, // couleur theme de la ligne
+    #[serde(default = "String::new")]
     pub class_sqlite: String, // couleur theme de la ligne
     #[serde(default = "lex_utils::default_bool")]
     pub deletable: bool, // Suppression fiche autorisée
@@ -422,6 +427,8 @@ pub struct View {
     #[serde(default = "String::new")]
     pub search: String, // calculé sql
     #[serde(default = "String::new")]
+    pub style: String, // style de la ligne
+    #[serde(default = "String::new")]
     pub style_sqlite: String, // style de la ligne
     #[serde(default = "String::new")]
     pub title: String, // Titre de la vue
@@ -447,6 +454,7 @@ impl Clone for View {
             action_press: self.action_press.clone(),
             actions: self.actions.clone(),
             card: self.card.clone(),
+            class: self.class.clone(),
             class_sqlite: self.class_sqlite.clone(),
             deletable: self.deletable.clone(),
             elements: self.elements.clone(),
@@ -463,6 +471,7 @@ impl Clone for View {
             order_by: self.order_by.clone(),
             post_sql: self.post_sql.clone(),
             search: self.search.clone(),
+            style: self.style.clone(),
             style_sqlite: self.style_sqlite.clone(),
             title: self.title.clone(),
             type_view: self.type_view.clone(),

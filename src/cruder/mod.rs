@@ -35,6 +35,7 @@ pub async fn records_elements(
         }
         vrows.push(hcols);
     } else {
+        // Chargement des enregistrements dans un tableau de valeur
         let rows = match sqlx::query(&sql).fetch_all(pooldb).await {
             Ok(r) => r,
             Err(e) => {
@@ -43,11 +44,18 @@ pub async fn records_elements(
                 return Err(msg)
             }
         };
-        // Chargement des enregistrements dans un tableau de valeur
         vrows = rows_to_vmap(rows);
     }
+    // Initialisation de la somme des colonnes avec cumul
+    let mut hsum: HashMap<String, f64> = HashMap::new();
+    for vel in velements {
+        hsum.insert(vel.elid.clone(), 0.0);
+    }
 
+    let qrows = vrows.len();
+    let mut irow = 0;
     for hvalue in vrows {
+        irow = irow + 1;
         // récup de la valeur de la clé de l'enregistrement
         let default = "".to_string();
         let key_value = match hvalue.get(&table.setting.key) {
@@ -84,11 +92,29 @@ pub async fn records_elements(
             if vel.type_element == "counter" {
                 element.read_only = true;
             }
+            // Calcul des colonnes avec cumul
+            if !vel.hide && vel.with_sum {
+                // let v = &element.value.clone();
+                match &element.value.parse::<f64>() {
+                    Ok(val) => {
+                        let sum = hsum.get(&vel.elid).unwrap() + val;
+                        hsum.insert(element.elid.clone(), sum);
+                        // dernier enregistrement
+                        if irow >= qrows {
+                            // copie de la sum dans les éléments du dernier enregistrement
+                            element.sum = sum;
+                        }
+                    },
+                    Err(_) => {
+                        // pas de cumul
+                    }
+                };
+            }
             hel.insert(element.elid.clone(), element);
+
         }
         records.push(hel);
     }
-
     Ok(records)
 }
 

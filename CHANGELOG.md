@@ -9,6 +9,11 @@
 - bouton coller le presse-papier
 - arg nécessaire dans l'url si view dans un formulaire pour mémoriser le retour
 
+0.14.0 - ?? septembre 2023
+- `added` ajout feuille de style fomantic - jquery - nombreux fichiers
+- `added` route /static /lexic
+- `added` page portail stylisée
+
 0.13.0 - 11 septembre 2023
 - `changed` formulaire de visualisation obligatoire pour visualiser un article
 - `changed` erreurs retournées au controlleur qui se chargera de les publier dans le flash_message
@@ -142,3 +147,4 @@
 - si form_view lien vers form_edit si défini
 - suppression element.compute_sqlite
 - form_view obligatoire pour visualiser un enregistrement
+- view action hide supprimée

@@ -1,0 +1,114 @@
+{% import "tpl_table_elements.html" as macros %}
+
+<div class="crud-mobile-show ui label">
+  {{view.title}}
+  {%- if records | length == 0 -%}
+  (aucun élément)
+  {%- elif records | length == 1 -%}
+  (1 élément)
+  {%- else -%}
+  ({{records|length}} éléments)
+  {%- endif -%}
+</div>
+{%- if view.form_add -%}
+<button class="right floated circular ui large plus blue icon button crud-jquery-url"
+  data-url="/add/{{appid}}/{{tableid}}/{{viewid}}/{{view.form_add}}" {%- if in_footer -%}
+  style="z-index: 1000; position: fixed; bottom: 5em; right: 2em; padding: 1em;" {%- else -%}
+  style="z-index: 1000; position: fixed; bottom: 2em; right: 2em; padding: 1em;" {%- endif -%}
+  title="Ajouter un élément...">
+  <i class="icon plus"></i>
+</button>
+{%- endif -%}
+<!-- FILTRES DE LA VUE -->
+{%- if view.filters -%}
+<form class="ui form" id="beeFormFilter" method="POST" enctype="multipart/form-data"
+  action="/filter/{{appid}}/{{tableid}}/{{viewid}}">
+  <input id="resetfilter" name="resetfilter" type="hidden">
+  <div class="fields">
+    {%- for key in view.filters -%}
+      {%- for el in view.velements -%}
+        {%- if el.elid == key -%}
+    <div class="bee-width-s field">
+          {%- if el.type_element == "tag" or el.type_element == "list" or el.type_element == "radio" -%}
+      <select name="{{key}}" id="{{key}}" class="ui fluid search dropdown">
+        <option value="">{{el.place_holder}}</option>
+            {%- for item in el.items -%}
+        <option value="{{item.key}}" {%- if item.key == el.value -%} selected{%- endif -%}>{{item.label}}</option>
+            {%- endfor -%}
+      </select>
+          {%- else -%}
+      <input type="text" name="{{key}}" id="{{key}}" placeholder="{{el.place_holder}}" value="{{el.value}}">
+          {%- endif -%}
+    </div>
+        {%- endif -%}
+      {%- endfor -%}
+    {%- endfor -%}
+    <div class="field">
+      <button class="ui icon primary button" title="Sélectionner">
+        <i class="search icon crud-filter-go"></i>
+      </button>
+    </div>
+    <div class="field">
+      <button class="ui icon primary button" title="Annuler la sélection">
+        <i class="close icon crud-filter-clear"></i>
+    </div>
+    </button>
+  </div><!-- end fields -->
+</form>
+{%- endif -%}
+<!-- TABLE -->
+<table
+  class="ui unstackable collapsing sortable {%- if view.form_view or view.form_edit -%}selectable{%- endif -%} celled table"
+  data-appid="{{appid}}" data-tableid="{{tableid}}" data-viewid="{{viewid}}">
+  <thead>
+    <tr class="crud-unsort">
+      {%- if view.with_line_number -%}<th>&nbsp;</th>{%- endif -%}
+      {%- for el in view.velements -%}
+        {%- if not el.hide -%}
+      <th id="col_{{el.elid}}"
+        class="ui {{el.col_align}} aligned{%- if el.hide_on_mobile -%} crud-mobile-hide{%- endif -%}{%- if sortid ==  el.elid -%} sorted {{sortdirection}}{%- endif -%} crud-ajax-sort"
+        title="{{el.elid}}">{{el.label_short}}</th>
+        {%- endif -%}
+      {%- endfor -%}
+    </tr>
+  </thead>
+  <tbody>
+    {%- for record in records -%}
+      {%- if view.form_view or view.deletable -%}
+    <tr class="crud-jquery-url {{view.class}}" {%- if view.style -%}style="{{view.style}}" {%- endif -%}
+      data-url="/form/{{appid}}/{{tableid}}/{{viewid}}/{{view.form_view}}/{{record[application.tables[tableid].setting.key].key_value}}">
+      {%- elif view.form_edit -%}
+    <tr class="crud-jquery-url {{view.class}}" {%- if view.style -%}style="{{view.style}}" {%- endif -%}
+      data-url="/edit/{{appid}}/{{tableid}}/{{viewid}}/{{view.form_edit}}/{{record[application.tables[tableid].setting.key].key_value}}">
+      {%- else -%}
+    <tr class="{{view.class}}" {%- if view.style -%}style="{{view.style}}" {%- endif -%}>
+      {%- endif -%}
+      {%- if view.with_line_number -%}<td class="right aligned">{{loop.index + 1}}</td>{%- endif -%}
+      {%- for vel in view.velements -%}
+        {%- if not vel.hide -%}
+          {{ macros::table_elements(el=record[vel.elid]) }}
+        {%- endif -%}
+      {%- endfor -%}
+    </tr>
+    {%- endfor -%}
+  </tbody>
+  <!-- footer avec les sum -->
+  {%- if view.with_sum and records | length > 0 -%}
+  <tfoot>
+    <tr class="">
+      {%- if view.with_line_number -%}<td>&nbsp;</td>{%- endif -%}
+      {%- for vel in view.velements -%}
+        {%- if not vel.hide -%}
+          {%- if vel.with_sum -%}
+      <td nowrap style="{%- if sums[vel.elid].sum < 0.0 -%}color: red{%-else-%}color: green{%- endif -%}">
+          {{sums[vel.elid].sum}}
+      </td>
+          {%- else -%}
+      <td></td>
+          {%- endif -%}
+        {%- endif -%}
+      {%- endfor -%}
+    </tr>
+  </tfoot>
+  {%- endif -%}
+</table>

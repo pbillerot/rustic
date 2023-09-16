@@ -1,0 +1,199 @@
+/* STYLES.CSS */
+body {
+    display: flex;
+    min-height: 100vh;
+    flex-direction: column;
+    background-color: whitesmoke;
+    background-image: url("/static/img/silex-bg.png");
+    background-size: cover;
+    overflow-x: visible;
+}
+
+main {
+    flex: 1;
+    margin-top: 6em;
+    margin-bottom: 1em;
+}
+
+.bee-hidden {
+    display: none
+}
+
+.ui.cards>.crud-card-portail {
+    width: 160px;
+    max-width: 100%;
+}
+
+.ui.cards>.crud-card-view {
+    width: 360px;
+    max-width: 100%;
+}
+
+.ui.cards>.bee-width-s {
+    width: 150px;
+    max-width: 100%;
+}
+
+.ui.cards>.bee-width-m {
+    width: 250px;
+    max-width: 100%;
+}
+
+.ui.cards>.bee-width-l {
+    width: 400px;
+    max-width: 100%;
+}
+
+.ui.cards>.bee-width-xl {
+    width: 550px;
+    max-width: 100%;
+}
+
+.ui.cards>.bee-width-xxl {
+    width: 665px;
+    max-width: 100%;
+}
+
+.ui.cards>.bee-width-max {
+    width: 99%;
+}
+
+.crud-cell-nowrap {
+    white-space: nowrap;
+}
+
+.crud-jquery-url {
+    cursor: pointer;
+}
+
+.ui.link.message {
+    cursor: pointer;
+}
+
+.ui.cards>.link {
+    cursor: pointer;
+}
+
+pre {
+    font-size: 0.9em;
+}
+
+/* .ui.cards>.card>.content>.header {
+    margin-bottom: 0.5em;
+} */
+.ui.table {
+    margin: 0;
+}
+
+/* TABLE(tr) LIST-IMAGE(card) LIST(message) selected*/
+tr.crud-list-selected,
+.ui.message.crud-list-selected {
+    -webkit-box-shadow: 0 0 0 1px #767676 inset, 0 1px 0 0 #767676 , 0 1px 3px 0 #767676 inset;
+    box-shadow: 0 0 0 1px #767676 inset, 0 1px 0 0 #767676 , 0 1px 3px 0 #767676 inset;
+}
+.ui.cards>.crud-list-selected, .ui.cards>.crud-list-selected:hover
+{
+    -webkit-box-shadow: 0 0 0 1px #767676, 0 2px 0 0 #767676, 0 1px 3px 0 #767676;
+    box-shadow: 0 0 0 1px #767676, 0 2px 0 0 #767676, 0 1px 3px 0 #767676;
+}
+
+.ui.cards>.crud-gondole {
+    background-color: lavender;
+}
+
+/* tablesort */
+th.sorted.ascending:after {
+    content: "  \2191";
+}
+
+th.sorted.descending:after {
+    content: " \2193";
+}
+
+pre {
+    white-space: pre-wrap;
+    /* css-3 */
+    white-space: -moz-pre-wrap;
+    /* Mozilla, since 1999 */
+    white-space: -pre-wrap;
+    /* Opera 4-6 */
+    white-space: -o-pre-wrap;
+    /* Opera 7 */
+    word-wrap: break-word;
+    /* Internet Explorer 5.5+ */
+}
+
+.compact.message {
+    margin: 0.5em;
+    padding: 0.5em 1em;
+}
+
+.CodeMirror {
+    border: 1px solid #eee;
+    height: auto;
+}
+
+.ui.navbar.bee-bar-light {
+    background: white;
+    border-bottom: 1px solid #dedede;
+}
+
+/* largeur field */
+.ui.form .bee-width-s {
+    width: 150px;
+    max-width: 100%;
+}
+.ui.form>.fields>.bee-width-s {
+    width: 150px;
+    max-width: 100%;
+}
+
+.ui.form> .bee-width-m {
+    width: 250px;
+    max-width: 100%;
+}
+.ui.form>.fields>.bee-width-m {
+    width: 250px;
+    max-width: 100%;
+}
+
+.ui.form>.bee-width-l {
+    width: 400px;
+    max-width: 100%;
+}
+.ui.form>.fields>.bee-width-l {
+    width: 400px;
+    max-width: 100%;
+}
+
+.ui.form>.bee-width-xl {
+    width: 550px;
+    max-width: 100%;
+}
+.ui.form>.fields>.bee-width-xl {
+    width: 550px;
+    max-width: 100%;
+}
+
+.ui.form>.bee-width-max {
+    width: 99%;
+    max-width: 99%;
+}
+
+/* Mobile */
+@media only screen and (max-width: 767px) {
+    .crud-mobile-hide {
+        display: none !important;
+    }
+}
+
+@media only screen and (min-width: 768px) {
+    .crud-mobile-show {
+        display: none !important;
+    }
+
+    /* .ui.form {
+        width: 520px;
+    } */
+
+}

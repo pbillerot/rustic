@@ -1,0 +1,19 @@
+<!-- MENU -->
+<div class="ui dropdown item">
+    <div class="ui mini image">
+        <img src="/lexic/{{appid}}{{application.image}}">
+    </div>
+    <div class="menu">
+        <a href="/" class="item"><i class="home icon"></i> Page d'accueil</a>
+        <div class="divider"></div>
+        {%- for menu in application.menu -%}
+        <a class="item{%- if menu.tableid == tableid and menu.viewid == viewid -%} blue active{%-endif-%}"
+            href="/view/{{appid}}/{{menu.tableid}}/{{menu.viewid}}">
+            <i class="{{application.tables[menu.tableid].views[menu.viewid].icon_name}} blue icon"></i>
+            {{application.tables[menu.tableid].views[menu.viewid].title}}
+        </a>
+        {%- endfor -%}
+        <div class="divider"></div>
+        <a href="/about" class="item">À propos</a>
+    </div>
+</div>

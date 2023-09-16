@@ -2,7 +2,7 @@
 //!
 use crate::{
     // lexic::lex_table::{self, Element},
-    AppState, cruder::list::crud_list, middler::{flash::FlashMessage, clear_flash, get_flash}
+    AppState, cruder::list::crud_list, middler::{flash::FlashMessage, clear_flash, get_flash},
 };
 use actix_session::Session;
 use actix_web::{
@@ -46,6 +46,8 @@ pub async fn view(
     ).await {
         Ok(records) => {
             context.insert("records", &records);
+            // si vue avec cumul les cumuls sont dans le dernier enregistrement
+            context.insert("sums", &records.last());
         },
         Err(e) => {
             messages.push(FlashMessage::error(format!("{e:?}").as_str()));
@@ -67,6 +69,11 @@ pub async fn view(
     context.insert("tableid", &tableid);
     context.insert("viewid", &viewid);
     context.insert("key", &table.setting.key);
+    context.insert("in_footer", &false); // TODO
+    context.insert("sortid", &""); // TODO
+    context.insert("sort_direction", &""); // TODO
+    // TODO view.class_sqlite valorisée dans view.class
+    // TODO view.style_sqlite valorisée dans view.style
 
     let html = data.template.render("tpl_view.html", &context).unwrap();
 

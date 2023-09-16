@@ -1,7 +1,7 @@
 appid: jecompte
 title: "Je compte pour toi"
 group: billerot
-image: "/bee/data/jecompte/calc.png"
+image: "calc.png"
 dico_dir: "/volshare/data/beedule/jecompte/config"
 shareable: true
 menu:

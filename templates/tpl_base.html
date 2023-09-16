@@ -1,62 +1,88 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-<title>{%- block head_title -%}{{ portail.title }}{%- endblock -%}</title>
-{%- block head -%}{%- endblock -%}
+  <meta charset="utf-8">
+  <title>{{ portail.title }}</title>
+  <meta name="description" content="{{ portail.info }}">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+
+  <link rel="manifest" href="/static/manifest.pwa.json">
+
+  <link rel="apple-touch-icon" sizes="72x72" href="/static/img/{{ portail.icon_file}}">
+  <link rel="apple-touch-icon" sizes="114x114" href="/static/img/{{ portail.icon_file}}">
+  <link rel="apple-touch-icon" href="/static/img/{{ portail.icon_file}}">
+  <link rel="apple-touch-startup-image" href="/static/img/{{ portail.icon_file}}">
+
+  <link rel="icon" type="image/png" href="/static/img/{{ portail.icon_file}}" />
+  <link rel="shortcut icon" sizes="196x196" href="/static/img/{{ portail.icon_file}}">
+  <!-- Semantic CSS -->
+  <link rel="stylesheet" type="text/css" href="/static/semantic/semantic.min.css">
+  <!-- CodeMirror  -->
+  <link rel="stylesheet" type="text/css" href="/static/codemirror/lib/codemirror.css">
+  <link rel="stylesheet" type="text/css" href="/static/codemirror/theme/eclipse.css">
+  <link rel="stylesheet" type="text/css" href="/static/codemirror/addon/hint/show-hint.css">
+  <!-- Silex CSS -->
+  <link href="/static/css/silex.css?v={{ get_env(name='CARGO_PKG_VERSION') }}" rel="stylesheet">
+  <!-- Custom CSS -->
+  {%- block head -%}{%- endblock -%}
 </head>
 
 <body>
-  <table style="width:100%; height:100%">
-    <thead>
-      <tr style="background-color: aliceblue">
-        <th colspan="3" style="padding: 1em;">
-          {%- block icone -%}<span style="float: left;"><a href="/" title="Affichage du menu sur Smartphone"><button>ICONE</button></a></span>{%- endblock -%}
-          {%- block navigation -%}{%- endblock -%}
-          {%- block title -%}<span>&nbsp;<b>{{ portail.title }}</b></span>{%- endblock -%}
-          {%- block boutons -%}<span style="float: right;"></span>{%- endblock -%}
-        </th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td style="vertical-align: top; background-color: aliceblue; width:10em; padding: 1em;"">
-          <div id="menu">
-          <h6><a href="/">Accueil</a></h6>
-          {%- block menu -%}{%- endblock -%}
-          </div><!-- /menu -->
-        </td><!-- /td menu -->
-        <td style="vertical-align: top; padding: 1em;">
-          <!-- content -->
-          <div id="content">
-            {% for flash in messages -%}
-            <div>{{flash.kind}}:{{flash.message}}</div>
-            {%- endfor %}
-            {% block content -%}<p>Placeholder content</p>{%- endblock %}
-          </div><!-- /content -->
-        </td><!-- /td content -->
-        <td style="vertical-align: top; background-color: aliceblue; width:10em; padding: 1em;">
-          <div style="" id="actions">
-            <h6>Actions</h6>
-            {%- block actions -%}{%- endblock -%}
-          </div><!-- /action -->
-        </td><!-- /td action -->
-      </tr>
-    </tbody>
-    <tfoot>
-      <tr>
-        <th colspan="3" style="text-align: left; padding: 1em;">
-          {%- block foot -%}
-          <h6>
-            <a href="{{ get_env(name='CARGO_PKG_REPOSITORY') | safe}}" target="_blank" title="Repository"/>{{get_env(name="CARGO_PKG_NAME")}}</a>
-            {{get_env(name="CARGO_PKG_VERSION")}} &copy; {{get_env(name="CARGO_PKG_AUTHORS")}}
-          </h6>
-          {%- endblock -%}
-        </th>
-      </tr>
-    </tfoot>
-  </table>
-  {%- block forms -%}
-  {%- endblock -%}
+  <!-- NAVBAR -->
+  <div class="ui container">
+    <div class="ui blue inverted large fixed borderless menu navbar">
+      <!-- MENU LEFT -->
+      {%- block menu -%}{%- endblock -%}
+      <!-- NAVBAR TITLE -->
+      {%- block navigation -%}{%- endblock -%}
+      {%- block title -%}<div class="header item">{{ portail.title }}</div>{%- endblock -%}
+      <!-- RIGHT MENU -->
+      <div class="right menu">
+        {%- block boutons -%}{%- endblock -%}
+        {%- block actions -%}{%- endblock -%}
+      </div>
+    </div>
+  </div>
+  <main>
+    {%- block content -%}{%- endblock -%}
+  </main>
+  {%- block forms -%}{%- endblock -%}
+  <input type="hidden" id="sid" />
+  <!-- JAVASCRIPTS  -->
+  <!-- jquery  -->
+  <script src="/static/jquery/jquery.min.js"></script>
+  <script src="/static/jquery/jquery.finger.min.js"></script>
+  <script src="/static/jquery/js.cookie.min.js"></script>
+  <!-- semantic  -->
+  <script src="/static/semantic/semantic.min.js"></script>
+  <!-- CodeMirror https://codemirror.net/doc/manual.html -->
+  <script src="/static/codemirror/lib/codemirror.js"></script>
+  <script src="/static/codemirror/addon/mode/overlay.js"></script>
+  <script src="/static/codemirror/addon/edit/matchbrackets.js"></script>
+  <script src="/static/codemirror/mode/javascript/javascript.js"></script>
+  <script src="/static/codemirror/mode/markdown/markdown.js"></script>
+  <script src="/static/codemirror/mode/gfm/gfm.js"></script>
+  <script src="/static/codemirror/mode/yaml/yaml.js"></script>
+  <script src="/static/codemirror/mode/yaml-frontmatter/yaml-frontmatter.js"></script>
+  <script src="/static/codemirror/mode/python/python.js"></script>
+  <script src="/static/codemirror/mode/sql/sql.js"></script>
+  <script src="/static/codemirror/addon/comment/comment.js"></script>
+  <script src="/static/codemirror/addon/hint/show-hint.js"></script>
+  <!-- Custom codemirror -->
+  <script defer src="/static/codemirror/addon/hint/eddy-hint.js"></script>
+  <!-- eddy -->
+  <script defer src="/static/eddy/eddy.js"></script>
+  <script defer src="/static/eddy/keyword.js"></script>
+  <!-- chart -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.0/chart.umd.js"
+    integrity="sha512-6HrPqAvK+lZElIZ4mZ64fyxIBTsaX5zAFZg2V/2WT+iKPrFzTzvx6QAsLW2OaLwobhMYBog/+bvmIEEGXi0p1w=="
+    crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+  <!-- silex  -->
+  <script src="/static/js/silex.js?v={{get_env(name='CARGO_PKG_VERSION')}}"></script>
 </body>
 
 </html>

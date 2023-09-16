@@ -1,0 +1,13 @@
+<!-- FLASH MESSAGE -->
+{%- for flash in messages -%}
+{%- if flash.kind == "success" -%}
+<div class="ui success message"><i class="close icon"></i>
+    <div class="header">{{flash.message}}</div>
+</div>
+{%- elif flash.kind == "error" %}
+<div class="ui error message"><i class="close icon"></i>
+    <div class="header">{{flash.message}}</div>
+</div>
+{%- endif %}
+{%- endfor %}
+<!-- /FLASH MESSAGE -->

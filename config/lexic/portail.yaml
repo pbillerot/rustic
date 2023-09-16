@@ -1,6 +1,6 @@
 title: "Bienvenue sur le portail Silex..."
 info: "Cadriciel de développement WEB en Yaml et Sql"
-icon_file: "silex.svg"
+icon_file: "silex.png"
 
 # Liste des applications gérées par le portail
 applications:

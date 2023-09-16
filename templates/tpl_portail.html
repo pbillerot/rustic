@@ -1,9 +1,38 @@
 {%- extends "tpl_base.html" -%}
 
+{%- block menu -%}
+<div class="ui dropdown item">
+  <div class="ui mini image">
+    <img src="/static/img/silex.svg">
+  </div>
+  <div class="menu">
+    <a href="/" class="item disabled"><i class="home icon"></i>Page d'accueil</a>
+    <div class="divider"></div>
+    <a href="/about" class="item">À propos</a>
+  </div>
+</div>
+{%- endblock -%}
+
 {%- block content -%}
-  <h1>{{portail.title}}</h1>
-  <h3>Liste des applications</h3>
-  {%- for app in applications -%}
-    <li><a href="/app/{{app.appid}}" title="{{ app.title }}">{{ app.title }}</a></li>
-  {%- endfor -%}
+<div class="ui container">
+  {% include "tpl_flash.html" %}
+  <div class="ui centered cards">
+    {%- for app in applications -%}
+    {%- for menu in app.menu -%}
+    {%- if loop.first -%}
+    <div class="card raised crud-card-portail">
+      <a class="" href="/view/{{app.appid}}/{{menu.tableid}}/{{menu.viewid}}">
+        <div class="ui circular image">
+          <img src="/lexic/{{app.appid}}/files/{{app.image}}">
+        </div>
+        <div class="content" style="padding: 0 0.5em">
+          <div class="center aligned description"><b>{{app.title}}</b></div>
+        </div>
+      </a>
+    </div>
+    {%- endif -%}
+    {%- endfor -%}
+    {%- endfor -%}
+  </div>
+</div>
 {%- endblock -%}

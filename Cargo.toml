@@ -8,6 +8,7 @@ homepage = ""
 repository = "https://github.com/pbillerot/silex"
 
 [dependencies]
+actix-files = "0.6.2"
 # actix-csrf = "0.7.0"
 # actix-csrf = {path = "./actix_csrf"}
 actix-session = { version = "0.7.2", features = ["cookie-session"] }

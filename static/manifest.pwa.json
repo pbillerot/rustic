@@ -4,11 +4,11 @@
     "name": "Silex",
     "short_name": "beedule",
     "start_url": "/",
-    "screenshots": ["/static/apropos.png"],
+    "screenshots": ["/static/img/silex.png"],
     "icons": [
       {
-        "src": "/static/silex.png",
-        "sizes": "252x252",
+        "src": "/static/img/silex.png",
+        "sizes": "106x106",
         "type": "image/png"
       }
     ],

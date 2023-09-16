@@ -1,5 +1,5 @@
 use actix_web::{middleware, App, HttpServer, web, cookie::Key};
-
+use actix_files as fs;
 use sqlx::{postgres::PgPoolOptions, Pool, Postgres, Sqlite, SqlitePool};
 
 use chrono::Local;
@@ -112,12 +112,21 @@ async fn main() -> std::io::Result<()> {
         template: tera,
         plexic: Arc::new(AtomicPtr::new(Box::into_raw(lexic))),
     };
+    let lexic_path = match std::env::var("LEXIC_PATH") {
+        Ok(s) => s,
+        Err(err) => {
+            log::error!("Failed to read lexic_path: {:?}", err);
+            std::process::exit(1);
+        }
+    };
 
     log::info!("starting HTTP server at http://0.0.0.0:8080");
 
     HttpServer::new(move|| {
         App::new()
-            .app_data(web::Data::new(data.clone()))
+        .service(fs::Files::new("/lexic", lexic_path.clone()).show_files_listing())
+        .service(fs::Files::new("/static", "./static").show_files_listing())
+        .app_data(web::Data::new(data.clone()))
             // enable logger - always register actix-web Logger middleware last
             .wrap(middleware::Logger::default())
 

@@ -2,18 +2,18 @@
 {# Affichage d'une cellule avec la value de l'élémnt correspondant #}
 {%- macro view_elements(el) -%}
 {%- if el.type_element == "number" -%}
-<td {% if el.style %}style="{{ el.style }}"{% else %}style="text-align: center;"{% endif %}
+<td class="ui aligned" {% if el.style %}style="{{ el.style }}"{% else %}style="text-align: center;"{% endif %}
 {% if el.class %} class="{{ el.class }}"{% endif %}>{{el.value}}</td>
 {%- elif el.type_element == "checkbox" -%}
-<td {% if el.style %}style="{{ el.style }}"{% else %}style="text-align: center;"{% endif %}{% if el.class %} class="{{ el.class }}"{% endif %}>
+<td class="ui aligned" {% if el.style %}style="{{ el.style }}"{% else %}style="text-align: center;"{% endif %}{% if el.class %} class="{{ el.class }}"{% endif %}>
 <input type="checkbox" {% if el.value == "1" %}checked{% endif %} disabled></input>
 </td>
 {%- elif el.type_element == "tag" -%}
-<td {% if el.style %}style="{{ el.style }}"{% endif %}{% if el.class %} class="{{ el.class }}"{% endif %}>
+<td class="ui aligned" {% if el.style %}style="{{ el.style }}"{% endif %}{% if el.class %} class="{{ el.class }}"{% endif %}>
     {%- for item in el.value | split(pat=",") -%}<span style="background-color: lightgrey; padding: 0.2em 0.1em">{{item}}</span>&nbsp;{%- endfor -%}
 </td>
 {%- else -%}
-<td {% if el.style %}style="{{ el.style }}"{% endif %}{% if el.class %} class="{{ el.class }}"{% endif %}>{{el.value}}</td>
+<td class="ui aligned" {% if el.style %}style="{{ el.style }}"{% endif %}{% if el.class %} class="{{ el.class }}"{% endif %}>{{el.value}}</td>
 {%- endif -%}
 {%- endmacro view_elements -%}
 
