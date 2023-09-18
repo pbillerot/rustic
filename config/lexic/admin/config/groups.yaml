@@ -22,7 +22,7 @@ views:
     form_edit: fedit
     #form_view: fedit
     deletable: true
-    type_element: card
+    type_view: card
     group: admin
     title: "Groupes Utilisateurs"
     icon_name: users

@@ -119,6 +119,97 @@ $(document).ready(function () {
             }
         }
     };
+
+    // RECHERCHE dans une vue
+    // Recherche via les filtres
+    $('.crud-filter-go').on('click', function (event) {
+        $('#formFilter', document).submit();
+        event.preventDefault();
+    });
+    // Clear des filtres de la vue
+    $('.crud-filter-clear').on('click', function (event) {
+        $('#resetfilter').val("reset");
+        $('#formFilter', document).submit();
+        event.preventDefault();
+    });
+
+    // Recherche globale dans la barre
+    $('.crud-search-active').on('click', function (event) {
+        var $content = $(this).closest('.crud-search-div');
+        $content.find('.crud-search').show();
+        $content.find('.crud-search-active').hide();
+        $content.find('.header').hide();
+        $content.find('.meta').hide();
+        $content.find('input').focus();
+        event.preventDefault();
+    });
+    // Fermer la recherche
+    $('.crud-search-close').on('click', function (event) {
+        var $content = $(this).closest('.crud-search-div');
+        $content.find('.crud-search-input').val('');
+        $content.find('.crud-search').hide();
+        $content.find('.crud-search-active').show();
+        $content.find('.header').show();
+        $content.find('.meta').show();
+        if ($content.find('.crud-search-input-1').val().length == 0) {
+            // abandon d'une recherche
+            event.preventDefault();
+            return;
+        }
+        $content.find('.crud-search-go').trigger('click');
+        event.preventDefault();
+    });
+    // Validation par touche entrée
+    $('.crud-search-input').on('keypress', function (e) {
+        var $content = $(this).closest('.crud-search-div');
+        if (e.which == 13) {
+            $content.find('.crud-search-go').trigger('click');
+        }
+    });
+    // Envoi de la recherche au serveur
+    $('.crud-search-go').on('click', function (event) {
+        var $content = $(this).closest('.crud-search-div');
+        var $datas = new FormData();
+        var $url = $content.find('.crud-search-input').data("url");
+        $datas.append("search", $content.find('.crud-search-input').val().toLowerCase());
+        $datas.append("_xsrf", $("#xsrf").val());
+        var request =
+            $.ajax({
+                type: "POST",
+                url: $url,
+                data: $datas,
+                dataType: 'json',
+                cache: false,
+                contentType: false,
+                processData: false,
+                beforeSend: function () {
+                    //Code à jouer avant l'appel ajax en lui même
+                }
+            });
+        request.done(function (response) {
+            //Code à jouer en cas d'éxécution sans erreur
+            console.log(response);
+        });
+        request.fail(function (response) {
+            //Code à jouer en cas d'éxécution en erreur
+            console.log(response);
+        });
+        request.always(function () {
+            //Code à jouer après done OU fail dans tous les cas
+            window.location.reload();
+        });
+        event.preventDefault();
+    });
+    // Boucle pour faire apparaître les champs de recherche avec une valeur
+    $('.crud-search-input').each(function (index) {
+        var $content = $(this).closest('.crud-search-div');
+        if ($(this).val().length > 0) {
+            // backup search dans crud-search-input-1 afin de traiter l'abandon d'une recherche
+            $content.find('.crud-search-input-1').val($(this).val());
+            $content.find('.crud-search-active').trigger('click');
+        }
+    });
+
     // Dropdown menu
     $('.ui.dropdown').dropdown();
 });

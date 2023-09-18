@@ -6,14 +6,13 @@ use chrono::Local;
 use std::io::Write;
 use std::sync::Arc;
 use std::sync::atomic::AtomicPtr;
-// use std::sync::atomic::Ordering;
-// use std::sync::Mutex;
 use actix_session::{
     storage::CookieSessionStore, SessionMiddleware,
 };
 use tera::Tera;
 
 use dotenv;
+
 // Déclarations des modules
 // mod constants;
 mod lexicer;

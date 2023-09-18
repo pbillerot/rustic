@@ -33,9 +33,10 @@ views:
     form_edit: fedit
     form_view: fedit
     deletable: true
-    type_element: table
+    type_view: table
     title: "Joueurs"
     icon_name: user
+    with_line_number: true
     style_sqlite: "select case when '{actif}' = '1' then 'background-color: violet' else '' end"
     order_by: "actif desc"
     elements:

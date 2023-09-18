@@ -55,7 +55,7 @@ views:
   vjeux:
     form_edit: fedit
     #form_view: fview (édition directe sans passer par fview)
-    type_element: table
+    type_view: table
     title: "Parties"
     icon_name: "th list"
     order-by: jec_jeux.partie desc, tt.cumul desc
@@ -67,6 +67,8 @@ views:
       points:
       cumul:
       rem:
+    filters:
+    - joueur
     actions:
     - label: "Ajouter une partie..."
       sql:

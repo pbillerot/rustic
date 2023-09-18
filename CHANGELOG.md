@@ -9,7 +9,10 @@
 - bouton coller le presse-papier
 - arg nécessaire dans l'url si view dans un formulaire pour mémoriser le retour
 
-0.14.0 - ?? septembre 2023
+0.15.0 - 16 septembre 2023
+- `added` portail & view stylisés
+
+0.14.0 - 16 septembre 2023
 - `added` ajout feuille de style fomantic - jquery - nombreux fichiers
 - `added` route /static /lexic
 - `added` page portail stylisée

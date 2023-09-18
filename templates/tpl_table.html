@@ -1,13 +1,13 @@
 {% import "tpl_table_elements.html" as macros %}
 
 <div class="crud-mobile-show ui label">
-  {{view.title}}
-  {%- if records | length == 0 -%}
+  {{view.title}}&nbsp;
+  {%- if trs | length == 0 -%}
   (aucun élément)
-  {%- elif records | length == 1 -%}
+  {%- elif trs | length == 1 -%}
   (1 élément)
   {%- else -%}
-  ({{records|length}} éléments)
+  ({{trs|length}} éléments)
   {%- endif -%}
 </div>
 {%- if view.form_add -%}
@@ -21,27 +21,27 @@
 {%- endif -%}
 <!-- FILTRES DE LA VUE -->
 {%- if view.filters -%}
-<form class="ui form" id="beeFormFilter" method="POST" enctype="multipart/form-data"
+<form class="ui form" id="formFilter" method="POST" enctype="multipart/form-data"
   action="/filter/{{appid}}/{{tableid}}/{{viewid}}">
   <input id="resetfilter" name="resetfilter" type="hidden">
   <div class="fields">
     {%- for key in view.filters -%}
-      {%- for el in view.velements -%}
-        {%- if el.elid == key -%}
+    {%- for vel in view.velements -%}
+    {%- if vel.elid == key -%}
     <div class="bee-width-s field">
-          {%- if el.type_element == "tag" or el.type_element == "list" or el.type_element == "radio" -%}
+      {%- if vel.type_element == "tag" or vel.type_element == "list" or vel.type_element == "radio" -%}
       <select name="{{key}}" id="{{key}}" class="ui fluid search dropdown">
-        <option value="">{{el.place_holder}}</option>
-            {%- for item in el.items -%}
-        <option value="{{item.key}}" {%- if item.key == el.value -%} selected{%- endif -%}>{{item.label}}</option>
-            {%- endfor -%}
+        <option value="">{{vel.place_holder}}</option>
+        {%- for item in vel.items -%}
+        <option value="{{item.key}}" {%- if item.key==vel.value -%} selected{%- endif -%}>{{item.label}}</option>
+        {%- endfor -%}
       </select>
-          {%- else -%}
-      <input type="text" name="{{key}}" id="{{key}}" placeholder="{{el.place_holder}}" value="{{el.value}}">
-          {%- endif -%}
+      {%- else -%}
+      <input type="text" name="{{key}}" id="{{key}}" placeholder="{{vel.place_holder}}" value="{{vel.value}}">
+      {%- endif -%}
     </div>
-        {%- endif -%}
-      {%- endfor -%}
+    {%- endif -%}
+    {%- endfor -%}
     {%- endfor -%}
     <div class="field">
       <button class="ui icon primary button" title="Sélectionner">
@@ -58,35 +58,27 @@
 {%- endif -%}
 <!-- TABLE -->
 <table
-  class="ui unstackable collapsing sortable {%- if view.form_view or view.form_edit -%}selectable{%- endif -%} celled table"
-  data-appid="{{appid}}" data-tableid="{{tableid}}" data-viewid="{{viewid}}">
+  class="ui unstackable collapsing sortable {% if view.form_view or view.form_edit %} selectable {% endif %} celled table"
+  data-role="table" data-mode="columntoggle" data-appid="{{appid}}" data-tableid="{{tableid}}" data-viewid="{{viewid}}">
   <thead>
     <tr class="crud-unsort">
       {%- if view.with_line_number -%}<th>&nbsp;</th>{%- endif -%}
       {%- for el in view.velements -%}
-        {%- if not el.hide -%}
+      {%- if not el.hide -%}
       <th id="col_{{el.elid}}"
-        class="ui {{el.col_align}} aligned{%- if el.hide_on_mobile -%} crud-mobile-hide{%- endif -%}{%- if sortid ==  el.elid -%} sorted {{sortdirection}}{%- endif -%} crud-ajax-sort"
+        class="ui {{el.col_align}} aligned{% if el.hide_on_mobile %} crud-mobile-hide{% endif %}{% if sortid ==  el.elid %} sorted {{sortdirection}}{% endif %} crud-ajax-sort"
         title="{{el.elid}}">{{el.label_short}}</th>
-        {%- endif -%}
+      {%- endif -%}
       {%- endfor -%}
     </tr>
   </thead>
   <tbody>
-    {%- for record in records -%}
-      {%- if view.form_view or view.deletable -%}
-    <tr class="crud-jquery-url {{view.class}}" {%- if view.style -%}style="{{view.style}}" {%- endif -%}
-      data-url="/form/{{appid}}/{{tableid}}/{{viewid}}/{{view.form_view}}/{{record[application.tables[tableid].setting.key].key_value}}">
-      {%- elif view.form_edit -%}
-    <tr class="crud-jquery-url {{view.class}}" {%- if view.style -%}style="{{view.style}}" {%- endif -%}
-      data-url="/edit/{{appid}}/{{tableid}}/{{viewid}}/{{view.form_edit}}/{{record[application.tables[tableid].setting.key].key_value}}">
-      {%- else -%}
-    <tr class="{{view.class}}" {%- if view.style -%}style="{{view.style}}" {%- endif -%}>
-      {%- endif -%}
-      {%- if view.with_line_number -%}<td class="right aligned">{{loop.index + 1}}</td>{%- endif -%}
+    {%- for tr in trs -%}
+    <tr class="{{tr.class}}" style="{{tr.style}}" data-url="{{tr.url_open}}" data-press="{{tr.url_press}}">
+      {%- if view.with_line_number -%}<td class="right aligned">{{loop.index}}</td>{%- endif -%}
       {%- for vel in view.velements -%}
         {%- if not vel.hide -%}
-          {{ macros::table_elements(el=record[vel.elid]) }}
+        {{ macros::table_elements(el=tr.record[vel.elid]) }}
         {%- endif -%}
       {%- endfor -%}
     </tr>
@@ -100,8 +92,8 @@
       {%- for vel in view.velements -%}
         {%- if not vel.hide -%}
           {%- if vel.with_sum -%}
-      <td nowrap style="{%- if sums[vel.elid].sum < 0.0 -%}color: red{%-else-%}color: green{%- endif -%}">
-          {{sums[vel.elid].sum}}
+      <td nowrap style="{% if sums[vel.elid].sum < 0.0 %}color: red{%else%}color: green{% endif %}">
+            {{sums[vel.elid].sum}}
       </td>
           {%- else -%}
       <td></td>

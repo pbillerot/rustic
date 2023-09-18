@@ -6,7 +6,7 @@ use std::collections::HashMap;
 use crate::cruder::sqler::{kerdata, kerlite};
 use crate::lexicer::lex_utils;
 
-use super::macrolex;
+use super::macvalue;
 
 #[derive(Debug, Serialize, Deserialize, Clone)]
 pub struct Table {
@@ -43,6 +43,7 @@ impl Table {
                     Some(t) => {
                         el.elid = key.clone();
                         el.merge(t);
+                        el.init_prop();
                         view.velements.push(el);
                     }
                     None => continue, // un view.element peut ne pas exister dans table.elements
@@ -50,7 +51,7 @@ impl Table {
             }
             view.velements.sort_by(|a, b| a.order.cmp(&b.order));
         }
-        // alimentation de felements avec form.elements fusionnés avec table.elements
+        // alimentation de velements avec form.elements fusionnés avec table.elements
         for (formid, form) in table.forms.iter_mut() {
             form.formid = formid.clone(); // TODO: que devient l'ancienne valeur ?
             for (key, element) in &form.elements {
@@ -59,6 +60,7 @@ impl Table {
                     Some(t) => {
                         el.elid = key.clone();
                         el.merge(t);
+                        el.init_prop();
                         form.velements.push(el);
                     }
                     None => continue, // un form.element peut ne pas exister dans table.elements
@@ -172,6 +174,19 @@ pub struct Element {
 }
 
 impl Element {
+    /// Initialisation des valeurs par défaut des propriétés de l'élément sans données contextuelles
+    pub fn init_prop(&mut self, ) {
+        if self.place_holder.is_empty() {
+            if ! self.label_long.is_empty() {
+                self.place_holder = self.label_long.clone();
+            } else if ! self.label_short.is_empty() {
+                self.place_holder = self.label_short.clone();
+            } else {
+                self.place_holder = self.elid.clone();
+            }
+        }
+    }
+
     /// Calcul de la valeur de l'élément et de ses propriétés à partir des données lues dans la table
     pub async fn compute_value(
         &mut self,
@@ -190,11 +205,11 @@ impl Element {
         }
         // valeur par défaut
         if self.value.is_empty() && !self.default_sqlite.is_empty() {
-            let sql = macrolex(&self.default_sqlite, hvalue);
+            let sql = macvalue(&self.default_sqlite, hvalue);
             self.value = kerlite(poolite, &sql).await?;
         }
         if self.value.is_empty() && !self.default.is_empty() {
-            self.value = macrolex(&self.default, hvalue);
+            self.value = macvalue(&self.default, hvalue);
         }
         Ok(self)
     }
@@ -207,10 +222,10 @@ impl Element {
     ) -> Result<&mut Self, String>{
         // valeur par défaut
         if !self.default.is_empty() {
-            self.default = macrolex(&self.default, hvalue);
+            self.default = macvalue(&self.default, hvalue);
         }
         if !self.default_sqlite.is_empty() {
-            let sql = macrolex(&self.default_sqlite, hvalue);
+            let sql = macvalue(&self.default_sqlite, hvalue);
             self.default = kerlite(poolite, &sql).await?;
         }
         if self.value.is_empty() {
@@ -226,38 +241,48 @@ impl Element {
         }
         // Macrolex des autres propriétés
         if !self.label_long.is_empty() {
-            self.label_long = macrolex(&self.label_long, hvalue);
+            self.label_long = macvalue(&self.label_long, hvalue);
         }
         if !self.label_short.is_empty() {
-            self.label_short = macrolex(&self.label_short, hvalue);
+            self.label_short = macvalue(&self.label_short, hvalue);
+        }
+        if !self.place_holder.is_empty() {
+            self.place_holder = macvalue(&self.place_holder, hvalue);
+        }
+        if self.place_holder.is_empty() {
+            if self.label_long.is_empty() {
+                self.place_holder = self.label_long.clone();
+            } else {
+                self.place_holder = self.label_short.clone();
+            }
         }
         if !self.help.is_empty() {
-            self.help = macrolex(&self.help, hvalue);
+            self.help = macvalue(&self.help, hvalue);
         }
         if !self.params.url.is_empty() {
-            self.params.url = macrolex(&self.params.url, hvalue);
+            self.params.url = macvalue(&self.params.url, hvalue);
         }
 
         // macrolex suivi de kerlite
         if !self.class_sqlite.is_empty() {
-            let sql = macrolex(&self.class_sqlite, hvalue);
+            let sql = macvalue(&self.class_sqlite, hvalue);
             self.class = kerlite(poolite, &sql).await?;
         }
         if !self.format_sqlite.is_empty() {
-            let sql = macrolex(&self.format_sqlite, hvalue);
+            let sql = macvalue(&self.format_sqlite, hvalue);
             self.format = kerlite(poolite, &sql).await?;
         }
         if !self.hide_sqlite.is_empty() {
-            let sql = macrolex(&self.hide_sqlite, hvalue);
+            let sql = macvalue(&self.hide_sqlite, hvalue);
             self.hide = !kerlite(poolite, &sql).await?.is_empty();
         }
         if !self.style_sqlite.is_empty() {
-            let sql = macrolex(&self.style_sqlite, hvalue);
+            let sql = macvalue(&self.style_sqlite, hvalue);
             self.style = kerlite(poolite, &sql).await?;
         }
         // items récupérés dans les données de l'application
         if !self.items_sql.is_empty() {
-            let sql = macrolex(&self.items_sql, hvalue);
+            let sql = macvalue(&self.items_sql, hvalue);
             self.items = kerdata(pooldb, &sql).await?;
         }
         Ok(self)
