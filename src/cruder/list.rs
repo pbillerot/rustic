@@ -1,3 +1,4 @@
+use actix_session::Session;
 ///
 /// CRUD sur les données
 ///
@@ -7,11 +8,13 @@ use crate::lexicer::lex_application::Application;
 use crate::lexicer::lex_table::Element;
 use std::collections::HashMap;
 
-use super::records_elements;
+use super::record::records_elements;
+
 ///
 /// - Lecture des données de la table
 ///
 pub async fn crud_list(
+    session: &Session,
     pooldb: &Pool<Postgres>,
     poolite: &Pool<Sqlite>,
     application: &Application, // le lexique de l'application
@@ -26,6 +29,21 @@ pub async fn crud_list(
     let view = table.views.get(viewid).unwrap();
     let mut bstart = true;
     let mut joins: Vec<String> = Vec::new();
+    // SORT SORTDIRECTION
+
+    let ctx_sortid = format!("{}-{tableid}-{viewid}-sortid", &application.appid);
+    let sortid = match session.get::<String>(&ctx_sortid) {
+        Ok(Some(s)) => s,
+        Ok(None) => String::new(),
+        Err(_) => String::new(),
+    };
+    let ctx_sort_direction = format!("{}-{tableid}-{viewid}-sortdirection", &application.appid);
+    let sortdirection = match session.get::<String>(&ctx_sort_direction) {
+        Ok(Some(s)) => s,
+        Ok(None) => String::new(),
+        Err(_) => String::new(),
+    };
+
     for element in &view.velements {
         if element.hide {
             continue;
@@ -59,8 +77,16 @@ pub async fn crud_list(
         if !view.where_sql.is_empty() {
             sql.push_str(format!(" WHERE ( {} )", &view.where_sql).as_str());
         }
-        if !view.order_by.is_empty() {
-            sql.push_str(format!(" ORDER BY {}", &view.order_by).as_str());
+        if sortid.is_empty() {
+            if !view.order_by.is_empty() {
+                sql.push_str(format!(" ORDER BY {}", &view.order_by).as_str());
+            }
+        } else {
+            if sortdirection == "descending" {
+                sql.push_str(format!(" ORDER BY {} DESC", &sortid).as_str());
+            } else {
+                sql.push_str(format!(" ORDER BY {}", &sortid ).as_str());
+            }
         }
         if !application.limit_sql.is_empty() {
             sql.push_str(format!(" LIMIT {}", &application.limit_sql).as_str());

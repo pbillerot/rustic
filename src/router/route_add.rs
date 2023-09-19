@@ -2,7 +2,7 @@
 //!
 use crate::{
     // lexic::lex_table::{self, Element},
-    AppState, cruder::records_elements, middler::{flash::FlashMessage, clear_flash, get_flash}
+    AppState, middler::{flash::FlashMessage, clear_flash, get_flash}, cruder::record::records_elements
 };
 use actix_session::Session;
 use actix_web::{

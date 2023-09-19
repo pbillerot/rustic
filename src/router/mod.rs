@@ -32,3 +32,5 @@ pub use self::route_add_post::add_post; // curl http://0.0.0.0:8080//update/appi
 mod route_delete_post;
 pub use self::route_delete_post::delete_post; // curl http://0.0.0.0:8080//delete/appid/tableid/viewid/formid/id
 
+mod route_sort;
+pub use self::route_sort::sort; // curl http://0.0.0.0:8080/sort/appid/tableid/viewid

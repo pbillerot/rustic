@@ -7,7 +7,8 @@ use crate::lexicer::lex_application::Application;
 use crate::lexicer::lex_table::{Element, Table};
 use std::collections::HashMap;
 
-use super::records_elements;
+use super::record::records_elements;
+
 ///
 /// - Lecture des données de la table
 ///

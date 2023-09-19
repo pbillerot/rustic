@@ -30,6 +30,8 @@ pub struct Application {
     #[serde(default = "String::new")]
     pub wiki: String,
     // Données calculées
+    #[serde(default = "String::new")]
+    pub in_footer: String, // nbre d'onglets de view dans le footer
     #[serde(default = "HashMap::new")]
     pub tables: HashMap<String, lex_table::Table>,
 
@@ -46,11 +48,23 @@ impl Application {
             .map_err(|e| format!("Could not open file {:?}", e))?;
         let mut application: Application  = serde_yaml::from_reader(f)
             .map_err(|e| format!("Could not read values {:?}", e))?;
+        let mut ifooter = 0;
         for menu in &application.menu {
             let table: &lex_table::Table = &lex_table::Table::load(&appid, &menu.tableid)?;
             application.tables.insert(menu.tableid.to_string(), table.clone());
+            if menu.in_footer {
+                ifooter = ifooter + 1;
+            }
         }
-
+        // Nbre d'onglets dans le footer en english pour semantic
+        application.in_footer = match ifooter {
+            1 => "one".to_string(),
+            2 => "two".to_string(),
+            3 => "three".to_string(),
+            4 => "four".to_string(),
+            5 => "five".to_string(),
+            _ => "".to_string(),
+        };
         Ok(application)
     }
 }

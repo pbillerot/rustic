@@ -19,7 +19,7 @@ use actix_web::{
     Result,
 };
 use actix_web_lab::respond::Html;
-use serde::{Serialize, Deserialize};
+use serde::{Deserialize, Serialize};
 use std::{
     collections::HashMap,
     // collections::HashMap,
@@ -52,17 +52,18 @@ pub async fn view(
     let mut context = tera::Context::new();
     let mut messages: Vec<FlashMessage> = Vec::new();
 
-    let records = match crud_list(&data.db, &data.dblite, app, &tableid, &viewid, "").await {
+    // LECTURE DES DONNEES DE LA VUE
+    let records = match crud_list(&session, &data.db, &data.dblite, app, &tableid, &viewid, "").await {
         Ok(recs) => recs,
         Err(e) => {
             messages.push(FlashMessage::error(format!("{e:?}").as_str()));
             Vec::new()
         }
     };
-    // si vue avec cumul les cumuls sont dans le dernier enregistrement
+    // CUMUL DES COLONNES
     context.insert("sums", &records.last());
 
-    // alimentation de la structure Trs
+    // TRS alimentation de la structure Trs avec les éléments et les données lues dans la table
     let mut trs: Vec<Tr> = Vec::new();
     for record in records {
         let tr = Tr {
@@ -93,28 +94,54 @@ pub async fn view(
                 }
             },
             url_open: {
-                if ! view.form_view.is_empty() || view.deletable {
-                    format!("/form/{appid}/{tableid}/{viewid}/{}/{}", view.form_view, record[&table.setting.key].key_value)
-                } else if ! view.form_edit.is_empty() {
-                    format!("/edit/{appid}/{tableid}/{viewid}/{}/{}", view.form_edit, record[&table.setting.key].key_value)
+                if !view.form_view.is_empty() || view.deletable {
+                    format!(
+                        "/form/{appid}/{tableid}/{viewid}/{}/{}",
+                        view.form_view, record[&table.setting.key].key_value
+                    )
+                } else if !view.form_edit.is_empty() {
+                    format!(
+                        "/edit/{appid}/{tableid}/{viewid}/{}/{}",
+                        view.form_edit, record[&table.setting.key].key_value
+                    )
                 } else {
                     String::new()
                 }
             },
             url_press: {
-                if ! view.action_press.sql.is_empty() {
-                    format!("/action/{appid}/{tableid}/{viewid}/{}", record[&table.setting.key].key_value)
+                if !view.action_press.sql.is_empty() {
+                    format!(
+                        "/action/{appid}/{tableid}/{viewid}/{}",
+                        record[&table.setting.key].key_value
+                    )
                 } else {
                     String::new()
                 }
-
             },
             record: record,
         };
         trs.push(tr);
+        if messages.len() > 0 {
+            break;
+        }
     }
     context.insert("trs", &trs);
 
+    // SORT ID DIRECTION
+    let ctx_sortid = format!("{appid}-{tableid}-{viewid}-sortid");
+    if let Some(sortid) = session.get::<String>(&ctx_sortid).unwrap() {
+        context.insert("sortid", &sortid);
+    } else {
+        context.insert("sortid", &"");
+    }
+    let ctx_sort_direction = format!("{appid}-{tableid}-{viewid}-sortdirection");
+    if let Some(sortdirection) = session.get::<String>(&ctx_sort_direction).unwrap() {
+        context.insert("sortdirection", &sortdirection);
+    } else {
+        context.insert("sortdirection", &"");
+    }
+
+    // FLASH
     if let Some(flash) = get_flash(&session)? {
         messages.push(flash);
     }
@@ -129,12 +156,7 @@ pub async fn view(
     context.insert("tableid", &tableid);
     context.insert("viewid", &viewid);
     context.insert("key", &table.setting.key);
-    context.insert("in_footer", &false); // TODO
     context.insert("search", &""); // TODO
-    context.insert("sortid", &""); // TODO
-    context.insert("sort_direction", &""); // TODO
-                                           // TODO view.class_sqlite valorisée dans view.class
-                                           // TODO view.style_sqlite valorisée dans view.style
 
     let html = data.template.render("tpl_view.html", &context).unwrap();
 
