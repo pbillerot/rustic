@@ -16,7 +16,7 @@ pub struct Formdata {
 // #[post("/sort/{appid}/{tableid}/{viewid}")]
 pub async fn sort(
     path: Path<(String, String, String)>,
-    form: web::Json<Formdata>,
+    form_json: web::Json<Formdata>,
     // data: web::Data<AppState>,
     session: Session,
 ) -> HttpResponse {
@@ -25,23 +25,22 @@ pub async fn sort(
 
     // enregistrement du tri dans la session
     let ctx_sortid = format!("{appid}-{tableid}-{viewid}-sortid");
-    if !form.sortid.is_empty() {
-        session.insert(&ctx_sortid, &form.sortid).unwrap();
+    if !form_json.sortid.is_empty() {
+        session.insert(&ctx_sortid, &form_json.sortid).unwrap();
     } else {
         session.remove(&ctx_sortid);
     }
     let ctx_sort_direction = format!("{appid}-{tableid}-{viewid}-sortdirection");
-    if !form.sortdirection.is_empty() {
-        session.insert(&ctx_sort_direction, &form.sortdirection).unwrap();
+    if !form_json.sortdirection.is_empty() {
+        session.insert(&ctx_sort_direction, &form_json.sortdirection).unwrap();
     } else {
         session.remove(&ctx_sort_direction);
     }
 
     let rest = Rest {
         response: "ok".to_string(),
-        message: format!("{} {}", &form.sortid, &form.sortdirection),
+        message: format!("{} {}", &form_json.sortid, &form_json.sortdirection),
     };
-    log::info!("{:?}", session.entries());
     HttpResponse::Ok().json(rest)
 
 }

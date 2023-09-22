@@ -12,7 +12,7 @@
 </div>
 {%- if view.form_add -%}
 <button class="right floated circular ui large plus blue icon button crud-jquery-url"
-  data-url="/add/{{appid}}/{{tableid}}/{{viewid}}/{{view.form_add}}" {%- if in_footer -%}
+  data-url="/add/{{appid}}/{{tableid}}/{{viewid}}/{{view.form_add}}" {%- if application.in_footer -%}
   style="z-index: 1000; position: fixed; bottom: 5em; right: 2em; padding: 1em;" {%- else -%}
   style="z-index: 1000; position: fixed; bottom: 2em; right: 2em; padding: 1em;" {%- endif -%}
   title="Ajouter un élément...">
@@ -21,27 +21,22 @@
 {%- endif -%}
 <!-- FILTRES DE LA VUE -->
 {%- if view.filters -%}
-<form class="ui form" id="formFilter" method="POST" enctype="multipart/form-data"
-  action="/filter/{{appid}}/{{tableid}}/{{viewid}}">
+<form class="ui form" id="formFilter" method="POST" action="/filter/{{appid}}/{{tableid}}/{{viewid}}">
   <input id="resetfilter" name="resetfilter" type="hidden">
   <div class="fields">
-    {%- for key in view.filters -%}
-    {%- for vel in view.velements -%}
-    {%- if vel.elid == key -%}
+    {%- for vel in filters -%}
     <div class="bee-width-s field">
       {%- if vel.type_element == "tag" or vel.type_element == "list" or vel.type_element == "radio" -%}
-      <select name="{{key}}" id="{{key}}" class="ui fluid search dropdown">
-        <option value="">{{vel.place_holder}}</option>
+      <select name="{{vel.elid}}" id="{{vel.elid}}" class="ui fluid search dropdown">
+        <option value="">{{vel.label_short}}</option>
         {%- for item in vel.items -%}
-        <option value="{{item.key}}" {%- if item.key==vel.value -%} selected{%- endif -%}>{{item.label}}</option>
+        <option value="{{item.key}}" {% if item.key==vel.value %} selected{% endif %}>{{item.label}}</option>
         {%- endfor -%}
       </select>
       {%- else -%}
-      <input type="text" name="{{key}}" id="{{key}}" placeholder="{{vel.place_holder}}" value="{{vel.value}}">
+      <input type="text" name="{{vel.elid}}" id="{{vel.elid}}" placeholder="{{vel.label_short}}" value="{{vel.value}}">
       {%- endif -%}
     </div>
-    {%- endif -%}
-    {%- endfor -%}
     {%- endfor -%}
     <div class="field">
       <button class="ui icon primary button" title="Sélectionner">

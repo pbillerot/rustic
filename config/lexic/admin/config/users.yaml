@@ -70,7 +70,7 @@ views:
     form_view: fview
     form_add: fadd
     form_edit: fedit
-    type_view: card
+    type_view: table
     group: admin
     deletable: true
     title: "Comptes Utilisateurs"
@@ -93,6 +93,11 @@ views:
       user_is_admin:
         hide_on_mobile: true
       user_groupes:
+    filters:
+    - user_name
+    - user_email
+    - user_is_admin
+    - user_groupes
 
   vprofil:
     form_view: fprofil

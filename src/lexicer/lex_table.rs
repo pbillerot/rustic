@@ -175,7 +175,7 @@ pub struct Element {
 
 impl Element {
     /// Initialisation des valeurs par défaut des propriétés de l'élément sans données contextuelles
-    pub fn init_prop(&mut self, ) {
+    pub fn init_prop(&mut self) {
         if self.place_holder.is_empty() {
             if ! self.label_long.is_empty() {
                 self.place_holder = self.label_long.clone();

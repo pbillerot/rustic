@@ -9,7 +9,10 @@
 - bouton coller le presse-papier
 - arg nécessaire dans l'url si view dans un formulaire pour mémoriser le retour
 
-0.16.0 - .. septembre 2023
+0.17.0 - 22 septembre 2023
+- `added` filters ok
+
+0.16.0 - 19 septembre 2023
 - `added` onglets view dans le footer
 - `added` style class sqlite sur les tr
 - `added` tri des colonnes

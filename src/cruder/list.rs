@@ -25,24 +25,27 @@ pub async fn crud_list(
     // construction de l'ordre sql
     let mut sql = "SELECT ".to_string();
     // on prend les colonnes définies dans la view.velements
+    let appid = &application.appid;
     let table = application.tables.get(tableid).unwrap();
     let view = table.views.get(viewid).unwrap();
     let mut bstart = true;
     let mut joins: Vec<String> = Vec::new();
-    // SORT SORTDIRECTION
 
-    let ctx_sortid = format!("{}-{tableid}-{viewid}-sortid", &application.appid);
+    // SORT ID DIRECTION
+    let ctx_sortid = format!("{appid}-{tableid}-{viewid}-sortid");
     let sortid = match session.get::<String>(&ctx_sortid) {
         Ok(Some(s)) => s,
         Ok(None) => String::new(),
-        Err(_) => String::new(),
+        Err(_) => String::new()
     };
-    let ctx_sort_direction = format!("{}-{tableid}-{viewid}-sortdirection", &application.appid);
+    let ctx_sort_direction = format!("{appid}-{tableid}-{viewid}-sortdirection");
     let sortdirection = match session.get::<String>(&ctx_sort_direction) {
         Ok(Some(s)) => s,
         Ok(None) => String::new(),
-        Err(_) => String::new(),
+        Err(_) => String::new()
     };
+
+    let mut where_filter = "".to_string();
 
     for element in &view.velements {
         if element.hide {
@@ -62,6 +65,43 @@ pub async fn crud_list(
         } else {
             sql.push_str(format!("{}.{} as {}", &tableid, &element.elid, &element.elid).as_str());
         }
+        // FILTRES DANS LA VUE
+        // les valeurs ont été mémorisée dans la session
+        if id.is_empty() {
+            for key in &view.filters {
+                if key == &element.elid {
+                    let key_filter = format!("{appid}-{tableid}-{viewid}-filter-{key}");
+                    if let Some(filter_value) = session.get::<String>(&key_filter).unwrap() {
+                        if filter_value.is_empty() {
+                            continue;
+                        }
+                        if ! where_filter.is_empty() {
+                            where_filter.push_str(" AND ");
+                        }
+                        if element.type_element == "list" || element.type_element == "radio" || element.type_element == "tag" {
+                            // where_filter.push_str(format!("'{filter_value}' IN {tableid}.{key}").as_str());
+                            where_filter.push_str(format!("lower({tableid}.{key}) LIKE '%{}%'",
+                            filter_value.to_lowercase()).as_str());
+                } else {
+                            if element.jointure.column.is_empty() {
+                                if element.type_element == "date" || element.type_element == "number" || element.type_element == "amount" || element.type_element == "checkbox" {
+                                    where_filter.push_str(format!("cast({tableid}.{key} as varchar) LIKE '%{}%'",
+                                    filter_value.to_lowercase()).as_str());
+                                } else {
+                                    where_filter.push_str(format!("lower({}) LIKE '%{}%'",
+                                    element.jointure.column,
+                                    filter_value.to_lowercase()).as_str());
+                                }
+                            } else {
+                                where_filter.push_str(format!("lower({}) LIKE '%{}%'",
+                                    element.jointure.column,
+                                    filter_value.to_lowercase()).as_str());
+                            }
+                        }
+                    }
+                }
+            }
+        }
     }
     sql.push_str(format!(" FROM {}", &tableid).as_str());
     if !joins.is_empty() {
@@ -71,21 +111,32 @@ pub async fn crud_list(
     }
     // Cas id valorisé ou non
     if id.is_empty() {
+        let mut w = String::new();
         if !view.where_sql.is_empty() {
-            sql.push_str(format!(" WHERE ( {} )", &view.where_sql).as_str());
+            w.push_str(format!(" WHERE ( {} )", &view.where_sql).as_str());
         }
         if !view.where_sql.is_empty() {
-            sql.push_str(format!(" WHERE ( {} )", &view.where_sql).as_str());
+            w.push_str(format!(" WHERE ( {} )", &view.where_sql).as_str());
         }
+        if !where_filter.is_empty() {
+            if w.is_empty() {
+                w.push_str(" WHERE ");
+            }
+            w.push_str(format!("{}", &where_filter).as_str());
+        }
+        if !w.is_empty() {
+            sql.push_str(&w);
+        }
+
         if sortid.is_empty() {
             if !view.order_by.is_empty() {
                 sql.push_str(format!(" ORDER BY {}", &view.order_by).as_str());
             }
         } else {
             if sortdirection == "descending" {
-                sql.push_str(format!(" ORDER BY {} DESC", &sortid).as_str());
+                sql.push_str(format!(" ORDER BY {} DESC", sortid).as_str());
             } else {
-                sql.push_str(format!(" ORDER BY {}", &sortid ).as_str());
+                sql.push_str(format!(" ORDER BY {}", sortid ).as_str());
             }
         }
         if !application.limit_sql.is_empty() {

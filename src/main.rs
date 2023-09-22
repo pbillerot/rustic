@@ -166,7 +166,7 @@ async fn main() -> std::io::Result<()> {
             // .route("/ajax/{appid}/{tableid}/{viewid}/{formid}/{action}", web::post().to(router::edit))
             // .route("/share/{appid}/{shareid}", web::post().to(router::share))
             // .route("/search/{appid}/{tableid}/{viewid}/{id}", web::post().to(router::search))
-            // .route("/filter/{appid}/{tableid}/{viewid}", web::post().to(router::filter))
+            .route("/filter/{appid}/{tableid}/{viewid}", web::post().to(router::filter))
             .route("/sort/{appid}/{tableid}/{viewid}", web::post().to(router::sort))
             // Gestion du lexique
             .route("/lexic/action/{action}", web::get().to(router::lexicall))
