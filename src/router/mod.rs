@@ -47,6 +47,9 @@ pub use self::route_sort::sort;
 mod route_filter;
 pub use self::route_filter::filter;
 
+// /search/appid/tableid/viewid
+mod route_search;
+pub use self::route_search::search;
 
 
 // /lexic/action

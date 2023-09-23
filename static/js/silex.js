@@ -169,22 +169,16 @@ $(document).ready(function () {
     // Envoi de la recherche au serveur
     $('.crud-search-go').on('click', function (event) {
         var $content = $(this).closest('.crud-search-div');
-        var $datas = new FormData();
+        var $datas = {"search": $content.find('.crud-search-input').val().toLowerCase()};
         var $url = $content.find('.crud-search-input').data("url");
-        $datas.append("search", $content.find('.crud-search-input').val().toLowerCase());
-        // $datas.append("_xsrf", $("#xsrf").val());
         var request =
             $.ajax({
                 type: "POST",
                 url: $url,
-                data: $datas,
+                data: JSON.stringify($datas),
                 dataType: 'json',
                 cache: false,
-                contentType: false,
-                processData: false,
-                beforeSend: function () {
-                    //Code à jouer avant l'appel ajax en lui même
-                }
+                contentType: "application/json; charset=utf-8",
             });
         request.done(function (response) {
             //Code à jouer en cas d'éxécution sans erreur
@@ -241,14 +235,8 @@ $(document).ready(function () {
                 data: JSON.stringify($datas),
                 dataType: 'json',
                 cache: false,
-                // contentType: 'multipart/form-data',
-                // contentType: false,
                 contentType: "application/json; charset=utf-8",
                 processData: false,
-                beforeSend: function (request) {
-                    //Code à jouer avant l'appel ajax en lui même
-                    console.log(request);
-                }
             });
         request.done(function (response) {
             //Code à jouer en cas d'éxécution sans erreur
@@ -281,9 +269,6 @@ $(document).ready(function () {
                 cache: false,
                 contentType: false,
                 processData: false,
-                beforeSend: function () {
-                    //Code à jouer avant l'appel ajax en lui même
-                }
             });
         request.done(function (response) {
             //Code à jouer en cas d'éxécution sans erreur
@@ -329,8 +314,6 @@ $(document).ready(function () {
     $('.crud-jquery-ajax').on('click', function (event) {
         var $datas = new FormData();
         var $url = $(this).data('url');
-        // var xsrf = $("#xsrf").val();
-        // $datas.append("_xsrf", xsrf);
         $.ajax({
             type: "POST",
             url: $url,

@@ -180,6 +180,14 @@ pub async fn view(
         }
     }
 
+    // SEARCH
+    let search_key = format!("{appid}-{tableid}-{viewid}-search");
+    if let Some(search) = session.get::<String>(&search_key).unwrap() {
+        tx.insert("search", &search);
+    } else {
+        tx.insert("search", &"");
+    }
+
     // FLASH
     if let Some(flash) = get_flash(&session)? {
         messages.push(flash);
@@ -196,7 +204,6 @@ pub async fn view(
     tx.insert("viewid", &viewid);
     tx.insert("key", &table.setting.key);
     tx.insert("filters", &filters);
-    tx.insert("search", &""); // TODO
 
     let html = data.template.render("tpl_view.html", &tx).unwrap();
 

@@ -9,6 +9,9 @@
 - bouton coller le presse-papier
 - arg nécessaire dans l'url si view dans un formulaire pour mémoriser le retour
 
+0.18.0 - 23 septembre 2023
+- `added` search : recherche globale
+
 0.17.0 - 22 septembre 2023
 - `added` filters ok
 
