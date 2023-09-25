@@ -46,7 +46,12 @@ impl Table {
                         el.init_prop();
                         view.velements.push(el);
                     }
-                    None => continue, // un view.element peut ne pas exister dans table.elements
+                    None => {
+                        // un view.elements peut ne pas exister dans table.elements
+                        el.elid = key.clone();
+                        el.init_prop();
+                        view.velements.push(el);
+                    }
                 };
             }
             view.velements.sort_by(|a, b| a.order.cmp(&b.order));
@@ -63,7 +68,12 @@ impl Table {
                         el.init_prop();
                         form.velements.push(el);
                     }
-                    None => continue, // un form.element peut ne pas exister dans table.elements
+                    None => {
+                        // un form.elements peut ne pas exister dans table.elements
+                        el.elid = key.clone();
+                        el.init_prop();
+                        form.velements.push(el);
+                    }
                 };
             }
             form.velements.sort_by(|a, b| a.order.cmp(&b.order));
@@ -98,6 +108,8 @@ pub struct Element {
     pub default: String, // valeur par défaut
     #[serde(default = "String::new")]
     pub default_sqlite: String, // Ordre SQL qui retournera la colonne pour alimenter Default
+    #[serde(default = "String::new")]
+    pub error: String, // valeur par défaut
     #[serde(default = "String::new")]
     pub filter: String, // pattern du display
     #[serde(default = "String::new")]
@@ -177,9 +189,9 @@ impl Element {
     /// Initialisation des valeurs par défaut des propriétés de l'élément sans données contextuelles
     pub fn init_prop(&mut self) {
         if self.place_holder.is_empty() {
-            if ! self.label_long.is_empty() {
+            if !self.label_long.is_empty() {
                 self.place_holder = self.label_long.clone();
-            } else if ! self.label_short.is_empty() {
+            } else if !self.label_short.is_empty() {
                 self.place_holder = self.label_short.clone();
             } else {
                 self.place_holder = self.elid.clone();
@@ -192,14 +204,12 @@ impl Element {
         &mut self,
         poolite: &Pool<Sqlite>,
         hvalue: &HashMap<String, String>,
-    ) -> Result<&mut Self, String>{
+    ) -> Result<&mut Self, String> {
         // get value dans la table
         if !self.elid.starts_with("_") {
             match hvalue.get(&self.elid) {
                 Some(v) => self.value = v.clone(),
-                None => {
-                    return Err(format!("Colonne {} non trouvée", self.elid))
-                }
+                None => return Err(format!("Colonne {} non trouvée", self.elid)),
             }
             // self.value = hvalue.get(&self.elid).unwrap().clone();
         }
@@ -219,7 +229,7 @@ impl Element {
         pooldb: &Pool<Postgres>,
         poolite: &Pool<Sqlite>,
         hvalue: &HashMap<String, String>,
-    ) -> Result<&mut Self, String>{
+    ) -> Result<&mut Self, String> {
         // valeur par défaut
         if !self.default.is_empty() {
             self.default = macvalue(&self.default, hvalue);
@@ -234,9 +244,7 @@ impl Element {
 
         // Calcul des propriétés en fonction du contexte
         match self.type_element.as_str() {
-            "counter" => {
-                self.read_only = true
-            }
+            "counter" => self.read_only = true,
             _ => {}
         }
         // Macrolex des autres propriétés
@@ -286,123 +294,122 @@ impl Element {
             self.items = kerdata(pooldb, &sql).await?;
         }
         Ok(self)
-
     }
 
-    /// fusion des propriétés éléments de la vue ou formulaire avec les élement déclarés au niveau de la table
-    fn merge(&mut self, helement: &Element) {
+    /// fusion des propriétés éléments de la vue ou formulaire avec les élement déclarés au niveau de la table (tel)
+    fn merge(&mut self, tel: &Element) {
         // let mut fusel = fullElement;
         if self.elid.is_empty() {
-            self.elid = helement.elid.clone();
+            self.elid = tel.elid.clone();
         }
         if self.actions.is_empty() {
-            self.actions = helement.actions.clone();
+            self.actions = tel.actions.clone();
         }
         if self.args.is_empty() {
-            self.args = helement.args.clone();
+            self.args = tel.args.clone();
         }
-        if self.ajax_sql != helement.ajax_sql {
-            self.ajax_sql = helement.ajax_sql.clone();
+        if self.ajax_sql.is_empty() {
+            self.ajax_sql = tel.ajax_sql.clone();
         }
-        if self.class_sqlite != helement.class_sqlite {
-            self.class_sqlite = helement.class_sqlite.clone();
+        if self.class_sqlite.is_empty() {
+            self.class_sqlite = tel.class_sqlite.clone();
         }
-        if self.col_align != helement.col_align {
-            self.col_align = helement.col_align.clone();
+        if self.col_align.is_empty() {
+            self.col_align = tel.col_align.clone();
         }
         if self.dataset.is_empty() {
-            self.dataset = helement.dataset.clone();
+            self.dataset = tel.dataset.clone();
         }
-        if self.default_sqlite != helement.default_sqlite {
-            self.default_sqlite = helement.default_sqlite.clone();
+        if self.default_sqlite.is_empty() {
+            self.default_sqlite = tel.default_sqlite.clone();
         }
-        if self.format_sqlite != helement.format_sqlite {
-            self.format_sqlite = helement.format_sqlite.clone();
+        if self.format_sqlite.is_empty() {
+            self.format_sqlite = tel.format_sqlite.clone();
         }
-        if self.group != helement.group {
-            self.group = helement.group.clone();
+        if self.group.is_empty() {
+            self.group = tel.group.clone();
         }
-        if self.help != helement.help {
-            self.help = helement.help.clone();
+        if self.help.is_empty() {
+            self.help = tel.help.clone();
         }
-        // if self.hide != fullelement.hide {
-        //     self.hide = fullelement.hide.clone();
-        // }
-        if self.hide_sqlite != helement.hide_sqlite {
-            self.hide_sqlite = helement.hide_sqlite.clone();
+        if tel.hide == true {
+            self.hide = true;
         }
-        // if self.hide_on_mobile != fel.hide_on_mobile {
-        //     self.hide_on_mobile = fel.hide_on_mobile.clone();
-        // }
-        if self.icon_name != helement.icon_name {
-            self.icon_name = helement.icon_name.clone();
+        if self.hide_sqlite.is_empty() {
+            self.hide_sqlite = tel.hide_sqlite.clone();
+        }
+        if tel.hide_on_mobile == true {
+            self.hide_on_mobile = true;
+        }
+        if self.icon_name.is_empty() {
+            self.icon_name = tel.icon_name.clone();
         }
         if self.items.is_empty() {
-            self.items = helement.items.clone();
+            self.items = tel.items.clone();
         }
-        if self.items_sql != helement.items_sql {
-            self.items_sql = helement.items_sql.clone();
+        if self.items_sql.is_empty() {
+            self.items_sql = tel.items_sql.clone();
         }
-        if self.jointure.column != helement.jointure.column {
-            self.jointure = helement.jointure.clone();
+        if self.jointure.column.is_empty() {
+            self.jointure = tel.jointure.clone();
         }
-        if self.label_long != helement.label_long {
-            self.label_long = helement.label_long.clone();
+        if self.label_long.is_empty() {
+            self.label_long = tel.label_long.clone();
         }
-        if self.label_short != helement.label_short {
-            self.label_short = helement.label_short.clone();
+        if self.label_short.is_empty() {
+            self.label_short = tel.label_short.clone();
         }
         if self.max == 0 {
-            self.max = helement.max;
+            self.max = tel.max;
         }
         if self.max_length == 0 {
-            self.max_length = helement.max_length;
+            self.max_length = tel.max_length;
         }
         if self.min == 0 {
-            self.min = helement.min;
+            self.min = tel.min;
         }
         if self.min_length == 0 {
-            self.min_length = helement.min_length;
+            self.min_length = tel.min_length;
         }
         if self.order == 0 {
-            self.order = helement.order;
+            self.order = tel.order;
         }
-        if self.params != helement.params {
-            self.params = helement.params.clone();
+
+        self.params.merge(&tel.params);
+
+        if self.pattern.is_empty() {
+            self.pattern = tel.pattern.clone();
         }
-        if self.pattern != helement.pattern {
-            self.pattern = helement.pattern.clone();
+        if self.place_holder.is_empty() {
+            self.place_holder = tel.place_holder.clone();
         }
-        if self.place_holder != helement.place_holder {
-            self.place_holder = helement.place_holder.clone();
+        if tel.protected == true {
+            self.protected = true;
         }
-        // if self.protected != fel.protected {
-        //    self.protected = fel.protected;
-        // }
-        // if self.read_only == false {
-        //     self.read_only = fel.read_only;
-        // }
-        // if self.required == false {
-        //     self.required = fel.required;
-        // }
-        if self.sort_direction != helement.sort_direction {
-            self.sort_direction = helement.sort_direction.clone();
+        if tel.read_only == true {
+            self.read_only = true;
         }
-        if self.sql_out != helement.sql_out {
-            self.sql_out = helement.sql_out.clone();
+        if tel.required == true {
+            self.required = true;
         }
-        if self.style_sqlite != helement.style_sqlite {
-            self.style_sqlite = helement.style_sqlite.clone();
+        if self.sort_direction.is_empty() {
+            self.sort_direction = tel.sort_direction.clone();
         }
-        if self.type_element != helement.type_element {
-            self.type_element = helement.type_element.clone();
+        if self.sql_out.is_empty() {
+            self.sql_out = tel.sql_out.clone();
         }
-        // if self.with_script != fel.with_script {
-        //     self.with_script = fel.with_script;
-        // }
-        // if self.with_sum != fel.with_sum {
-        //     self.with_sum = fel.with_sum;
-        // }
+        if self.style_sqlite.is_empty() {
+            self.style_sqlite = tel.style_sqlite.clone();
+        }
+        if self.type_element.is_empty() {
+            self.type_element = tel.type_element.clone();
+        }
+        if tel.with_script == true {
+            self.with_script = true;
+        }
+        if tel.with_sum == true {
+            self.with_sum = true;
+        }
     }
 }
 
@@ -641,6 +648,50 @@ impl Params {
             where_sql: String::new(),
             with_confirm: false,
             without_frame: false,
+        }
+    }
+    pub fn merge(&mut self, telp: &Params) {
+        if self.formid.is_empty() {
+            self.formid = telp.formid.clone();
+        }
+        if self.header.is_empty() {
+            self.header = telp.header.clone();
+        }
+        if self.description.is_empty() {
+            self.description = telp.description.clone();
+        }
+        if self.meta.is_empty() {
+            self.meta = telp.meta.clone();
+        }
+        if self.extra.is_empty() {
+            self.extra = telp.extra.clone();
+        }
+        if self.url.is_empty() {
+            self.url = telp.url.clone();
+        }
+        if self.src.is_empty() {
+            self.src = telp.src.clone();
+        }
+        if self.tableid.is_empty() {
+            self.tableid = telp.tableid.clone();
+        }
+        if self.target.is_empty() {
+            self.target = telp.target.clone();
+        }
+        if self.title.is_empty() {
+            self.title = telp.title.clone();
+        }
+        if self.viewid.is_empty() {
+            self.viewid = telp.viewid.clone();
+        }
+        if self.where_sql.is_empty() {
+            self.where_sql = telp.where_sql.clone();
+        }
+        if telp.with_confirm == true {
+            self.with_confirm = true;
+        }
+        if self.without_frame == true {
+            self.without_frame = true;
         }
     }
 }

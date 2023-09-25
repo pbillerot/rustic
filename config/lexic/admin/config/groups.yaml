@@ -47,3 +47,4 @@ forms:
         order: 10
       group_note:
         order: 20
+        required: true

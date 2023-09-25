@@ -31,6 +31,7 @@ elements:
     label_long: "Administrateur"
     label_short: "Admin"
     col_align: center
+    with_sum: true
   user_groupes:
     order: 60
     type_element: tag
@@ -39,6 +40,12 @@ elements:
     col_align: center
     width: xl
     items_sql: "select group_id as key, group_id as label from groups order by group_id"
+  user_subscription:
+    order: 70
+    type_element: amount
+    label_long: "Cotisation"
+    label_short: "Cotisation"
+    with_sum: true
   _pwd_change:
     order: 100
     type_element: button
@@ -67,7 +74,7 @@ elements:
 
 views:
   vall:
-    form_view: fview
+    #form_view: fview
     form_add: fadd
     form_edit: fedit
     type_view: table
@@ -76,6 +83,7 @@ views:
     title: "Comptes Utilisateurs"
     icon_name: user
     order_by: user_name
+    with_sum: true
     card:
       header:
         - user_name
@@ -93,6 +101,7 @@ views:
       user_is_admin:
         hide_on_mobile: true
       user_groupes:
+      user_subscription:
     filters:
     - user_name
     - user_email
@@ -120,6 +129,7 @@ views:
       user_email:
       user_is_admin:
       user_groupes:
+      user_subscription:
 
 forms:
   fadd:
@@ -134,12 +144,28 @@ forms:
     title: "Fiche compte"
     group: admin
     elements:
+      _card0:
+        type_element: card
+        order: 1
       user_name:
         order: 10
       user_email:
         order: 20
+      _card1:
+        type_element: card
+        order: 100
       user_groupes:
-        order: 60
+        order: 110
+      _card2:
+        type_element: card
+        order: 200
+      user_is_admin:
+        order: 210
+      _card3:
+        type_element: card
+        order: 300
+      user_subscription :
+        order: 310
   fview:
     title: "Fiche Compte"
     group: admin
@@ -154,8 +180,10 @@ forms:
         order: 50
       user_groupes:
         order: 60
-      _pwd_change:
+      user_subscription:
         order: 70
+      _pwd_change:
+        order: 100
   fprofil:
     title: "Mon profil"
     group: owner
@@ -178,7 +206,6 @@ forms:
     elements:
       user_name:
         order: 10
-        read_only: true
       user_email:
         order: 20
   fpwd:

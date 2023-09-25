@@ -179,6 +179,7 @@ pre {
     width: 99%;
     max-width: 99%;
 }
+.ui.form input[readonly] { background-color: #f5f5f5;}
 
 /* Mobile */
 @media only screen and (max-width: 767px) {

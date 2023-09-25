@@ -45,7 +45,6 @@ pub async fn records_elements(
         hsum.insert(vel.elid.clone(), 0.0);
     }
 
-    let qrows = vrows.len();
     let mut irow = 0;
     for hvalue in vrows {
         irow = irow + 1;
@@ -81,9 +80,11 @@ pub async fn records_elements(
             element.compute_prop(pooldb, poolite, &hvalue_computed).await?;
             if vel.elid == table.setting.key && !sql.is_empty() {
                 element.read_only = true;
+                element.required = false;
             }
             if vel.type_element == "counter" {
                 element.read_only = true;
+                element.required = false;
             }
             // Calcul des colonnes avec cumul
             if !vel.hide && vel.with_sum {
@@ -92,16 +93,12 @@ pub async fn records_elements(
                     Ok(val) => {
                         let sum = hsum.get(&vel.elid).unwrap() + val;
                         hsum.insert(element.elid.clone(), sum);
-                        // dernier enregistrement
-                        if irow >= qrows {
-                            // copie de la sum dans les éléments du dernier enregistrement
-                            element.sum = sum;
-                        }
                     },
                     Err(_) => {
                         // pas de cumul
                     }
                 };
+                element.sum = hsum.get(&vel.elid).unwrap().clone();
             }
             hel.insert(element.elid.clone(), element);
 

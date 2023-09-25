@@ -123,7 +123,7 @@ pub async fn view(
                 }
             },
             url_open: {
-                if !view.form_view.is_empty() || view.deletable {
+                if !view.form_view.is_empty() {
                     format!(
                         "/form/{appid}/{tableid}/{viewid}/{}/{}",
                         view.form_view, record[&table.setting.key].key_value

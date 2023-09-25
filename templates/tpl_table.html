@@ -69,7 +69,7 @@
   </thead>
   <tbody>
     {%- for tr in trs -%}
-    <tr class="{{tr.class}}" style="{{tr.style}}" data-url="{{tr.url_open}}" data-press="{{tr.url_press}}">
+    <tr class="{%if tr.url_open%}crud-jquery-url{%endif%} {{tr.class}}" style="{{tr.style}}" data-url="{{tr.url_open}}" data-press="{{tr.url_press}}">
       {%- if view.with_line_number -%}<td class="right aligned">{{loop.index}}</td>{%- endif -%}
       {%- for vel in view.velements -%}
         {%- if not vel.hide -%}
@@ -80,16 +80,22 @@
     {%- endfor -%}
   </tbody>
   <!-- footer avec les sum -->
-  {%- if view.with_sum and records | length > 0 -%}
+  {%- if view.with_sum and trs | length > 0 -%}
   <tfoot>
     <tr class="">
       {%- if view.with_line_number -%}<td>&nbsp;</td>{%- endif -%}
       {%- for vel in view.velements -%}
         {%- if not vel.hide -%}
           {%- if vel.with_sum -%}
-      <td nowrap style="{% if sums[vel.elid].sum < 0.0 %}color: red{%else%}color: green{% endif %}">
-            {{sums[vel.elid].sum}}
-      </td>
+            {%- if vel.type_element == "amount" -%}
+            <td nowrap style="text-align: right;{% if sums[vel.elid].sum < 0.0 %}color: red{%else%}color: green{% endif %}">
+              {{sums[vel.elid].sum | as_str | format_amount }}
+            </td>
+            {%- else -%}
+            <td nowrap style="text-align: center;{% if sums[vel.elid].sum < 0.0 %}color: red{%else%}color: green{% endif %}">
+              {{sums[vel.elid].sum}}
+            </td>
+            {%- endif -%}
           {%- else -%}
       <td></td>
           {%- endif -%}

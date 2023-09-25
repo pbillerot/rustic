@@ -169,7 +169,7 @@ $(document).ready(function () {
     // Envoi de la recherche au serveur
     $('.crud-search-go').on('click', function (event) {
         var $content = $(this).closest('.crud-search-div');
-        var $datas = {"search": $content.find('.crud-search-input').val().toLowerCase()};
+        var $datas = { "search": $content.find('.crud-search-input').val().toLowerCase() };
         var $url = $content.find('.crud-search-input').data("url");
         var request =
             $.ajax({
@@ -223,7 +223,7 @@ $(document).ready(function () {
         }
         var $sortid = this.id.substring(4)
 
-        var $datas = {"sortid": $sortid, "sortdirection": $sortdirection};
+        var $datas = { "sortid": $sortid, "sortdirection": $sortdirection };
         var $node = $(this).closest('table');
         // $datas.append("sortid", $sortid);
         // $datas.append("sortdirection", $sortdirection);
@@ -414,6 +414,18 @@ $(document).ready(function () {
         //   setTimeout(() => { window.location.reload(true) }, 1500);
         // });
         event.preventDefault();
+    });
+
+    // VALIDATION FORMULAIRE
+    $('.crud-jquery-submit').on('click', function (event) {
+        $(this).attr('disabled', 'disabled');
+        $('#myForm', document).submit();
+        event.preventDefault();
+    });
+    $('.field').on('keypress', function (event) {
+        if ( !$(this).hasClass("nosubmitkey") && event.which == 13) {
+            $('.crud-jquery-submit').trigger('click');
+        }
     });
 
     // UI SEMANTIC

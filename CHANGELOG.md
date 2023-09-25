@@ -8,6 +8,11 @@
 - static files
 - bouton coller le presse-papier
 - arg nécessaire dans l'url si view dans un formulaire pour mémoriser le retour
+- vérif sum d'une view
+
+0.19.0 - 25 septembre 2023
+- `added` TODO edit d'un enregistrement
+- `fixed` TODO correction champ _name dans un formulaire mais non défini dans élément
 
 0.18.0 - 23 septembre 2023
 - `added` search : recherche globale

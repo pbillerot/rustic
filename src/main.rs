@@ -13,6 +13,8 @@ use tera::Tera;
 
 use dotenv;
 
+use crate::middler::format_amount;
+
 // Déclarations des modules
 // mod constants;
 mod lexicer;
@@ -96,13 +98,14 @@ async fn main() -> std::io::Result<()> {
             std::process::exit(1);
         }
     };
-    let tera = match Tera::new("templates/**/*.html") {
+    let mut tera = match Tera::new("templates/**/*.html") {
         Ok(t) => t,
         Err(e) => {
             log::error!("Parsing error(s): {}", e);
             ::std::process::exit(1);
         }
     };
+    tera.register_filter("format_amount", format_amount);
 
     // AppState doit être crée devant le HyypServer, sinon le ptr sera privé au thread
     let data = AppState {

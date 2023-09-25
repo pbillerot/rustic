@@ -1,7 +1,10 @@
 
 {# Affichage d'une cellule avec la value de l'élémnt correspondant #}
 {%- macro table_elements(el) -%}
-{%- if el.type_element == "number" -%}
+{%- if el.type_element == "amount" -%}
+<td class="ui aligned" {% if el.style %}style="{{ el.style }}"{% else %}style="text-align: right;"{% endif %}
+{% if el.class %} class="{{ el.class }}"{% endif %}>{{el.value | format_amount}}</td>
+{%- elif el.type_element == "number" -%}
 <td class="ui aligned" {% if el.style %}style="{{ el.style }}"{% else %}style="text-align: center;"{% endif %}
 {% if el.class %} class="{{ el.class }}"{% endif %}>{{el.value}}</td>
 {%- elif el.type_element == "checkbox" -%}
@@ -10,7 +13,9 @@
 </td>
 {%- elif el.type_element == "tag" -%}
 <td class="ui aligned" {% if el.style %}style="{{ el.style }}"{% endif %}{% if el.class %} class="{{ el.class }}"{% endif %}>
-    {%- for item in el.value | split(pat=",") -%}<span style="background-color: lightgrey; padding: 0.2em 0.1em">{{item}}</span>&nbsp;{%- endfor -%}
+    {%- for item in el.value | split(pat=",") -%}
+    <div class="ui tag small label" style="margin-bottom: 0.5em;margin-right: 0.3em;">{{item}}</div>
+    {%- endfor -%}
 </td>
 {%- else -%}
 <td class="ui aligned" {% if el.style %}style="{{ el.style }}"{% endif %}{% if el.class %} class="{{ el.class }}"{% endif %}>{{el.value}}</td>
