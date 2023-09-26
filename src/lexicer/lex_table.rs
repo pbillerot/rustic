@@ -242,11 +242,6 @@ impl Element {
             self.value = self.default.clone();
         }
 
-        // Calcul des propriétés en fonction du contexte
-        match self.type_element.as_str() {
-            "counter" => self.read_only = true,
-            _ => {}
-        }
         // Macrolex des autres propriétés
         if !self.label_long.is_empty() {
             self.label_long = macvalue(&self.label_long, hvalue);
@@ -293,6 +288,31 @@ impl Element {
             let sql = macvalue(&self.items_sql, hvalue);
             self.items = kerdata(pooldb, &sql).await?;
         }
+
+        // Calcul des propriétés en fonction du contexte
+        // format_spec := [[fill]align][sign]['#']['0'][width]['.' precision]type
+        match self.type_element.as_str() {
+            "amount" => {
+                if self.format.is_empty() {
+                    if !self.value.is_empty() {
+                        self.format = format!("{:.2} €", self.value.parse::<f64>().unwrap());
+                    }
+                    self.col_align = "right".into();
+                    if self.class.is_empty() {
+                        self.class = "crud-cell-nowrap".into();
+                    }
+                }
+            },
+            "counter" => {
+                self.read_only = true;
+                self.required = false;
+                if self.col_align.is_empty() {
+                    self.col_align = "center".into();
+                }
+            },
+            _ => {}
+        }
+
         Ok(self)
     }
 

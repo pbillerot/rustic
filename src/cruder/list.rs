@@ -56,9 +56,6 @@ pub async fn crud_list(
     let mut where_filter = "".to_string();
 
     for element in &view.velements {
-        if element.hide {
-            continue;
-        }
         if element.elid.starts_with("_") {
             continue;
         }

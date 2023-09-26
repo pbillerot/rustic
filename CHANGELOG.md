@@ -10,6 +10,9 @@
 - arg nécessaire dans l'url si view dans un formulaire pour mémoriser le retour
 - vérif sum d'une view
 
+0.20.0 - 26 septembre 2023
+- `added` formulaire de consultation
+
 0.19.0 - 25 septembre 2023
 - `added` TODO edit d'un enregistrement
 - `fixed` TODO correction champ _name dans un formulaire mais non défini dans élément
@@ -37,7 +40,6 @@
 - `changed` formulaire de visualisation obligatoire pour visualiser un article
 - `changed` erreurs retournées au controlleur qui se chargera de les publier dans le flash_message
 - `added` suppression d'un article
-
 
 0.12.0 - 6 septembre 2023
 - `deleted` actix-web-flash-messages qui ne fonctionnait pas
@@ -167,3 +169,4 @@
 - suppression element.compute_sqlite
 - form_view obligatoire pour visualiser un enregistrement
 - view action hide supprimée
+- element.params.formid viewid tableid

@@ -82,10 +82,6 @@ pub async fn records_elements(
                 element.read_only = true;
                 element.required = false;
             }
-            if vel.type_element == "counter" {
-                element.read_only = true;
-                element.required = false;
-            }
             // Calcul des colonnes avec cumul
             if !vel.hide && vel.with_sum {
                 // let v = &element.value.clone();

@@ -37,7 +37,6 @@ elements:
     type_element: tag
     label_long: "Groupes"
     label_short: "Groupes"
-    col_align: center
     width: xl
     items_sql: "select group_id as key, group_id as label from groups order by group_id"
   user_subscription:
@@ -58,7 +57,7 @@ elements:
     label_long: "Sécurité"
     icon_name: lock
     params:
-      form: fmdp
+      formid: fmdp
   _new_password:
     type_element: password
     label_long: "Nouveau mot de passe"
@@ -74,7 +73,7 @@ elements:
 
 views:
   vall:
-    #form_view: fview
+    form_view: fview
     form_add: fadd
     form_edit: fedit
     type_view: table

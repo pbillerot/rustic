@@ -1,33 +1,50 @@
-
 {# Affichage d'une cellule avec la value de l'élémnt correspondant #}
 {%- macro form_elements(el) -%}
-{%- if el.type_element == "button" -%}
-<td></td>
-<td {% if el.style %}style="{{ el.style }}"{% endif %}{% if el.class %} class="{{ el.class }}"{% endif %}>
-<button onclick="window.open('{{el.params.url | safe}}', '_self');">{{el.label_long}}</button>
-</td>
-{%- elif el.type_element == "checkbox" -%}
-<td>{{el.label_long}}</td>
-<td {% if el.style %}style="{{ el.style }}"{% endif %}{% if el.class %} class="{{ el.class }}"{% endif %}>
-<input type="checkbox" {% if el.value == "1" %}checked{% endif %} disabled></input>
-</td>
-{%- elif el.type_element == "number" -%}
-<td>{{el.label_long}}</td>
-<td {% if el.style %}style="{{ el.style }}"{% else %}style="text-align: right;"{% endif %}
-{% if el.class %} class="{{ el.class }}"{% endif %}>{{el.value}}</td>
-{%- elif el.type_element == "checkbox" -%}
-<td>{{el.label_long}}</td>
-<td style="text-align: left;">[{{el.value}}]</td>
-{%- elif el.type_element == "tag" -%}
-<td>{{el.label_long}}</td>
-<td {% if el.style %}style="{{ el.style }}"{% endif %}{% if el.class %} class="{{ el.class }}"{% endif %}>
-    {%- for item in el.value | split(pat=",") -%}<span style="background-color: lightgrey; padding: 0.2em 0.1em">{{item}}</span>&nbsp;{%- endfor -%}
-</td>
-{%- else -%}
-<td>{{el.label_long}}</td>
-<td {% if el.style %}style="{{ el.style }}"{% endif %}{% if el.class %} class="{{ el.class }}"{% endif %}>
-    {{el.value}}
-</td>
-{%- endif -%}
-{%- endmacro form_elements -%}
 
+{%- if el.type_element == "button" -%}
+<!-- type button -->
+<div class="meta">
+  <button class="ui blue button crud-jquery-button" style="{{el.style}}" data-url="{{el.params.url}}"
+    data-target="{{el.params.target}}">
+    {{el.label_long}}
+  </button>
+</div>
+
+{%- elif el.type_element == "checkbox" -%}
+<!-- type checkbox -->
+<div class="content">
+  <h4>
+    {%- if el.value == "1" -%}
+    <i class="check square outline icon"></i> {{el.label_long}}
+    {%- else -%}
+    <i class="square outline icon"></i> {{el.label_long}}
+    {%- endif -%}
+  </h4>
+</div>
+
+{%- elif el.type_element == "tag" -%}
+<!-- type tag -->
+<div class="description">
+  <div class="meta">
+    <span>{{el.label_long}}</span>
+  </div>
+</div>
+{%- for item in el.value | split(pat=",") -%}
+<div class="ui tag small label" style="margin-bottom: 0.5em">{{item}}</div>
+{%- endfor -%}
+
+{%- else -%}
+<!-- type autre -->
+<div class="description">
+  <div class="meta">
+    <span>{{el.label_long}}</span>
+  </div>
+</div>
+<div class="header">
+  <span class="ui {{el.class}} text" style="{{el.style}}">
+    {%- if el.format -%}{{el.format}}{%- else -%}{{el.value}}{%- endif -%}
+  </span>
+</div>
+{%- endif -%}
+
+{%- endmacro form_elements -%}

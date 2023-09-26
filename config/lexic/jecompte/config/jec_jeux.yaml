@@ -10,7 +10,6 @@ elements:
     label_long: "id"
     label_short: "id"
     order: 10
-    hide: true
   partie:
     type_element: number
     label_long: "N° partie"
@@ -62,6 +61,7 @@ views:
     class-sqlite: "select case when ({partie} %2) = 0 then 'violet' else '' end"
     elements:
       id:
+        hide: true
       partie:
       joueur:
       points:

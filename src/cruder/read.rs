@@ -27,9 +27,6 @@ pub async fn crud_read(
     let mut bstart = true;
     let mut joins: Vec<String> = Vec::new();
     for element in velements {
-        if element.hide {
-            continue;
-        }
         if element.elid.starts_with("_") {
             continue;
         }
