@@ -19,7 +19,7 @@ use actix_web::{
     web,
     web::Path,
     Responder,
-    Result,
+    Result, HttpRequest,
 };
 use actix_web_lab::respond::Html;
 use serde::{Deserialize, Serialize};
@@ -28,6 +28,8 @@ use std::{
     // collections::HashMap,
     sync::atomic::Ordering,
 };
+
+use super::get_back;
 
 #[derive(Debug, Serialize, Deserialize, Clone)]
 pub struct Tr {
@@ -44,6 +46,7 @@ pub async fn view(
     path: Path<(String, String, String)>,
     data: web::Data<AppState>,
     session: Session,
+    req: HttpRequest
 ) -> Result<impl Responder> {
     let (appid, tableid, viewid) = path.into_inner();
     let ptr = data.plexic.load(Ordering::Relaxed);
@@ -204,6 +207,7 @@ pub async fn view(
     tx.insert("viewid", &viewid);
     tx.insert("key", &table.setting.key);
     tx.insert("filters", &filters);
+    tx.insert("back", &get_back(&req, &session));
 
     let html = data.template.render("tpl_view.html", &tx).unwrap();
 

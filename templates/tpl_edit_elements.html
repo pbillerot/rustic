@@ -5,107 +5,88 @@
 {%- elif el.type_element == "amount" -%}
 <!-- amount -->
 <div class="{%if el.required%}required {%endif%}bee-width-{{el.width}} field {{el.error}}">
-    <label for="{{el.elid}}">{{el.label_long}}</label>
-    {% if el.format %}
-    <input type="hidden" name="{{el.elid}}" id="{{el.elid}}" value="{{el.value}}">
-    <input {%if el.protected or el.read_only%}readonly="" {%endif%} {%if el.required%}required="" {%endif%} type="number" inputmode="numeric" step="0.01"
-        name="{{el.elid}}" id="{{el.elid}}" placeholder="{{el.place_holder}}" {%if el.pattern %}pattern="{{el.pattern}}"{%endif%}"
-        value="{{el.format}}">
-    {% else %}
-    <input {%if el.protected or el.read_only%}readonly="" {%endif%} type="number" inputmode="numeric" step="0.01"
-        name="{{el.elid}}" id="{{el.elid}}" placeholder="{{el.place_holder}}" {%if el.pattern %}pattern="{{el.pattern}}"{%endif%}"
-        value="{{el.value}}">
-    {%- endif -%}
-    {% if el.help %}<span class="ui small blue text">{{el.help | markdown}}</span>{%endif%}
+  <label for="{{el.elid}}">{{el.label_long}}</label>
+  <input {%if el.protected or el.read_only%}readonly="" {%endif%} type="number" inputmode="numeric" step="0.01"
+    name="{{el.elid}}" id="{{el.elid}}" placeholder="{{el.place_holder}}" {%if el.pattern %}pattern="{{el.pattern}}"
+    {%endif%}" value="{{el.value}}">
+  {% if el.help %}<span class="ui small blue text">{{el.help | markdown}}</span>{%endif%}
 </div>
 {%- elif el.type_element == "button" -%}
 <!-- button -->
 <td></td>
 <td {% if el.style %}style="{{ el.style }}" {% endif %}{% if el.class %} class="{{ el.class }}" {% endif %}>
-    <button onclick="window.open('{{el.params.url | safe}}', '_self');" {% if el.read_only %}disabled{% endif
-        %}>{{el.label_long}}</button>
+  <button onclick="window.open('{{el.params.url | safe}}', '_self');" {% if el.read_only %}disabled{% endif
+    %}>{{el.label_long}}</button>
 </td>
 {%- elif el.type_element == "checkbox" -%}
 <!-- checkbox -->
 <div class="inline field {{el.error}}">
-    <div class="ui checkbox">
-        <input type="checkbox" name="{{el.elid}}" id="{{el.elid}}" {%if el.protected or el.read_only%}readonly=""
-            {%endif%} {% if el.value == '1' %} checked{% endif %}>
-        <label for="{{el.elid}}">{{el.label_long}}</label>
-        {% if el.help %}<span class="ui small blue text">{{el.help | markdown}}</span>{%endif%}
-    </div>
+  <div class="ui checkbox">
+    <input type="checkbox" name="{{el.elid}}" id="{{el.elid}}" {%if el.protected or el.read_only%}readonly="" {%endif%}
+      {% if el.value=='1' %} checked{% endif %}>
+    <label for="{{el.elid}}">{{el.label_long}}</label>
+    {% if el.help %}<span class="ui small blue text">{{el.help | markdown}}</span>{%endif%}
+  </div>
 </div>
 {%- elif el.type_element == "list" -%}
 <!-- list -->
 <div class="{%if el.required%}required {%endif%}bee-width-{{el.width}} field {{el.error}}">
-    <label for="{{el.elid}}">{{el.label_long}}</label>
-    <select name="{{el.elid}}" id="{{el.elid}}" {%if el.required%}required="" {%endif%} class="ui fluid dropdown {% if
+  <label for="{{el.elid}}">{{el.label_long}}</label>
+  <select name="{{el.elid}}" id="{{el.elid}}" {%if el.required%}required="" {%endif%} class="ui fluid dropdown {% if
         el.class %}{{ el.class }}{% endif %}" {% if el.style %}style="{{ el.style }}" {% endif %} {% if el.read_only
-        %}readonly="" {% endif %}>
-        {%- for item in el.items -%}
-        {%- if item.key in el.value -%}
-        <option value="{{item.key}}" selected="">{{item.label}}</option>
-        {%- else -%}
-        <option value="{{item.key}}">{{item.label}}</option>
-        {%- endif -%}
-        {%- endfor -%}
-    </select>
-    {% if el.help %}<span class="ui small blue text">{{el.help | markdown}}</span>{%endif%}
+    %}readonly="" {% endif %}>
+    {%- for item in el.items -%}
+    {%- if item.key in el.value -%}
+    <option value="{{item.key}}" selected="">{{item.label}}</option>
+    {%- else -%}
+    <option value="{{item.key}}">{{item.label}}</option>
+    {%- endif -%}
+    {%- endfor -%}
+  </select>
+  {% if el.help %}<span class="ui small blue text">{{el.help | markdown}}</span>{%endif%}
 </div>
 {%- elif el.type_element == "number" -%}
 <!-- number -->
 <div class="{%if el.required%}required {%endif%}bee-width-{{el.width}} field {{el.error}}">
-    <label for="{{el.elid}}">{{el.label_long}}</label>
-    {% if el.format %}
-    <input type="hidden" name="{{el.elid}}" id="{{el.elid}}" value="{{el.value}}">
-    <input {%if el.protected or el.read_only%}readonly="" {%endif%} {%if el.required%}required="" {%endif%} type="number" inputmode="numeric" step="any"
-        name="{{el.elid}}" id="{{el.elid}}" placeholder="{{el.place_holder}}" {%if el.pattern %}pattern="{{el.pattern}}"{%endif%}"
-        value="{{el.format}}">
-    {% else %}
-    <input {%if el.protected or el.read_only%}readonly="" {%endif%} {%if el.required%}required="" {%endif%} type="number" inputmode="numeric" step="any"
-        name="{{el.elid}}" id="{{el.elid}}" placeholder="{{el.place_holder}}" {%if el.pattern %}pattern="{{el.pattern}}"{%endif%}"
-        value="{{el.value}}">
-    {%- endif -%}
-    {% if el.help %}<span class="ui small blue text">{{el.help | markdown}}</span>{%endif%}
+  <label for="{{el.elid}}">{{el.label_long}}</label>
+  <input {%if el.protected or el.read_only%}readonly="" {%endif%} {%if el.required%}required="" {%endif%} type="number"
+    inputmode="numeric" step="any" name="{{el.elid}}" id="{{el.elid}}" placeholder="{{el.place_holder}}" {%if el.pattern
+    %}pattern="{{el.pattern}}" {%endif%}" value="{{el.value}}">
+  {% if el.help %}<span class="ui small blue text">{{el.help | markdown}}</span>{%endif%}
 </div>
 {%- elif el.type_element == "tag" -%}
 <!-- tag -->
 <div class="{%if el.required%}required {%endif%}bee-width-{{el.width}} field {{el.error}}">
-    <label for="{{el.elid}}">{{el.label_long}}</label>
-    <select multiple="" name="{{el.elid}}" id="{{el.elid}}" {%if el.required%}required="" {%endif%} class="ui fluid dropdown {% if
+  <label for="{{el.elid}}">{{el.label_long}}</label>
+  <select multiple="" name="{{el.elid}}" id="{{el.elid}}" {%if el.required%}required="" {%endif%} class="ui fluid dropdown {% if
         el.class %}{{ el.class }}{% endif %}" {% if el.style %}style="{{ el.style }}" {% endif %} {% if el.read_only
-        %}readonly="" {% endif %}>
-        {%- for item in el.items -%}
-        {%- if item.key in el.value -%}
-        <option value="{{item.key}}" selected="">{{item.label}}</option>
-        {%- else -%}
-        <option value="{{item.key}}">{{item.label}}</option>
-        {%- endif -%}
-        {%- endfor -%}
-    </select>
-    {% if el.help %}<span class="ui small blue text">{{el.help | markdown}}</span>{%endif%}
+    %}readonly="" {% endif %}>
+    {%- for item in el.items -%}
+    {%- if item.key in el.value -%}
+    <option value="{{item.key}}" selected="">{{item.label}}</option>
+    {%- else -%}
+    <option value="{{item.key}}">{{item.label}}</option>
+    {%- endif -%}
+    {%- endfor -%}
+  </select>
+  {% if el.help %}<span class="ui small blue text">{{el.help | markdown}}</span>{%endif%}
 </div>
 {%- elif el.type_element == "textarea" -%}
 <!-- textarea -->
 <div class="{%if el.required%}required {%endif%}bee-width-{{el.width}} field {{el.error}} nosubmitkey">
-    <label for="{{el.elid}}">{{el.label_long}}</label>
-    <textarea {%if el.protected or el.read_only%}readonly="" {%endif%} {%if el.required%}required="" {%endif%} name="{{el.elid}}"
-        id="{{el.elid}}">{{el.value}}</textarea>
-    {% if el.help %}<span class="ui small blue text">{{el.help | markdown}}</span>{%endif%}
+  <label for="{{el.elid}}">{{el.label_long}}</label>
+  <textarea {%if el.protected or el.read_only%}readonly="" {%endif%} {%if el.required%}required="" {%endif%}
+    name="{{el.elid}}" id="{{el.elid}}">{{el.value}}</textarea>
+  {% if el.help %}<span class="ui small blue text">{{el.help | markdown}}</span>{%endif%}
 </div>
 {%- elif el.type_element in ["date","email","password","tel","text","time", "url"] -%}
 <!-- date email password tel text time url -->
 <div class="{%if el.required%}required {%endif%}bee-width-{{el.width}} field {{el.error}}">
-    <label for="{{el.elid}}">{{el.label_long}}</label>
-    {% if el.format %}
-    <input type="hidden" name="{{el.elid}}" id="{{el.elid}}" value="{{el.value}}">
-    <input {%if el.protected or el.read_only%}readonly="" {%endif%} type="{{el.type_element}}" name="{{el.elid}}"
-        id="{{el.elid}}" placeholder="{{el.place_holder}}" {%if el.pattern %}pattern="{{el.pattern}}"{%endif%}" value="{{el.format}}">
-    {% else %}
-    <input {%if el.protected or el.read_only%}readonly=""{%endif%} {%if el.required%}required=""{%endif%} type="{{el.type_element}}" name="{{el.elid}}"
-        id="{{el.elid}}" placeholder="{{el.place_holder}}" {%if el.pattern %}pattern="{{el.pattern}}"{%endif%} value="{{el.value}}">
-    {%- endif -%}
-    {% if el.help %}<span class="ui small blue text">{{el.help | markdown}}</span>{%endif%}
+  <label for="{{el.elid}}">{{el.label_long}}</label>
+  <input {%if el.protected or el.read_only%}readonly="" {%endif%} {%if el.required%}required="" {%endif%}
+    type="{{el.type_element}}" name="{{el.elid}}" id="{{el.elid}}" placeholder="{{el.place_holder}}" {%if el.pattern
+    %}pattern="{{el.pattern}}" {%endif%} value="{{el.value}}">
+  {% if el.help %}<span class="ui small blue text">{{el.help | markdown}}</span>{%endif%}
 </div>
 {%- endif -%}
 {%- endmacro edit_elements -%}

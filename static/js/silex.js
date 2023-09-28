@@ -423,9 +423,25 @@ $(document).ready(function () {
         event.preventDefault();
     });
     $('.field').on('keypress', function (event) {
-        if ( !$(this).hasClass("nosubmitkey") && event.which == 13) {
+        if (!$(this).hasClass("nosubmitkey") && event.which == 13) {
             $('.crud-jquery-submit').trigger('click');
         }
+    });
+
+    // SUPPRESSION D'UN ENREGISTREMENT
+    $('.crud-jquery-delete').on('click', function (event) {
+        $('#crud-action').html($(this).attr("title"));
+        $('#crud-modal-confirm')
+            .modal({
+                closable: false,
+                onDeny: function () {
+                    return true;
+                },
+                onApprove: function () {
+                    $('#crud-form-delete-id', document).submit();
+                }
+            }).modal('show');
+        event.preventDefault();
     });
 
     // UI SEMANTIC

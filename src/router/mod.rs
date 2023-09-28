@@ -55,3 +55,7 @@ pub use self::route_search::search;
 // /lexic/action
 mod route_lexic;
 pub use self::route_lexic::lexicall;
+
+// gestion des URL de retour
+mod back;
+pub use back::get_back;

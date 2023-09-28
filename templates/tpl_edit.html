@@ -6,7 +6,7 @@
 {%- block menu -%}{% include "tpl_menu.html" %}{%- endblock -%}
 
 {%- block navigation -%}
-<a href="/view/{{appid}}/{{tableid}}/{{viewid}}" class="item" style="padding: 0.3em;">
+<a href="{{back}}" class="item" style="padding: 0.3em;">
   <i class="arrow left icon"></i>
   <div class="header item">{{view.title}}</div>
 </a>
@@ -31,8 +31,7 @@
       <div class="header">&nbsp;{{form.title}}</div>
     </div>
   </div>
-  <p></p>
-  <form class= "ui form" id="myForm" action="/update/{{appid}}/{{tableid}}/{{viewid}}/{{formid}}/{{id}}" method="post">
+  <form class= "ui form attached segment" id="myForm" action="/update/{{appid}}/{{tableid}}/{{viewid}}/{{formid}}/{{id}}" method="post">
     {% set_global card_on = 0 %}
     {%- for vel in form.velements -%}
       {%- if record[vel.elid].type_element == "card" -%}

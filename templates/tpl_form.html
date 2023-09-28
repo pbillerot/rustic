@@ -6,7 +6,7 @@
 {%- block menu -%}{% include "tpl_menu.html" %}{%- endblock -%}
 
 {%- block navigation -%}
-<a href="/view/{{appid}}/{{tableid}}/{{viewid}}" class="item" style="padding: 0.3em;">
+<a href="{{back}}" class="item" style="padding: 0.3em;">
   <i class="arrow left icon"></i>
   <div class="header item">{{view.title}}</div>
 </a>
@@ -56,7 +56,7 @@
         {%- endif -%}{# end form edit #}
         <div class="header">
           <i class="large blue {{view.icon_name}} icon"></i>
-          {{form.title}} : [{{record[table.setting.key].value}}]
+          {{form.title}} <span style="color: maroon">{{record[table.setting.key].value|upper}}</span>
         </div>
       </div>
       <div class="content">
@@ -90,9 +90,10 @@
       <div class="content">
         {# TODO card view #}
         {%- endif -%}{# end if type card #}
+      {%- else -%}
+        {# dessin des élements autre que card #}
+        {{ macros::form_elements(el=record[vel.elid]) }}
       {%- endif -%}{# end if card #}
-      {# dessin des élements #}
-      {{ macros::form_elements(el=record[vel.elid]) }}
     {%- endif -%}{# end if not hide #}
   {%- endfor -%}{# end loop velements #}
     {# end card courante #}
@@ -102,8 +103,42 @@
 {%- endblock -%}
 
 {%- block forms -%}
-{%- if view.deletable -%}
-<form id="myform" action="/delete/{{appid}}/{{tableid}}/{{viewid}}/{{id}}" method="post">
-</form>
-{%- endif -%}
+  <!-- Demande de confirmation de la suppression -->
+  <div id="crud-modal-confirm" class="ui tiny modal">
+    <div class="header" id="crud-action">texte à venir</div>
+    <div class="content">
+      <p>Veuillez le confirmer</p>
+    </div>
+    <div class="actions">
+      <div class="ui cancel button">Annuler</div>
+      <div class="ui approve button">Je confirme</div>
+    </div>
+  </div>
+  <form id="crud-form-delete-id" action="/delete/{{appid}}/{{tableid}}/{{viewid}}/{{id}}" method="POST">
+  </form>
+  <!-- Affichage d'une image en popup-->
+  <div id="crud-modal-image" class="ui fullscreen modal">
+    <div class="actions">
+      <div class="ui cancel button">Fermer</div>
+    </div>
+    <div class="image content">
+      <img id="crud-image" class="image center aligned" src="">
+    </div>
+  </div> <!-- end modal image -->
+  <!-- Affichage d'un pdf en popup-->
+  <div id="crud-modal-pdf" class="ui fullscreen modal">
+    <div class="actions">
+      <div class="ui cancel button">Fermer</div>
+    </div>
+    <div class="content">
+    </div>
+  </div> <!-- end modal image -->
+  <!-- Affichage d'un chart en popup-->
+  <div id="crud-modal-chart" class="ui fullscreen modal">
+    <div class="actions">
+      <div class="ui cancel button">Fermer</div>
+    </div>
+    <div class="image content" id="crud-chart">
+    </div>
+  </div> <!-- end modal image -->
 {%- endblock -%}

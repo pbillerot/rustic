@@ -12,7 +12,9 @@
 {%- elif el.type_element == "tag" -%}
 <td class="ui {{el.col_align}} aligned {{el.class}}" style="{{el.style}}">
     {%- for item in el.value | split(pat=",") -%}
-    <div class="ui tag mini label" style="margin-bottom: 0.5em;margin-right: 0.3em;">{{item}}</div>
+    {%- if item -%}
+    <div class="ui tag tiny label" style="margin-bottom: 0.5em;margin-right: 0.3em;">{{item}}</div>
+    {%- endif -%}
     {%- endfor -%}
 </td>
 {%- else -%}

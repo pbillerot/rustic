@@ -1,14 +1,18 @@
 # CHANGELOG
 
-# Historique des modifications
+## Historique des modifications
 
 ### TODO :
 - ajout csrf -> pas évident
 - question AtomicPtr::fetch_update : la mémoire de l'ancien pointeur sera-t-elle libérée après la fin des requests en cours ?
-- static files
 - bouton coller le presse-papier
 - arg nécessaire dans l'url si view dans un formulaire pour mémoriser le retour
-- vérif sum d'une view
+- journal des ordres mode debug
+
+### VERSION
+
+0.20.1 - 28 septembre 2023
+- `added` back : gestion du retour
 
 0.20.0 - 26 septembre 2023
 - `added` formulaire de consultation
@@ -152,7 +156,7 @@
 0.1.0 - 1er août 2023
 - `added` initialisation dans github avec des bricoles
 
-###### Types de changements:
+### Types de changements:
 `added` *pour les nouvelles fonctionnalités.*
 `changed` *pour les changements aux fonctionnalités préexistantes.*
 `deprecated` *pour les fonctionnalités qui seront bientôt supprimées*.

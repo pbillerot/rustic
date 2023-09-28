@@ -97,7 +97,7 @@ pub async fn crud_update(
         }
     };
 
-    Ok(format!("[{sql:?}] {result:?}"))
+    Ok(format!("{sql:?} {result:?}"))
 
 }
 

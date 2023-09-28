@@ -1,11 +1,13 @@
 //! Ouverture d'une view
 //!
+//!
+use super::get_back;
 use crate::cruder::insert::crud_insert;
 use crate::middler::set_flash;
 use crate::AppState;
 use crate::middler::flash::FlashMessage;
 use actix_session::Session;
-use actix_web::{HttpResponse, web};
+use actix_web::{HttpResponse, HttpRequest, web};
 use actix_web::http::header::LOCATION;
 use actix_web::web::Path;
 use std::{
@@ -19,6 +21,7 @@ pub async fn add_post(
     web::Form(form_posted): web::Form<Vec<(String, String)>>,
     data: web::Data<AppState>,
     session: Session,
+    req: HttpRequest,
 ) -> HttpResponse {
 
 
@@ -34,7 +37,7 @@ pub async fn add_post(
     match crud_insert(&data.db, &data.dblite, &table, &form.velements, &form_posted).await {
             Ok(s) => {
                 set_flash(&session, FlashMessage::success(&s)).unwrap();
-                location.push_str(format!("/view/{appid}/{tableid}/{viewid}").as_str());
+                location.push_str(get_back(&req, &session).as_str())
             },
             Err(e) => {
                 set_flash(&session, FlashMessage::error(format!("{e:?}").as_str())).unwrap();

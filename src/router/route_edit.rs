@@ -13,7 +13,7 @@ use actix_web::{
     web,
     web::Path,
     Responder,
-    Result,
+    Result, HttpRequest,
 };
 use actix_web_lab::respond::Html;
 // use actix_web_lab::respond::Html;
@@ -22,11 +22,14 @@ use std::{
     sync::atomic::Ordering
 };
 
+use super::get_back;
+
 // #[get("/edit/{appid}/{tableid}/{viewid}/{formid}/{id}")]
 pub async fn edit(
     path: Path<(String, String, String, String, String)>,
     data: web::Data<AppState>,
     session: Session,
+    req: HttpRequest,
 ) -> Result<impl Responder> {
 
     let (appid, tableid, viewid, formid, id) = path.into_inner();
@@ -67,6 +70,7 @@ pub async fn edit(
     context.insert("formid", &formid);
     context.insert("id", &id);
     context.insert("key", &table.setting.key);
+    context.insert("back", &get_back(&req, &session));
 
     let html = data.template.render("tpl_edit.html", &context).unwrap();
 

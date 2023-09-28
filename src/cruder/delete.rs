@@ -28,7 +28,7 @@ pub async fn crud_delete(
         }
     };
 
-    Ok(format!("[{sql:?}] {result:?}"))
+    Ok(format!("{sql:?} {result:?}"))
 
 }
 

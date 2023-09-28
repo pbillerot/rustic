@@ -104,7 +104,7 @@ pub async fn crud_insert(
     sql.push_str(")");
 
     match sqlx::query(&sql).execute(pooldb).await {
-        Ok(result) => Ok(format!("[{sql:?}] {result:?}")),
+        Ok(result) => Ok(format!("{sql:?} {result:?}")),
         Err(e) => {
             let msg = format!("{sql:?} : {e:?}");
             log::error!("{msg}");

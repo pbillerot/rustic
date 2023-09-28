@@ -29,9 +29,13 @@
     <span>{{el.label_long}}</span>
   </div>
 </div>
+<div class="header" style="min-height:1.5em;">
 {%- for item in el.value | split(pat=",") -%}
-<div class="ui tag small label" style="margin-bottom: 0.5em">{{item}}</div>
+{%- if item -%}
+<div class="ui tag tiny label" style="margin-bottom: 0.5em">{{item}}</div>
+{%- endif -%}
 {%- endfor -%}
+</div>
 
 {%- else -%}
 <!-- type autre -->
@@ -40,7 +44,7 @@
     <span>{{el.label_long}}</span>
   </div>
 </div>
-<div class="header">
+<div class="header" style="min-height:1.5em;">
   <span class="ui {{el.class}} text" style="{{el.style}}">
     {%- if el.format -%}{{el.format}}{%- else -%}{{el.value}}{%- endif -%}
   </span>

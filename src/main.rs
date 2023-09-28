@@ -7,7 +7,7 @@ use std::io::Write;
 use std::sync::Arc;
 use std::sync::atomic::AtomicPtr;
 use actix_session::{
-    storage::CookieSessionStore, SessionMiddleware,
+    storage::CookieSessionStore, SessionMiddleware, config::PersistentSession,
 };
 use tera::Tera;
 
@@ -122,6 +122,8 @@ async fn main() -> std::io::Result<()> {
         }
     };
 
+    let key = Key::generate();
+
     log::info!("starting HTTP server at http://0.0.0.0:8080");
 
     HttpServer::new(move|| {
@@ -137,15 +139,15 @@ async fn main() -> std::io::Result<()> {
 
             // activation de actix-session
             .wrap(
-                SessionMiddleware::builder(CookieSessionStore::default(), Key::generate())
+                SessionMiddleware::builder(CookieSessionStore::default(), key.clone())
                     .cookie_name("_session".to_string())
-                    .cookie_secure(false) // à true en https
+                    .cookie_secure(true) // à true en https
                     .cookie_http_only(true)
                     .cookie_path("/".to_string())
                     // customize session and cookie expiration
-                    // .session_lifecycle(
-                    //     PersistentSession::default().session_ttl(cookie::time::Duration::minutes(10)),
-                    // )
+                    .session_lifecycle(
+                        PersistentSession::default().session_ttl(cookie::time::Duration::minutes(10)),
+                    )
                     .build(),
             )
 

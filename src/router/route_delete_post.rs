@@ -5,7 +5,7 @@ use crate::middler::set_flash;
 use crate::AppState;
 use crate::middler::flash::FlashMessage;
 use actix_session::Session;
-use actix_web::{HttpResponse, web};
+use actix_web::{HttpResponse, HttpRequest, web};
 use actix_web::http::header::LOCATION;
 use actix_web::web::Path;
 use std::{
@@ -13,11 +13,14 @@ use std::{
     sync::atomic::Ordering
 };
 
+use super::get_back;
+
 // #[post("/delete/{appid}/{tableid}/{viewid}/{id}")]
 pub async fn delete_post(
     path: Path<(String, String, String, String)>,
     data: web::Data<AppState>,
     session: Session,
+    req: HttpRequest,
 ) -> HttpResponse {
 
 
@@ -31,7 +34,7 @@ pub async fn delete_post(
     match crud_delete(&data.db, &table, &id).await {
             Ok(s) => {
                 set_flash(&session, FlashMessage::success(&s)).unwrap();
-                location.push_str(format!("/view/{appid}/{tableid}/{viewid}").as_str());
+                location.push_str(get_back(&req, &session).as_str())
             },
             Err(e) => {
                 set_flash(&session, FlashMessage::error(format!("{e:?}").as_str())).unwrap();

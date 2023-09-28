@@ -173,16 +173,16 @@ forms:
         order: 10
       user_email:
         order: 20
-      _card_MDP:
-        order: 30
-      user_is_admin:
-        order: 50
-      user_groupes:
-        order: 60
       user_subscription:
-        order: 70
-      _pwd_change:
+        order: 30
+      _card_MDP:
         order: 100
+      user_is_admin:
+        order: 110
+      user_groupes:
+        order: 120
+      _pwd_change:
+        order: 130
   fprofil:
     title: "Mon profil"
     group: owner

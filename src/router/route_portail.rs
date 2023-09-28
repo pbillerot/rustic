@@ -49,6 +49,7 @@ pub async fn portail(data: web::Data<AppState>,
     context.insert("messages", &messages);
     context.insert("portail", unsafe { &(*ptr).portail });
     context.insert("applications", &vapp);
+    context.insert("back", "");
     let html = data.template.render("tpl_portail.html", &context).unwrap();
 
     Ok(Html(html))
