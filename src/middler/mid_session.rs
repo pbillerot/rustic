@@ -48,12 +48,12 @@ where
 
     fn call(&self, req: ServiceRequest) -> Self::Future {
         // https://github.com/TianLangStudio/rust_cms/blob/master/web/src/middleware.rs
-        // let path = req.path().to_string();
+        let path = req.path().to_string();
         let session = &req.get_session();
         log::info!("11 {:?}", session.entries());
 
         if get_back(&session).is_empty()  { // && path.find("/login").is_none()
-            log::warn!("Session expired");
+            log::warn!("Session expired {}", path);
             session.insert("back", "/").unwrap();
             let (request, _pl) = req.into_parts();
             let response = HttpResponse::Found()

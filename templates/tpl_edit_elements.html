@@ -56,7 +56,7 @@
 </div>
 {%- elif el.type_element == "tag" -%}
 <!-- tag -->
-<div class="{%if el.required%}required {%endif%}bee-width-{{el.width}} field {{el.error}}">
+<div class="{%if el.required%}required {%endif%}bee-width-{{el.width}} field {{el.error}}" style="min-width: 215px">
   <label for="{{el.elid}}">{{el.label_long}}</label>
   <select multiple="" name="{{el.elid}}" id="{{el.elid}}" {%if el.required%}required="" {%endif%} class="ui fluid dropdown {% if
         el.class %}{{ el.class }}{% endif %}" {% if el.style %}style="{{ el.style }}" {% endif %} {% if el.read_only

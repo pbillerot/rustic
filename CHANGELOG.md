@@ -11,7 +11,10 @@
 
 ### VERSION
 
-0.20.2 - 28 septembre 2023
+0.21.0 - 29 septembre 2023
+- `added` formualire d'ajout stylé
+
+0.20.2 - 29 septembre 2023
 - `fixed` correction gestion du reour
 
 0.20.1 - 28 septembre 2023

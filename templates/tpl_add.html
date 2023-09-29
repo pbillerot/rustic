@@ -1,39 +1,48 @@
 {%- extends "tpl_base.html" -%}
 {% import "tpl_edit_elements.html" as macros %}
-{%- block title -%}
-<span>&nbsp;<b>{{ application.title }}</b></span>
-{%- endblock -%}
+
+{%- block title -%}{%- endblock -%}
 
 {%- block menu -%}{% include "tpl_menu.html" %}{%- endblock -%}
 
 {%- block navigation -%}
-<span style="float: left; margin-left: 1em;"><a href="{{back}}"><button><- retour
-        <b>{{view.title}}</b> </button></a></span>
+<a href="{{back}}" class="item" style="padding: 0.3em;">
+  <i class="arrow left icon"></i>
+  <div class="header item">abandon</div>
+</a>
 {%- endblock -%}
 
 {%- block boutons -%}
-<span style="float: right;">
-  <button onclick="document.getElementById('myform').submit();">Ajouter</button></a>
-</span>
+<div class="item">
+  <button class="ui labeled icon button crud-jquery-submit">
+    <i class="check icon"></i>
+    Ajouter
+  </button>
+</div>
 {%- endblock -%}
 
 {%- block content -%}
-<h1>{{form.title}}</h1>
-<form id="myform" action="/insert/{{appid}}/{{tableid}}/{{viewid}}/{{formid}}" method="post">
-  <table>
-    <tr>
-      <td>
-        <table>
-          {%- for vel in form.velements -%}
-          <tr>
-            {%- if record[vel.elid] -%}
-            {{ macros::edit_elements(el=record[vel.elid]) }}
-            {%- endif -%}
-          </tr>
-          {%- endfor -%}
-        </table>
-      </td>
-    </tr>
-  </table>
-</form>
+<div class="ui container">
+  {% include "tpl_flash.html" %}
+  <!-- FORMULAIRE -->
+  <div class="ui attached icon message">
+    <i class="{%if form.icon_name%}{{form.icon_name}}{%else%}{{view.icon_name}}{%endif%} blue inbox icon"></i>
+    <div class="content">
+      <div class="header">&nbsp;{{form.title}}</div>
+    </div>
+  </div>
+  <form class= "ui form attached segment" id="myForm" action="/insert/{{appid}}/{{tableid}}/{{viewid}}/{{formid}}" method="post">
+    {% set_global card_on = 0 %}
+    {%- for vel in form.velements -%}
+      {%- if record[vel.elid].type_element == "card" -%}
+      <!-- {{card_on}} -->
+        {%- if card_on == 1 -%}</div>{%- endif -%}
+        <div class="fields">{%- set_global card_on = 1 -%}
+      {%- else -%}
+        {{ macros::edit_elements(el=record[vel.elid]) }}
+      {%- endif -%}
+    {%- endfor -%}
+    {%- if card_on == 1 -%}</div>{%- endif -%}
+  </form>
+</div>
 {%- endblock -%}
