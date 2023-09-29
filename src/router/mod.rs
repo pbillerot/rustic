@@ -3,6 +3,9 @@
 ///
 
 
+// mod route_login;
+// pub use self::route_login::login;
+
 // /
 mod route_portail;
 pub use self::route_portail::portail;
@@ -58,4 +61,5 @@ pub use self::route_lexic::lexicall;
 
 // gestion des URL de retour
 mod back;
+pub use back::compute_back;
 pub use back::get_back;

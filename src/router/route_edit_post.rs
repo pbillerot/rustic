@@ -5,7 +5,7 @@ use crate::cruder::update::crud_update;
 use crate::middler::flash::FlashMessage;
 use crate::middler::set_flash;
 use actix_session::Session;
-use actix_web::{HttpResponse, web, HttpRequest};
+use actix_web::{HttpResponse, web};
 use actix_web::http::header::LOCATION;
 use actix_web::web::Path;
 use std::{
@@ -20,7 +20,6 @@ pub async fn edit_post(
     web::Form(form_posted): web::Form<Vec<(String, String)>>,
     data: web::Data<AppState>,
     session: Session,
-    req: HttpRequest,
 ) -> HttpResponse {
 
     let (appid, tableid, viewid, formid, id) = path.into_inner();
@@ -36,7 +35,7 @@ pub async fn edit_post(
             Ok(s) => {
                 set_flash(&session, FlashMessage::success(&s)).unwrap();
                 // location.push_str(format!("/form/{appid}/{tableid}/{viewid}/{formid}/{id}").as_str());
-                location.push_str(get_back(&req, &session).as_str())
+                location.push_str(get_back(&session).as_str())
             },
             Err(e) => {
                 set_flash(&session, FlashMessage::error(format!("{e:?}").as_str())).unwrap();

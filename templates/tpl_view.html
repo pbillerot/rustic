@@ -52,7 +52,6 @@
   {%- endif -%}
 </div>
 <!-- onglets infooter -->
-<div>{{application.in_footer}}</div>
 {%- if application.in_footer -%}
 <div class="ui bottom visible sidebar">
   <div class="ui {{application.in_footer}} labeled icon item menu">
@@ -65,6 +64,8 @@
   {%- endfor -%}
   </div>
 </div>
-{%- endif -%}>
+{%- endif -%}
+{%- endblock -%}
+{%- block forms -%}
 <input type="hidden" id="crud_view" value="{{appid}}-{{tableid}}-{{viewid}}">
 {%- endblock -%}

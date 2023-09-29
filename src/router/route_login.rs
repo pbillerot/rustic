@@ -31,8 +31,6 @@ struct TplLogin {
     password: String,
 }
 
-// cuerl http://0.0.0.0:8080/login
-#[get("/login")]
 pub async fn login(_session: Session, _data: web::Data<AppState>, req: HttpRequest) -> Result<impl Responder> {
     let session = req.get_session();
     log::info!("Session {:?} {:?}", session.status(), session.entries());
@@ -69,7 +67,6 @@ pub struct LoginForm {
 //     }
 // }
 
-#[post("/login")]
 pub async fn login_post(params: web::Form<LoginForm>,
     _session: Session,
     _data: web::Data<AppState>,

@@ -13,7 +13,7 @@ use actix_web::{
     web,
     web::Path,
     Responder,
-    Result, HttpRequest,
+    Result,
 };
 use actix_web_lab::respond::Html;
 // use actix_web_lab::respond::Html;
@@ -29,7 +29,6 @@ pub async fn edit(
     path: Path<(String, String, String, String, String)>,
     data: web::Data<AppState>,
     session: Session,
-    req: HttpRequest,
 ) -> Result<impl Responder> {
 
     let (appid, tableid, viewid, formid, id) = path.into_inner();
@@ -70,7 +69,7 @@ pub async fn edit(
     context.insert("formid", &formid);
     context.insert("id", &id);
     context.insert("key", &table.setting.key);
-    context.insert("back", &get_back(&req, &session));
+    context.insert("back", &get_back(&session));
 
     let html = data.template.render("tpl_edit.html", &context).unwrap();
 

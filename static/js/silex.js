@@ -2,13 +2,6 @@ $(document).ready(function () {
     var $isUsed = false;
     var $crud_view = $('#crud_view').val();
 
-    var $sid = sessionStorage.getItem('sid');
-    if (!$sid) {
-        sessionStorage.setItem('sid', Date.now());
-        $sid = sessionStorage.getItem('sid');
-    } // endif form
-    document.getElementById('sid').value = $sid;
-
     // clic sur TR ou CARD
     $('.crud-jquery-url').on('click', function (event) {
         // id de l'onglet de la session
@@ -472,3 +465,9 @@ $(document).ready(function () {
         });
 
 });
+    // var $sid = sessionStorage.getItem('sid');
+    // if (!$sid) {
+    //     sessionStorage.setItem('sid', Date.now());
+    //     $sid = sessionStorage.getItem('sid');
+    // } // endif form
+    // document.getElementById('sid').value = $sid;

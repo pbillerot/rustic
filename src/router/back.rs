@@ -3,53 +3,69 @@
 use actix_session::Session;
 use actix_web::HttpRequest;
 
-pub fn get_back(req: &HttpRequest, session: &Session) -> String {
+pub fn compute_back(req: &HttpRequest, session: &Session) {
+  let b1 = match session.get::<String>("back1") {
+      Ok(Some(b)) => b,
+      Ok(None) => String::new(),
+      Err(_) => String::new(),
+  };
+  let b2 = match session.get::<String>("back2") {
+      Ok(Some(b)) => b,
+      Ok(None) => String::new(),
+      Err(_) => String::new(),
+  };
+  let b3 = match session.get::<String>("back3") {
+      Ok(Some(b)) => b,
+      Ok(None) => String::new(),
+      Err(_) => String::new(),
+  };
+
   if req.path().contains("/view/") {
-    session.insert("back1", req.path().to_string()).unwrap(); // /view
-    session.remove("back2"); // /form
-    session.remove("back3"); //     view /form
-    return req.path().to_string();
+    session.insert("back", req.path().to_string()).unwrap();
+    session.insert("back1", req.path().to_string()).unwrap();
+    session.remove("back2");
+    session.remove("back3");
   } else if req.path().contains("/form/") {
-    match session.get::<String>("back3") {
-      Ok(Some(b3)) => return b3,
-      Ok(None) => { // pas de b3
-        match session.get::<String>("back2") {
-          Ok(Some(b2)) => {
-            if b2 != req.path() {
-              // appel d'un nouveau formulaire de niveau 3
-              session.insert("back3", req.path().to_string()).unwrap();
-              return req.path().to_string()
-            } else {
-              return b2
-            };
-          },
-          Ok(None) => { // pas de b2
-            // appel d'un nouveau formulaire de niveau 2
-            session.insert("back2", req.path().to_string()).unwrap();
-            return req.path().to_string()
-          },
-          Err(_) => return req.path().to_string()
-        };
-      },
-      Err(_) => return req.path().to_string()
-    };
+      if !b3.is_empty() {
+        if b3 == req.path() {
+          session.remove("back3");
+          session.insert("back", b2).unwrap();
+        } else {
+          session.insert("back3", req.path()).unwrap();
+          session.insert("back", b3).unwrap();
+        }
+      } else {
+        // b3 empty
+        if !b2.is_empty() {
+          if b2 == req.path() {
+            session.insert("back", b1).unwrap();
+          } else {
+            session.insert("back3", req.path()).unwrap();
+            session.insert("back", b2).unwrap();
+          }
+        } else {
+          // b2 empty
+          session.insert("back2", req.path()).unwrap();
+          session.insert("back", b1).unwrap();
+        }
+      }
   } else {
-    match session.get::<String>("back3") {
-      Ok(Some(b3)) => return b3,
-      Ok(None) => {
-        match session.get::<String>("back2") {
-          Ok(Some(b2)) => return b2,
-          Ok(None) => {
-            match session.get::<String>("back1") {
-              Ok(Some(b1)) => return b1,
-              Ok(None) => return req.path().to_string(),
-              Err(_) => return req.path().to_string()
-            };
-          },
-          Err(_) => return req.path().to_string()
-        };
-      },
-      Err(_) => return req.path().to_string()
-    };
+    if !b3.is_empty() {
+      session.insert("back", b3).unwrap();
+    } else if !b2.is_empty() {
+      session.insert("back", b2).unwrap();
+    } else if !b1.is_empty() {
+      session.insert("back", b1).unwrap();
+    } else {
+      session.insert("back", "/").unwrap();
+    }
+  }
+}
+
+pub fn get_back(session: &Session) -> String {
+  match session.get::<String>("back") {
+    Ok(Some(b)) => return b,
+    Ok(None) => return String::new(),
+    Err(_) => return String::new(),
   };
 }
