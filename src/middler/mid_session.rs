@@ -4,13 +4,15 @@ use actix_session::SessionExt;
 use actix_web::{
     body::EitherBody,
     dev::{self, Service, ServiceRequest, ServiceResponse, Transform},
-    // http,
-    Error, HttpResponse, http,
+    http,
     // HttpResponse,
+    // http,
+    Error,
+    HttpResponse,
 };
 use futures_util::future::LocalBoxFuture;
 
-use crate::router::{get_back, compute_back};
+use crate::router::{compute_back, get_back};
 
 pub struct SilexSession;
 
@@ -49,24 +51,25 @@ where
     fn call(&self, req: ServiceRequest) -> Self::Future {
         // https://github.com/TianLangStudio/rust_cms/blob/master/web/src/middleware.rs
         let path = req.path().to_string();
-        let session = &req.get_session();
-        log::info!("11 {:?}", session.entries());
+        if path.find("/static/").is_none() {
+            let session = &req.get_session();
+            log::info!("11 {:?}", session.entries());
 
-        if get_back(&session).is_empty()  { // && path.find("/login").is_none()
-            log::warn!("Session expired {}", path);
-            session.insert("back", "/").unwrap();
-            let (request, _pl) = req.into_parts();
-            let response = HttpResponse::Found()
-                .insert_header((http::header::LOCATION, "/"))
-                .finish()
-                .map_into_right_body();
-            return Box::pin(async { Ok(ServiceResponse::new(request, response)) });
+            if get_back(&session).is_empty() {
+                // && path.find("/login").is_none()
+                log::warn!("Session expired {}", path);
+                session.insert("back", "/").unwrap();
+                let (request, _pl) = req.into_parts();
+                let response = HttpResponse::Found()
+                    .insert_header((http::header::LOCATION, "/"))
+                    .finish()
+                    .map_into_right_body();
+                return Box::pin(async { Ok(ServiceResponse::new(request, response)) });
+            }
+            compute_back(&req.request(), &session);
+            log::info!("22 {:?}", session.entries());
         }
-        compute_back(&req.request(), &session);
-        log::info!("22 {:?}", session.entries());
-
         let res = self.service.call(req);
-            Box::pin(async move { res.await.map(ServiceResponse::map_into_left_body) })
-
+        Box::pin(async move { res.await.map(ServiceResponse::map_into_left_body) })
     }
 }

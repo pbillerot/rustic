@@ -21,6 +21,10 @@
   <link rel="shortcut icon" sizes="196x196" href="/static/img/{{ portail.icon_file}}">
   <!-- Semantic CSS -->
   <link rel="stylesheet" type="text/css" href="/static/semantic/semantic.min.css">
+  <!-- CodeMirror  -->
+  <link rel="stylesheet" type="text/css" href="/static/codemirror/lib/codemirror.css">
+  <link rel="stylesheet" type="text/css" href="/static/codemirror/theme/eclipse.css">
+  <link rel="stylesheet" type="text/css" href="/static/codemirror/addon/hint/show-hint.css">
   <!-- Silex CSS -->
   <link href="/static/css/silex.css?v={{ get_env(name='CARGO_PKG_VERSION') }}" rel="stylesheet">
   <!-- Custom CSS -->
@@ -54,6 +58,24 @@
   <script src="/static/jquery/js.cookie.min.js"></script>
   <!-- semantic  -->
   <script src="/static/semantic/semantic.min.js"></script>
+  <!-- CodeMirror https://codemirror.net/doc/manual.html -->
+  <script src="/static/codemirror/lib/codemirror.js"></script>
+  <script src="/static/codemirror/addon/mode/overlay.js"></script>
+  <script src="/static/codemirror/addon/edit/matchbrackets.js"></script>
+  <script src="/static/codemirror/mode/javascript/javascript.js"></script>
+  <script src="/static/codemirror/mode/markdown/markdown.js"></script>
+  <script src="/static/codemirror/mode/gfm/gfm.js"></script>
+  <script src="/static/codemirror/mode/yaml/yaml.js"></script>
+  <script src="/static/codemirror/mode/yaml-frontmatter/yaml-frontmatter.js"></script>
+  <script src="/static/codemirror/mode/python/python.js"></script>
+  <script src="/static/codemirror/mode/sql/sql.js"></script>
+  <script src="/static/codemirror/addon/comment/comment.js"></script>
+  <script src="/static/codemirror/addon/hint/show-hint.js"></script>
+  <!-- Custom codemirror -->
+  <script defer src="/static/codemirror/addon/hint/eddy-hint.js"></script>
+  <!-- eddy -->
+  <script defer src="/static/eddy/eddy.js"></script>
+  <script defer src="/static/eddy/keyword.js"></script>
   <!-- chart -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.0/chart.umd.js"
     integrity="sha512-6HrPqAvK+lZElIZ4mZ64fyxIBTsaX5zAFZg2V/2WT+iKPrFzTzvx6QAsLW2OaLwobhMYBog/+bvmIEEGXi0p1w=="

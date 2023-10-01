@@ -1,6 +1,9 @@
 
-{# Affichage d'une cellule avec la value de l'élémnt correspondant #}
+{#
+  AFFICHAGE D'UNE CELLULE D'UNE TABLE AVEC L'ÉLÉMENT
+#}
 {%- macro table_elements(el) -%}
+
 {%- if el.type_element == "amount" -%}
 <td class="ui {{el.col_align}} aligned {{el.class}}" style="{{el.style}}">{{el.format}}</td>
 {%- elif el.type_element == "number" -%}
@@ -22,5 +25,5 @@
 {%- if el.format -%}{{el.format}}{%-else-%}{{el.value}}{%-endif-%}
 </td>
 {%- endif -%}
-{%- endmacro table_elements -%}
 
+{%- endmacro table_elements -%}

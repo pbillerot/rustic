@@ -208,7 +208,14 @@ pub async fn view(
     tx.insert("filters", &filters);
     tx.insert("back", &get_back(&session));
 
-    let html = data.template.render("tpl_view.html", &tx).unwrap();
+    let tpl = match view.type_view.as_str() {
+      "table" => "tpl_view_table.html",
+      "card" => "tpl_view_card.html",
+      "dashboard" => "tpl_view_dash.html",
+      _ => "tpl_view_table.html",
+    };
 
-    Ok(Html(html))
+    let html = data.template.render(tpl, &tx).unwrap();
+
+    Ok(Html(html.to_string()))
 }

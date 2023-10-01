@@ -1,0 +1,80 @@
+{#
+AFFICHAGE D'UNE CELLULE DANS UNE CARD
+#}
+{%- macro card_elements(el, position="", with_label=false) -%}
+<span class="{{position}}">
+
+  {%- if el.type_element == "button" -%}
+  <a class="{{position}} crud-jquery-ajax" style="padding-top: 2px;"
+    data-url="/actionx/{{appid}}/{{tableid}}/{{viewid}}/{{id}}/{{key}}" title="{{el.label_short}}">
+    {%- if element.icon_name -%}<i class="{{el.class}} {{el.icon_name}} icon"></i>{%- endif -%}
+  </a>
+
+  {%- elif el.type_element == "checkbox" -%}
+  {%- if el.value == "1" -%}
+  <div class="ui label" style="white-space: nowrap">
+    <i class="check square outline icon"></i>
+    <span class="">{{el.label_long}}</span>
+  </div>
+  {%- else -%}
+  <div class="ui label" style="white-space: nowrap">
+    <i class="square outline icon"></i>
+    <span>{{el.label_long}}</span>
+  </div>
+  {%-endif-%}
+
+  {%- elif el.type_element == "image" -%}
+  <div class="ui link {{el.class}} image crud-popup-image" data-url="{{el.params.url}}" title="{{el.params.title}}"><img
+      src="{{el.params.src}}">
+  </div>
+  {%- if el.label_long -%}
+  <div class="center aligned description" style="{{el.style}}">
+    <b>{{el.label_long}}</b>
+  </div>
+  {%-endif-%}
+
+  {%-elif el.type_element == "list" -%}
+  {%- if with_label and el.label_short -%}<span style="white-space: nowrap"><span
+      class="ui grey text">{{el.label_short}} : </span>{%- endif -%}
+    {%- for ik, it in el.items -%}
+    {%- if ik == el.value -%}
+    <div class="ui tag label" style="margin-bottom: 0.5em">{{it}}</div>
+    {%- endif -%}
+    {%- endfor -%}
+
+    {%-elif el.type_element == "tag" -%}
+    {%- if with_label and el.label_short -%}<span style="white-space: nowrap"><span
+        class="ui grey text">{{el.label_short}} : </span>{%- endif -%}
+      {%- for item in el.value | split(pat=",") -%}
+      {%- if item -%}
+      <div class="ui tiny tag label" style="margin-bottom: 0.5em">{{item}}</div>
+      {%- endif -%}
+      {%- endfor -%}
+
+      {%- elif el.type_element == "url" and el.value -%}
+      <div class="{{position}}">
+        <a class="crud-jquery-button" data-url="{{el.value}}" data-target="_blank" title="{{el.label_long}}">
+          {%- if el.icon_name -%}<i class="{{el.icon_name}} icon"></i>
+          {%- else -%}<i class="ui {{el.class}} paperclip icon"></i>
+          {%- endif -%}
+        </a>
+      </div>
+
+      {%- elif el.type_element == "hidden" -%}
+      <input type="hidden" name="{{el.elid}}">
+
+      {%-elif el.type_element == "textarea" -%}
+      {%- if with_label and el.label_short -%}<span style="white-space: nowrap"><span
+          class="ui grey text">{{el.label_short}} : </span>{%- endif -%}
+        <span class="ui text" style="{{el.style}}">
+          {%- if el.format -%}{{el.format}}{%- else -%}{{el.value}}{%- endif -%}
+        </span>
+        {%-else-%} {# autres types #}
+        {%- if with_label and el.label_short -%}<span style="white-space: nowrap"><span
+            class="ui grey text">{{el.label_short}} : </span>{%- endif -%}
+          <span class="ui text" style="{{el.style}}">
+            {%- if el.format -%}{{el.format}}{%- else -%}<b>{{el.value}}</b>{%- endif -%}
+          </span>
+          {%-endif-%}
+        </span>
+        {%- endmacro card_elements -%}

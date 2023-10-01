@@ -11,6 +11,9 @@
 
 ### VERSION
 
+0.22.0 - 1er octobre 2023
+- `added` view card
+
 0.21.0 - 29 septembre 2023
 - `added` formualire d'ajout stylé
 

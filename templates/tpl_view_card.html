@@ -1,0 +1,170 @@
+{%- extends "tpl_base.html" -%}
+{% import "tpl_card_elements.html" as macros %}
+
+{%- block title -%}<div class="header item">{{ view.title }}</div>{%- endblock -%}
+
+{%- block menu -%}{% include "tpl_menu.html" %}{%- endblock -%}
+
+{%- block boutons -%}
+{%- endblock -%}
+
+{%- block actions -%}
+{%- if application.tables[tableid].views[viewid].actions or application.tables[tableid].views[viewid].form_add -%}
+{%- if not view.filters -%}
+<div class="ui icon item crud-search-div">
+  <!-- Recherche -->
+  <i class="search link icon crud-search-active" title="Rechercher..."></i>
+  <div style="display: none; white-space: nowrap;" class="crud-search">
+    <div class="ui icon input">
+      <input class="crud-search-input-1" type="hidden" value="">
+      <input type="text" class="crud-search-input" data-url="/search/{{appid}}/{{tableid}}/{{viewid}}"
+        value="{{search}}" placeholder="Recherche...">
+      <i class="circular search link icon crud-search-go" title="Rechercher"></i>
+    </div>
+    <i class="close link icon crud-search-close" title="Fermer la recherche"></i>
+  </div>
+</div>
+{%- endif -%}
+<div class="ui dropdown item">
+  <i class="ellipsis vertical icon"></i>
+  <div class="menu">
+    {%- if application.tables[tableid].views[viewid].form_add -%}
+    <a class="ui icon item crud-jquery-url" data-url="/add/{{appid}}/{{tableid}}/{{viewid}}/{{view.form_add}}">
+      <i class="plus blue icon"></i>Ajouter un élément...
+    </a>
+    {%- endif -%}
+    {%- for action in application.tables[tableid].views[viewid].actions -%}
+    <a class="item crud-jquery-action" data-confirm="{{action.with_confirm}}"
+      data-url="/actionv/{{appid}}/{{tableid}}/{{viewid}}/{{loop.index}}">{{action.label}}</a>
+    {%- endfor -%}
+  </div>
+</div>
+{%- endif -%}
+{%- endblock -%}
+
+{%- block content -%}
+<div class="ui container" {%- if application.in_footer -%} style="margin-bottom: 6em;height: 100%" {%- endif -%}>
+  {% include "tpl_flash.html" %}
+  <div class="crud-mobile-show ui label">
+    {{view.title}}&nbsp;
+    {%- if trs | length == 0 -%}
+    (aucun élément)
+    {%- elif trs | length == 1 -%}
+    (1 élément)
+    {%- else -%}
+    ({{trs|length}} éléments)
+    {%- endif -%}
+  </div>
+  {%- if view.form_add -%}
+  <button class="right floated circular ui large plus blue icon button crud-jquery-url"
+    data-url="/add/{{appid}}/{{tableid}}/{{viewid}}/{{view.form_add}}" {%- if application.in_footer -%}
+    style="z-index: 1000; position: fixed; bottom: 5em; right: 2em; padding: 1em;" {%- else -%}
+    style="z-index: 1000; position: fixed; bottom: 2em; right: 2em; padding: 1em;" {%- endif -%}
+    title="Ajouter un élément...">
+    <i class="icon plus"></i>
+  </button>
+  {%- endif -%}
+  <!-- CARD -->
+  <div class="ui cards">
+    {%- for tr in trs -%}
+    <div
+      class="ui {{tr.class}} raised card crud-card-view bee-width-{{view.width}} {%if tr.url_open%}crud-jquery-url{%endif%}"
+      style="{{tr.style}}" data-url="{{tr.url_open}}" data-press="{{tr.url_press}}">
+      <div class="content" style="padding-bottom: 0.5em;">
+        {#
+        header : pas de label, header_right (pas de header_left)
+        meta: label affiché, meta_left meta_right sans label affiché
+        description: pas de left & right
+        extra: label affiché, extra_left extra_right sans label affiché
+        footer: pas de label, footer_left footer_right (pas de footer_left)
+        #}
+        <div class="header">
+          {%- for key in view.card.header_right -%}
+          {%- if not vel.hide -%}
+          {{ macros::card_elements(el=tr.record[key], position="right floated", with_label=false) }}
+          {%- endif -%}
+          {%- endfor -%}
+          {%- if view.icon_name -%}
+          <i class="large blue {{view.icon_name}} icon" style="padding-right: 1.5em"></i>
+          {%- endif -%}
+          {%- for key in view.card.header -%}
+          {%- if not vel.hide -%}
+          {{ macros::card_elements(el=tr.record[key], position="", with_label=false) }}
+          {%- endif -%}
+          {%- endfor -%}
+        </div><!-- /header -->
+      </div><!-- /content -->
+      <div class="content" style="padding-top: 0.5em;padding-bottom: 0.5em;">
+        {%- if view.card.meta_right or view.card.meta_left or view.card.meta -%}
+        <div class="description">
+          {%- for key in view.card.meta_right -%}
+          {%- if not vel.hide -%}
+          {{ macros::card_elements(el=tr.record[key], position="right floated", with_label=false) }}
+          {%- endif -%}
+          {%- endfor -%}
+          {%- for key in view.card.meta_left -%}
+          {%- if not vel.hide -%}
+          {{ macros::card_elements(el=tr.record[key], position="left floated", with_label=false) }}
+          {%- endif -%}
+          {%- endfor -%}
+          {%- for key in view.card.meta -%}
+          {%- if not vel.hide -%}
+          {{ macros::card_elements(el=tr.record[key], position="", with_label=true) }}
+          {%- endif -%}
+          {%- endfor -%}
+        </div><!-- /meta -->
+        {%- endif -%}
+        {%- if view.card.description -%}
+        <div class="description">
+          {%- for key in view.card.description -%}
+          {%- if not vel.hide -%}
+          <div class="ui message" style="margin: 0.5em 0;padding: 0.7em">
+            {{ macros::card_elements(el=tr.record[key], position="", with_label=false) }}
+          </div>
+          {%- endif -%}
+          {%- endfor -%}
+        </div><!-- /description -->
+        {%- endif -%}
+        {%- if view.card.extra_right or view.card.extra_left or view.card.extra -%}
+        <div class="description">
+          {%- for key in view.card.extra_right -%}
+          {%- if not vel.hide -%}
+          {{ macros::card_elements(el=tr.record[key], position="right floated", with_label=false) }}
+          {%- endif -%}
+          {%- endfor -%}
+          {%- for key in view.card.extra_left -%}
+          {%- if not vel.hide -%}
+          {{ macros::card_elements(el=tr.record[key], position="left floated", with_label=false) }}
+          {%- endif -%}
+          {%- endfor -%}
+          {%- for key in view.card.extra -%}
+          {%- if not vel.hide -%}
+          {{ macros::card_elements(el=tr.record[key], position="", with_label=true) }}
+          {%- endif -%}
+          {%- endfor -%}
+        </div><!-- /extra -->
+        {%- endif -%}
+      </div><!-- /content -->
+      {%- if view.card.footer_right or view.card.footer -%}
+      <div class="extra content" style="padding-top: 0.5em;padding-bottom: 0.7em;">
+        {%- for key in view.card.footer_right -%}
+        {%- if not vel.hide -%}
+        {{ macros::card_elements(el=tr.record[key], position="right floated", with_label=false) }}
+        {%- endif -%}
+        {%- endfor -%}
+        {%- for key in view.card.footer -%}
+        {%- if not vel.hide -%}
+        {{ macros::card_elements(el=tr.record[key], position="", with_label=false) }}
+        {%- endif -%}
+        {%- endfor -%}
+      </div><!-- /content -->
+      {%- endif -%}
+    </div><!-- /card -->
+    {%- endfor -%}
+  </div><!-- /cards -->
+</div>
+{% include "tpl_view_footer.html" %}
+{%- endblock -%}
+{%- block forms -%}
+<input type="hidden" id="crud_view" value="{{appid}}-{{tableid}}-{{viewid}}">
+{%- endblock -%}

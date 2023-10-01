@@ -76,7 +76,7 @@ views:
     form_view: fview
     form_add: fadd
     form_edit: fedit
-    type_view: table
+    type_view: card
     group: admin
     deletable: true
     title: "Comptes Utilisateurs"
