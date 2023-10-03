@@ -5,7 +5,10 @@ use crate::{
         list::crud_list,
         sqler::{kerdata, kerlite},
     },
-    lexicer::{lex_table::Element, macelement},
+    lexicer::{
+        lex_table::Element,
+        macelement,
+    },
     middler::{clear_flash, flash::FlashMessage, get_flash},
     // lexic::lex_table::{self, Element},
     AppState,
@@ -19,7 +22,7 @@ use actix_web::{
     web,
     web::Path,
     Responder,
-    Result
+    Result,
 };
 use actix_web_lab::respond::Html;
 use serde::{Deserialize, Serialize};
@@ -209,10 +212,10 @@ pub async fn view(
     tx.insert("back", &get_back(&session));
 
     let tpl = match view.type_view.as_str() {
-      "table" => "tpl_view_table.html",
-      "card" => "tpl_view_card.html",
-      "dashboard" => "tpl_view_dash.html",
-      _ => "tpl_view_table.html",
+        "table" => "tpl_view_table.html",
+        "card" => "tpl_view_card.html",
+        "dashboard" => "tpl_view_dash.html",
+        _ => "tpl_view_table.html",
     };
 
     let html = data.template.render(tpl, &tx).unwrap();

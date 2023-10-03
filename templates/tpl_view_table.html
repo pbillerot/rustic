@@ -1,9 +1,9 @@
 {%- extends "tpl_base.html" -%}
-{% import "tpl_table_elements.html" as macros %}
+{% import "macro_table.html" as macros %}
 
 {%- block title -%}<div class="header item">{{ view.title }}</div>{%- endblock -%}
 
-{%- block menu -%}{% include "tpl_menu.html" %}{%- endblock -%}
+{%- block menu -%}{% include "incl_menu.html" %}{%- endblock -%}
 
 {%- block boutons -%}
 {%- endblock -%}
@@ -44,7 +44,7 @@
 
 {%- block content -%}
 <div class="ui container" {%- if application.in_footer -%} style="margin-bottom: 6em;height: 100%" {%- endif -%}>
-  {% include "tpl_flash.html" %}
+  {% include "incl_flash.html" %}
   <div class="crud-mobile-show ui label">
     {{view.title}}&nbsp;
     {%- if trs | length == 0 -%}
@@ -79,7 +79,8 @@
           {%- endfor -%}
         </select>
         {%- else -%}
-        <input type="text" name="{{vel.elid}}" id="{{vel.elid}}" placeholder="{{vel.label_short}}" value="{{vel.value}}">
+        <input type="text" name="{{vel.elid}}" id="{{vel.elid}}" placeholder="{{vel.label_short}}"
+          value="{{vel.value}}">
         {%- endif -%}
       </div>
       {%- endfor -%}
@@ -97,9 +98,11 @@
   </form>
   {%- endif -%}
   <!-- TABLE -->
-  <table
+  {{ macros::table(vview=view, vtrs=trs) }}
+  {# <table
     class="ui unstackable collapsing sortable {% if view.form_view or view.form_edit %} selectable {% endif %} celled table"
-    data-role="table" data-mode="columntoggle" data-appid="{{appid}}" data-tableid="{{tableid}}" data-viewid="{{viewid}}">
+    data-role="table" data-mode="columntoggle" data-appid="{{appid}}" data-tableid="{{tableid}}"
+    data-viewid="{{viewid}}">
     <thead>
       <tr class="crud-unsort">
         {%- if view.with_line_number -%}<th>&nbsp;</th>{%- endif -%}
@@ -114,12 +117,13 @@
     </thead>
     <tbody>
       {%- for tr in trs -%}
-      <tr class="{%if tr.url_open%}crud-jquery-url{%endif%} {{tr.class}}" style="{{tr.style}}" data-url="{{tr.url_open}}" data-press="{{tr.url_press}}">
+      <tr class="{%if tr.url_open%}crud-jquery-url{%endif%} {{tr.class}}" style="{{tr.style}}"
+        data-url="{{tr.url_open}}" data-press="{{tr.url_press}}">
         {%- if view.with_line_number -%}<td class="right aligned">{{loop.index}}</td>{%- endif -%}
         {%- for vel in view.velements -%}
-          {%- if not vel.hide -%}
-          {{ macros::table_elements(el=tr.record[vel.elid]) }}
-          {%- endif -%}
+        {%- if not vel.hide -%}
+        {{ macros::table_elements(el=tr.record[vel.elid]) }}
+        {%- endif -%}
         {%- endfor -%}
       </tr>
       {%- endfor -%}
@@ -130,28 +134,29 @@
       <tr class="">
         {%- if view.with_line_number -%}<td>&nbsp;</td>{%- endif -%}
         {%- for vel in view.velements -%}
-          {%- if not vel.hide -%}
-            {%- if vel.with_sum -%}
-              {%- if vel.type_element == "amount" -%}
-              <td nowrap style="text-align: right;{% if sums[vel.elid].sum < 0.0 %}color: red{%else%}color: green{% endif %}">
-                {{sums[vel.elid].sum | as_str | format_amount }}
-              </td>
-              {%- else -%}
-              <td nowrap style="text-align: center;{% if sums[vel.elid].sum < 0.0 %}color: red{%else%}color: green{% endif %}">
-                {{sums[vel.elid].sum}}
-              </td>
-              {%- endif -%}
-            {%- else -%}
+        {%- if not vel.hide -%}
+        {%- if vel.with_sum -%}
+        {%- if vel.type_element == "amount" -%}
+        <td nowrap style="text-align: right;{% if sums[vel.elid].sum < 0.0 %}color: red{%else%}color: green{% endif %}">
+          {{sums[vel.elid].sum | as_str | format_amount }}
+        </td>
+        {%- else -%}
+        <td nowrap
+          style="text-align: center;{% if sums[vel.elid].sum < 0.0 %}color: red{%else%}color: green{% endif %}">
+          {{sums[vel.elid].sum}}
+        </td>
+        {%- endif -%}
+        {%- else -%}
         <td></td>
-            {%- endif -%}
-          {%- endif -%}
+        {%- endif -%}
+        {%- endif -%}
         {%- endfor -%}
       </tr>
     </tfoot>
     {%- endif -%}
-  </table>
+  </table> #}
 </div>
-{% include "tpl_view_footer.html" %}
+{% include "incl_view_footer.html" %}
 {%- endblock -%}
 {%- block forms -%}
 <input type="hidden" id="crud_view" value="{{appid}}-{{tableid}}-{{viewid}}">

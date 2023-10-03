@@ -1,9 +1,9 @@
 {%- extends "tpl_base.html" -%}
-{% import "tpl_edit_elements.html" as macros %}
+{% import "macro_edit_elements.html" as macros %}
 
 {%- block title -%}{%- endblock -%}
 
-{%- block menu -%}{% include "tpl_menu.html" %}{%- endblock -%}
+{%- block menu -%}{% include "incl_menu.html" %}{%- endblock -%}
 
 {%- block navigation -%}
 <a href="{{back}}" class="item" style="padding: 0.3em;">
@@ -23,7 +23,7 @@
 
 {%- block content -%}
 <div class="ui container">
-  {% include "tpl_flash.html" %}
+  {% include "incl_flash.html" %}
   <!-- FORMULAIRE -->
   <div class="ui attached icon message">
     <i class="{%if form.icon_name%}{{form.icon_name}}{%else%}{{view.icon_name}}{%endif%} blue inbox icon"></i>

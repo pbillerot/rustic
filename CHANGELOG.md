@@ -11,6 +11,9 @@
 
 ### VERSION
 
+0.23.0 - 1er octobre 2023
+- `changed` réorganisation des tpl macro et include
+
 0.22.0 - 1er octobre 2023
 - `added` view card
 

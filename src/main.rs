@@ -131,53 +131,53 @@ async fn main() -> std::io::Result<()> {
         .service(fs::Files::new("/lexic", lexic_path.clone()).show_files_listing())
         .service(fs::Files::new("/static", "./static").show_files_listing())
         .app_data(web::Data::new(data.clone()))
-            // enable logger - always register actix-web Logger middleware last
-            .wrap(middleware::Logger::default())
+        // enable logger - always register actix-web Logger middleware last
+        .wrap(middleware::Logger::default())
 
-            // contrôle de le session utilisateur
-            .wrap(middler::mid_session::SilexSession)
+        // contrôle de le session utilisateur
+        .wrap(middler::mid_session::SilexSession)
 
-            // activation de actix-session
-            .wrap(
-                SessionMiddleware::builder(CookieSessionStore::default(), key.clone())
-                    .cookie_name("_session".to_string())
-                    .cookie_secure(true) // à true en https
-                    .cookie_http_only(true)
-                    .cookie_path("/".to_string())
-                    // customize session and cookie expiration
-                    .session_lifecycle(
-                        PersistentSession::default().session_ttl(cookie::time::Duration::minutes(10)),
-                    )
-                    .build(),
-            )
+        // activation de actix-session
+        .wrap(
+            SessionMiddleware::builder(CookieSessionStore::default(), key.clone())
+                .cookie_name("_session".to_string())
+                .cookie_secure(true) // à true en https
+                .cookie_http_only(true)
+                .cookie_path("/".to_string())
+                // customize session and cookie expiration
+                .session_lifecycle(
+                    PersistentSession::default().session_ttl(cookie::time::Duration::minutes(10)),
+                )
+                .build(),
+        )
 
-            .route("/", web::get().to(router::portail))
-            // .route("/login", web::post().to(router::login))
-            // .route("/logout", web::post().to(router::logout))
-            .route("/app/{appid}", web::get().to(router::application))
-            .route("/view/{appid}/{tableid}/{viewid}", web::get().to(router::view))
-            // .route("/dashboard/{appid}/{tableid}/{viewid}", web::get().to(router::dashboard))
-            .route("/form/{appid}/{tableid}/{viewid}/{formid}/{id}", web::get().to(router::form))
-            .route("/add/{appid}/{tableid}/{viewid}/{formid}", web::get().to(router::add))
-            .route("/edit/{appid}/{tableid}/{viewid}/{formid}/{id}", web::get().to(router::edit))
-            .route("/update/{appid}/{tableid}/{viewid}/{formid}/{id}", web::post().to(router::edit_post))
-            .route("/insert/{appid}/{tableid}/{viewid}/{formid}", web::post().to(router::add_post))
-            .route("/delete/{appid}/{tableid}/{viewid}/{id}", web::post().to(router::delete_post))
-            // .route("/actionv/{appid}/{tableid}/{viewid}/{iaction}", web::post().to(router::action_view))
-            // .route("/actionp/{appid}/{tableid}/{viewid}/{id}", web::post().to(router::action_press))
-            // .route("/actionf/{appid}/{tableid}/{viewid}/{formid}/{id}/{action}", web::post().to(router::action_form))
-            // .route("/actione/{appid}/{tableid}/{viewid}/{formid}/{id}/{action}", web::post().to(router::action_element))
-            // .route("/actionx/{appid}/{tableid}/{viewid}/{id}/{action}", web::post().to(router::action_ajax))
-            // .route("/ajax/{appid}/{tableid}/{viewid}/{formid}/{action}", web::post().to(router::edit))
-            // .route("/share/{appid}/{shareid}", web::post().to(router::share))
-            .route("/search/{appid}/{tableid}/{viewid}", web::post().to(router::search))
-            .route("/filter/{appid}/{tableid}/{viewid}", web::post().to(router::filter))
-            .route("/sort/{appid}/{tableid}/{viewid}", web::post().to(router::sort))
-            // Gestion du lexique
-            .route("/lexic/action/{action}", web::get().to(router::lexicall))
-            // .route("/lexic/document", web::get().to(router::lexic))
-            // .route("/lexic/document", web::post().to(router::lexic_post))
-            // .route("/lexic/log", web::get().to(router::log))
+        .route("/", web::get().to(router::portail))
+        // .route("/login", web::post().to(router::login))
+        // .route("/logout", web::post().to(router::logout))
+        .route("/app/{appid}", web::get().to(router::application))
+        .route("/view/{appid}/{tableid}/{viewid}", web::get().to(router::view))
+        // .route("/dashboard/{appid}/{tableid}/{viewid}", web::get().to(router::dashboard))
+        .route("/form/{appid}/{tableid}/{viewid}/{formid}/{id}", web::get().to(router::form))
+        .route("/add/{appid}/{tableid}/{viewid}/{formid}", web::get().to(router::add))
+        .route("/edit/{appid}/{tableid}/{viewid}/{formid}/{id}", web::get().to(router::edit))
+        .route("/update/{appid}/{tableid}/{viewid}/{formid}/{id}", web::post().to(router::edit_post))
+        .route("/insert/{appid}/{tableid}/{viewid}/{formid}", web::post().to(router::add_post))
+        .route("/delete/{appid}/{tableid}/{viewid}/{id}", web::post().to(router::delete_post))
+        // .route("/actionv/{appid}/{tableid}/{viewid}/{iaction}", web::post().to(router::action_view))
+        // .route("/actionp/{appid}/{tableid}/{viewid}/{id}", web::post().to(router::action_press))
+        // .route("/actionf/{appid}/{tableid}/{viewid}/{formid}/{id}/{action}", web::post().to(router::action_form))
+        // .route("/actione/{appid}/{tableid}/{viewid}/{formid}/{id}/{action}", web::post().to(router::action_element))
+        // .route("/actionx/{appid}/{tableid}/{viewid}/{id}/{action}", web::post().to(router::action_ajax))
+        // .route("/ajax/{appid}/{tableid}/{viewid}/{formid}/{action}", web::post().to(router::edit))
+        // .route("/share/{appid}/{shareid}", web::post().to(router::share))
+        .route("/search/{appid}/{tableid}/{viewid}", web::post().to(router::search))
+        .route("/filter/{appid}/{tableid}/{viewid}", web::post().to(router::filter))
+        .route("/sort/{appid}/{tableid}/{viewid}", web::post().to(router::sort))
+        // Gestion du lexique
+        .route("/lexic/action/{action}", web::get().to(router::lexicall))
+        // .route("/lexic/document", web::get().to(router::lexic))
+        // .route("/lexic/document", web::post().to(router::lexic_post))
+        // .route("/lexic/log", web::get().to(router::log))
 
         })
         .bind(("0.0.0.0", 8080))?

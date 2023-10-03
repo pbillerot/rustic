@@ -10,3 +10,6 @@ menu:
 - tableid: "groups"
   viewid: "vall"
   in_footer: true
+- tableid: "users_groups"
+  viewid: "vall"
+  in_footer: true

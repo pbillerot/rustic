@@ -36,8 +36,9 @@ impl Table {
         table.tableid = tableid.to_string().clone();
         // alimentation de velements avec view.elements fusionnés avec table.elements
         for (viewid, view) in table.views.iter_mut() {
-            view.viewid = viewid.clone(); // TODO: que devient l'ancienne valeur ?
-            for (key, element) in &view.elements {
+          view.tableid = tableid.to_string().clone();
+          view.viewid = viewid.clone();
+          for (key, element) in &view.elements {
                 let mut el = element.clone();
                 match table.elements.get(key) {
                     Some(t) => {
@@ -495,6 +496,8 @@ pub struct View {
     #[serde(default = "lex_utils::default_bool")]
     pub with_sum: bool,
     // calcul
+    #[serde(default = "String::new")]
+    pub tableid: String, // parent de la vue
     #[serde(default = "Vec::new")]
     pub velements: Vec<Element>,
 }
@@ -531,6 +534,7 @@ impl Clone for View {
             width: self.width.clone(),
             with_line_number: self.with_line_number.clone(),
             with_sum: self.with_sum.clone(),
+            tableid: self.tableid.clone(),
             velements: self.velements.clone(),
         }
     }

@@ -96,6 +96,7 @@
 - https://codevoweb.com/rust-build-a-crud-api-with-sqlx-and-postgresql/
 - https://github.com/wpcodevo/rust-postgres-crud-sqlx
 - *** https://www.opensourceforu.com/2022/05/sqlx-the-rust-sql-toolkit/
+- https://stackoverflow.com/questions/71880795/multiple-database-pools-to-different-databases-in-actix-web
 
 # sqlx map
 - https://gist.github.com/jeremychone/34d1e3daffc38eb602b1a9ab21298d10

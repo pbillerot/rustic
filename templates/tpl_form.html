@@ -1,9 +1,9 @@
 {%- extends "tpl_base.html" -%}
-{% import "tpl_form_elements.html" as macros %}
+{% import "macro_form_elements.html" as macros %}
 
 {%- block title -%}{%- endblock -%}
 
-{%- block menu -%}{% include "tpl_menu.html" %}{%- endblock -%}
+{%- block menu -%}{% include "incl_menu.html" %}{%- endblock -%}
 
 {%- block navigation -%}
 <a href="{{back}}" class="item" style="padding: 0.3em;">
@@ -39,7 +39,7 @@
 
 {%- block content -%}
 <div class="ui container">
-  {% include "tpl_flash.html" %}
+  {% include "incl_flash.html" %}
   <div class="ui cards">
   {%- for vel in form.velements -%}
     {%- if loop.first and record[vel.elid].type_element != "card" -%}
@@ -47,7 +47,7 @@
       {%- if view.form_edit -%}
     <div class="link card raised crud-card-view {{vel.class}} crud-jquery-url" style="{{vel.style}}" data-url="/edit/{{appid}}/{{tableid}}/{{viewid}}/{{view.form_edit}}/{{id}}">
       {%- else -%}
-    <div class="link card raised crud-card-view {{vel.class}}" style="{{vel.style}}">
+    <div class="card raised crud-card-view {{vel.class}}" style="{{vel.style}}">
       {%- endif -%}{# end form edit #}
       <div class="content" style="flex-grow: 0;">
         {%- if view.form_edit -%}

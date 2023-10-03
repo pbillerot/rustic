@@ -1,9 +1,9 @@
 {%- extends "tpl_base.html" -%}
-{% import "tpl_card_elements.html" as macros %}
+{% import "macro_card_elements.html" as macros %}
 
 {%- block title -%}<div class="header item">{{ view.title }}</div>{%- endblock -%}
 
-{%- block menu -%}{% include "tpl_menu.html" %}{%- endblock -%}
+{%- block menu -%}{% include "incl_menu.html" %}{%- endblock -%}
 
 {%- block boutons -%}
 {%- endblock -%}
@@ -44,7 +44,7 @@
 
 {%- block content -%}
 <div class="ui container" {%- if application.in_footer -%} style="margin-bottom: 6em;height: 100%" {%- endif -%}>
-  {% include "tpl_flash.html" %}
+  {% include "incl_flash.html" %}
   <div class="crud-mobile-show ui label">
     {{view.title}}&nbsp;
     {%- if trs | length == 0 -%}
@@ -163,7 +163,7 @@
     {%- endfor -%}
   </div><!-- /cards -->
 </div>
-{% include "tpl_view_footer.html" %}
+{% include "incl_view_footer.html" %}
 {%- endblock -%}
 {%- block forms -%}
 <input type="hidden" id="crud_view" value="{{appid}}-{{tableid}}-{{viewid}}">

@@ -183,6 +183,13 @@ forms:
         order: 120
       _pwd_change:
         order: 130
+      _view_groups:
+        order: 200
+        type_element: view
+        params:
+          table: users_groups
+          view: vall
+
   fprofil:
     title: "Mon profil"
     group: owner

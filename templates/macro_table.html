@@ -1,0 +1,57 @@
+{#
+Macro d'affichage d'une table html d'une vue
+#}
+{%- macro table(vview, vtrs ) -%}
+<table
+  class="ui unstackable collapsing sortable {% if vview.form_view or vview.form_edit %} selectable {% endif %} celled table"
+  data-role="table" data-mode="columntoggle" data-appid="{{appid}}" data-tableid="{{vview.tableid}}"
+  data-viewid="{{vview.viewid}}">
+  <thead>
+    <tr class="crud-unsort">
+      {%- if vview.with_line_number -%}<th>&nbsp;</th>{%- endif -%}
+      {%- for el in vview.velements -%}
+      {%- if not el.hide -%}
+      <th id="col_{{el.elid}}"
+        class="ui {{el.col_align}} aligned{% if el.hide_on_mobile %} crud-mobile-hide{% endif %}{% if sortid ==  el.elid %} sorted {{sortdirection}}{% endif %} crud-ajax-sort"
+        title="{{el.elid}}">{{el.label_short}}</th>
+      {%- endif -%}
+      {%- endfor -%}
+    </tr>
+  </thead>
+  <tbody>
+    {%- for tr in vtrs -%}
+    <tr class="{%if tr.url_open%}crud-jquery-url{%endif%} {{tr.class}}" style="{{tr.style}}" data-url="{{tr.url_open}}"
+      data-press="{{tr.url_press}}">
+      {%- if vview.with_line_number -%}<td class="right aligned">{{loop.index}}</td>{%- endif -%}
+      {%- for vel in vview.velements -%}
+      {%- if not vel.hide -%}
+      {%- set el = tr.record[vel.elid] -%}
+      {# traitement des types d'éléments #}
+      {%- if el.type_element == "amount" -%}
+      <td class="ui {{el.col_align}} aligned {{el.class}}" style="{{el.style}}">{{el.format}}</td>
+      {%- elif el.type_element == "number" -%}
+      <td class="ui {{el.col_align}} aligned {{el.class}}" style="{{el.style}}">{{el.value}}</td>
+      {%- elif el.type_element == "checkbox" -%}
+      <td class="ui {{el.col_align}} aligned {{el.class}}" style="{{el.style}}">
+        <input type="checkbox" {% if el.value=="1" %}checked{% endif %} disabled></input>
+      </td>
+      {%- elif el.type_element == "tag" -%}
+      <td class="ui {{el.col_align}} aligned {{el.class}}" style="{{el.style}}">
+        {%- for item in el.value | split(pat=",") -%}
+        {%- if item -%}
+        <div class="ui tag tiny label" style="margin-bottom: 0.5em;margin-right: 0.3em;">{{item}}</div>
+        {%- endif -%}
+        {%- endfor -%}
+      </td>
+      {%- else -%}
+      <td class="ui {{el.col_align}} aligned {{el.class}}" style="{{el.style}}">
+        {%- if el.format -%}{{el.format}}{%-else-%}{{el.value}}{%-endif-%}
+      </td>
+      {%- endif -%} {# /end el.type #}
+      {%- endif -%} {# /end vel.hide #}
+      {%- endfor -%}
+    </tr>
+    {%- endfor -%}
+  </tbody>
+</table>
+{%- endmacro table -%}

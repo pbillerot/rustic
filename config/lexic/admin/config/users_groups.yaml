@@ -1,0 +1,52 @@
+# table USERS
+setting:
+  alias_db: admin
+  key: user_group_id
+  icon_name: "users"
+
+elements:
+  user_group_id:
+    order: 10
+    type_element: counter
+    label_long: "id"
+    label_short: "id"
+  user_name:
+    order: 20
+    type_element: list
+    label_long: "Name"
+    label_short: "Name"
+    pattern: "[a-zA-Z0-9]+"
+    required: true
+    items_sql: "select user_name as key, user_name as label from users"
+  group_id:
+    order: 30
+    type_element: list
+    label_long: "Group"
+    label_short: "Group"
+    pattern: "[a-zA-Z0-9]+"
+    required: true
+    items_sql: "select group_id as key, group_id as label from groups"
+
+views:
+  vall:
+    form_view: fedit
+    form_add: fedit
+    group: admin
+    deletable: true
+    title: "Users et Groups"
+    icon_name: users
+    order_by: user_name
+    elements:
+      user_group_id:
+      user_name:
+      group_id:
+
+forms:
+  fedit:
+    title: "User Group"
+    groupe: admin
+    elements:
+      user_group_id:
+      user_name:
+      group_id:
+
