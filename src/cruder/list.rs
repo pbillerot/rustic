@@ -21,6 +21,7 @@ pub async fn crud_list(
     tableid: &str,
     viewid: &str,
     id: &str,
+    filter_element: &str,
 ) -> Result<Vec<HashMap<String, Element>>, String> {
     // construction de l'ordre sql
     let mut sql = "SELECT ".to_string();
@@ -53,7 +54,11 @@ pub async fn crud_list(
         Err(_) => String::new(),
     };
 
-    let mut where_filter = "".to_string();
+    let mut where_filter = String::new();
+
+    if !filter_element.is_empty() {
+      where_filter.push_str(&filter_element);
+    }
 
     for element in &view.velements {
         if element.elid.starts_with("_") {

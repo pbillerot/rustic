@@ -1,29 +1,29 @@
 {#
 Macro d'affichage d'une table html d'une vue
 #}
-{%- macro table(vview, vtrs ) -%}
+{%- macro macro_table(tv) -%}
 <table
-  class="ui unstackable collapsing sortable {% if vview.form_view or vview.form_edit %} selectable {% endif %} celled table"
-  data-role="table" data-mode="columntoggle" data-appid="{{appid}}" data-tableid="{{vview.tableid}}"
-  data-viewid="{{vview.viewid}}">
+  class="ui unstackable collapsing sortable {% if tv.view.form_view or tv.view.form_edit %} selectable {% endif %} celled table"
+  data-role="table" data-mode="columntoggle" data-appid="{{appid}}" data-tableid="{{tv.view.tableid}}"
+  data-viewid="{{tv.view.viewid}}">
   <thead>
     <tr class="crud-unsort">
-      {%- if vview.with_line_number -%}<th>&nbsp;</th>{%- endif -%}
-      {%- for el in vview.velements -%}
+      {%- if tv.view.with_line_number -%}<th>&nbsp;</th>{%- endif -%}
+      {%- for el in tv.view.velements -%}
       {%- if not el.hide -%}
       <th id="col_{{el.elid}}"
-        class="ui {{el.col_align}} aligned{% if el.hide_on_mobile %} crud-mobile-hide{% endif %}{% if sortid ==  el.elid %} sorted {{sortdirection}}{% endif %} crud-ajax-sort"
+        class="ui {{el.col_align}} aligned{% if el.hide_on_mobile %} crud-mobile-hide{% endif %}{% if tv.sortid ==  el.elid %} sorted {{tv.sortdirection}}{% endif %} crud-ajax-sort"
         title="{{el.elid}}">{{el.label_short}}</th>
       {%- endif -%}
       {%- endfor -%}
     </tr>
   </thead>
   <tbody>
-    {%- for tr in vtrs -%}
+    {%- for tr in tv.trs -%}
     <tr class="{%if tr.url_open%}crud-jquery-url{%endif%} {{tr.class}}" style="{{tr.style}}" data-url="{{tr.url_open}}"
       data-press="{{tr.url_press}}">
-      {%- if vview.with_line_number -%}<td class="right aligned">{{loop.index}}</td>{%- endif -%}
-      {%- for vel in vview.velements -%}
+      {%- if tv.view.with_line_number -%}<td class="right aligned">{{loop.index}}</td>{%- endif -%}
+      {%- for vel in tv.view.velements -%}
       {%- if not vel.hide -%}
       {%- set el = tr.record[vel.elid] -%}
       {# traitement des types d'éléments #}
@@ -54,4 +54,4 @@ Macro d'affichage d'une table html d'une vue
     {%- endfor -%}
   </tbody>
 </table>
-{%- endmacro table -%}
+{%- endmacro macro_table -%}

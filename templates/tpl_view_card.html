@@ -3,7 +3,7 @@
 
 {%- block title -%}<div class="header item">{{ view.title }}</div>{%- endblock -%}
 
-{%- block menu -%}{% include "incl_menu.html" %}{%- endblock -%}
+{%- block menu -%}{% include "inc_menu.html" %}{%- endblock -%}
 
 {%- block boutons -%}
 {%- endblock -%}
@@ -18,7 +18,7 @@
     <div class="ui icon input">
       <input class="crud-search-input-1" type="hidden" value="">
       <input type="text" class="crud-search-input" data-url="/search/{{appid}}/{{tableid}}/{{viewid}}"
-        value="{{search}}" placeholder="Recherche...">
+        value="{{tv.search}}" placeholder="Recherche...">
       <i class="circular search link icon crud-search-go" title="Rechercher"></i>
     </div>
     <i class="close link icon crud-search-close" title="Fermer la recherche"></i>
@@ -44,15 +44,15 @@
 
 {%- block content -%}
 <div class="ui container" {%- if application.in_footer -%} style="margin-bottom: 6em;height: 100%" {%- endif -%}>
-  {% include "incl_flash.html" %}
+  {% include "inc_flash.html" %}
   <div class="crud-mobile-show ui label">
     {{view.title}}&nbsp;
-    {%- if trs | length == 0 -%}
+    {%- if tv.trs | length == 0 -%}
     (aucun élément)
-    {%- elif trs | length == 1 -%}
+    {%- elif tv.trs | length == 1 -%}
     (1 élément)
     {%- else -%}
-    ({{trs|length}} éléments)
+    ({{tv.trs|length}} éléments)
     {%- endif -%}
   </div>
   {%- if view.form_add -%}
@@ -66,7 +66,7 @@
   {%- endif -%}
   <!-- CARD -->
   <div class="ui cards">
-    {%- for tr in trs -%}
+    {%- for tr in tv.trs -%}
     <div
       class="ui {{tr.class}} raised card crud-card-view bee-width-{{view.width}} {%if tr.url_open%}crud-jquery-url{%endif%}"
       style="{{tr.style}}" data-url="{{tr.url_open}}" data-press="{{tr.url_press}}">
@@ -81,7 +81,7 @@
         <div class="header">
           {%- for key in view.card.header_right -%}
           {%- if not vel.hide -%}
-          {{ macros::card_elements(el=tr.record[key], position="right floated", with_label=false) }}
+          {{ macros::macro_card_elements(el=tr.record[key], position="right floated", with_label=false) }}
           {%- endif -%}
           {%- endfor -%}
           {%- if view.icon_name -%}
@@ -89,7 +89,7 @@
           {%- endif -%}
           {%- for key in view.card.header -%}
           {%- if not vel.hide -%}
-          {{ macros::card_elements(el=tr.record[key], position="", with_label=false) }}
+          {{ macros::macro_card_elements(el=tr.record[key], position="", with_label=false) }}
           {%- endif -%}
           {%- endfor -%}
         </div><!-- /header -->
@@ -99,17 +99,17 @@
         <div class="description">
           {%- for key in view.card.meta_right -%}
           {%- if not vel.hide -%}
-          {{ macros::card_elements(el=tr.record[key], position="right floated", with_label=false) }}
+          {{ macros::macro_card_elements(el=tr.record[key], position="right floated", with_label=false) }}
           {%- endif -%}
           {%- endfor -%}
           {%- for key in view.card.meta_left -%}
           {%- if not vel.hide -%}
-          {{ macros::card_elements(el=tr.record[key], position="left floated", with_label=false) }}
+          {{ macros::macro_card_elements(el=tr.record[key], position="left floated", with_label=false) }}
           {%- endif -%}
           {%- endfor -%}
           {%- for key in view.card.meta -%}
           {%- if not vel.hide -%}
-          {{ macros::card_elements(el=tr.record[key], position="", with_label=true) }}
+          {{ macros::macro_card_elements(el=tr.record[key], position="", with_label=true) }}
           {%- endif -%}
           {%- endfor -%}
         </div><!-- /meta -->
@@ -119,7 +119,7 @@
           {%- for key in view.card.description -%}
           {%- if not vel.hide -%}
           <div class="ui message" style="margin: 0.5em 0;padding: 0.7em">
-            {{ macros::card_elements(el=tr.record[key], position="", with_label=false) }}
+            {{ macros::macro_card_elements(el=tr.record[key], position="", with_label=false) }}
           </div>
           {%- endif -%}
           {%- endfor -%}
@@ -129,17 +129,17 @@
         <div class="description">
           {%- for key in view.card.extra_right -%}
           {%- if not vel.hide -%}
-          {{ macros::card_elements(el=tr.record[key], position="right floated", with_label=false) }}
+          {{ macros::macro_card_elements(el=tr.record[key], position="right floated", with_label=false) }}
           {%- endif -%}
           {%- endfor -%}
           {%- for key in view.card.extra_left -%}
           {%- if not vel.hide -%}
-          {{ macros::card_elements(el=tr.record[key], position="left floated", with_label=false) }}
+          {{ macros::macro_card_elements(el=tr.record[key], position="left floated", with_label=false) }}
           {%- endif -%}
           {%- endfor -%}
           {%- for key in view.card.extra -%}
           {%- if not vel.hide -%}
-          {{ macros::card_elements(el=tr.record[key], position="", with_label=true) }}
+          {{ macros::macro_card_elements(el=tr.record[key], position="", with_label=true) }}
           {%- endif -%}
           {%- endfor -%}
         </div><!-- /extra -->
@@ -149,12 +149,12 @@
       <div class="extra content" style="padding-top: 0.5em;padding-bottom: 0.7em;">
         {%- for key in view.card.footer_right -%}
         {%- if not vel.hide -%}
-        {{ macros::card_elements(el=tr.record[key], position="right floated", with_label=false) }}
+        {{ macros::macro_card_elements(el=tr.record[key], position="right floated", with_label=false) }}
         {%- endif -%}
         {%- endfor -%}
         {%- for key in view.card.footer -%}
         {%- if not vel.hide -%}
-        {{ macros::card_elements(el=tr.record[key], position="", with_label=false) }}
+        {{ macros::macro_card_elements(el=tr.record[key], position="", with_label=false) }}
         {%- endif -%}
         {%- endfor -%}
       </div><!-- /content -->
@@ -163,7 +163,7 @@
     {%- endfor -%}
   </div><!-- /cards -->
 </div>
-{% include "incl_view_footer.html" %}
+{% include "inc_view_footer.html" %}
 {%- endblock -%}
 {%- block forms -%}
 <input type="hidden" id="crud_view" value="{{appid}}-{{tableid}}-{{viewid}}">

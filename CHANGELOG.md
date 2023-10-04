@@ -11,6 +11,9 @@
 
 ### VERSION
 
+0.24.0 - 4 octobre 2023
+- `added` formulaire avec élément de type view
+
 0.23.0 - 1er octobre 2023
 - `changed` réorganisation des tpl macro et include
 

@@ -3,7 +3,7 @@
 
 {%- block title -%}{%- endblock -%}
 
-{%- block menu -%}{% include "incl_menu.html" %}{%- endblock -%}
+{%- block menu -%}{% include "inc_menu.html" %}{%- endblock -%}
 
 {%- block navigation -%}
 <a href="{{back}}" class="item" style="padding: 0.3em;">
@@ -39,7 +39,7 @@
 
 {%- block content -%}
 <div class="ui container">
-  {% include "incl_flash.html" %}
+  {% include "inc_flash.html" %}
   <div class="ui cards">
   {%- for vel in form.velements -%}
     {%- if loop.first and record[vel.elid].type_element != "card" -%}
@@ -92,7 +92,7 @@
         {%- endif -%}{# end if type card #}
       {%- else -%}
         {# dessin des élements autre que card #}
-        {{ macros::form_elements(el=record[vel.elid]) }}
+        {{ macros::macro_form_elements(el=record[vel.elid]) }}
       {%- endif -%}{# end if card #}
     {%- endif -%}{# end if not hide #}
   {%- endfor -%}{# end loop velements #}

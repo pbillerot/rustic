@@ -1,5 +1,5 @@
 {# Affichage d'une cellule avec la value de l'élémnt correspondant #}
-{%- macro edit_elements(el) -%}
+{%- macro macro_edit_elements(el) -%}
 {%- if el.hide -%}
 <!--{{el.elid}} hide-->
 {%- elif el.type_element == "amount" -%}
@@ -89,4 +89,4 @@
   {% if el.help %}<span class="ui small blue text">{{el.help | markdown}}</span>{%endif%}
 </div>
 {%- endif -%}
-{%- endmacro edit_elements -%}
+{%- endmacro macro_edit_elements -%}

@@ -76,7 +76,8 @@ views:
     form_view: fview
     form_add: fadd
     form_edit: fedit
-    type_view: card
+    # type_view: card
+    type_view: table
     group: admin
     deletable: true
     title: "Comptes Utilisateurs"
@@ -187,8 +188,9 @@ forms:
         order: 200
         type_element: view
         params:
-          table: users_groups
-          view: vall
+          tableid: users_groups
+          viewid: vall
+          where_sql: users_groups.user_name = '{user_name}'
 
   fprofil:
     title: "Mon profil"

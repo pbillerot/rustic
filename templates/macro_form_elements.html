@@ -1,5 +1,7 @@
 {# Affichage d'une cellule avec la value de l'élémnt correspondant #}
-{%- macro form_elements(el) -%}
+{% import "macro_table.html" as mactable %}
+
+{%- macro macro_form_elements(el) -%}
 
 {%- if el.type_element == "button" -%}
 <!-- type button -->
@@ -37,8 +39,8 @@
 {%- endfor -%}
 </div>
 
-{%- elif el.type_element == "view" -%}
-{%- set elview = elviews[el.params.viewid] -%}
+{%- elif el.type_element == "view" and tvs | length > 0 -%}
+{%- set tv = tvs[el.params.viewid] -%}
 </div><!-- /content -->
 </div><!-- /card -->
 <div class="card raised crud-card-view bee-width-{{el.width}} {{el.class}}" style="{{el.style}}">
@@ -51,29 +53,27 @@
       <div class="ui icon input">
         <input class="crud-search-input-1" type="hidden" value="">
         <input type="text" class="crud-search-input" data-url="/search/{{appid}}/{{el.params.tableid}}/{{el.params.viewid}}"
-          value="{{search}}" placeholder="Recherche...">
+          value="{{tvs[el.params.viewid].search}}" placeholder="Recherche...">
         <i class="circular search link icon crud-search-go" title="Rechercher"></i>
       </div>
       <i class="close link icon crud-search-close" title="Fermer recherche"></i>
     </div>
     <!-- /recheche -->
-    {%- if elview.form_add -%}}
+    {%- if tv.form_add -%}}
     <button class="right floated circular ui plus blue icon button crud-jquery-url"
-    data-url="/add/{{appid}}/{{ el.params.tableid}}/{{el.params.view}}/{{elview.form_add}}{{args}}"
+    data-url="/add/{{appid}}/{{ el.params.tableid}}/{{el.params.view}}/{{tv.form_add}}{{args}}"
     style="z-index: 1000; position: absolute; top: 2.5em; right: 2em; padding: 1em;"
     title="Ajouter un élément...">
       <i class="icon plus"></i>
     </button>
     {%- endif -%}
     <div class="header">
-      <i class="large blue {{elview.icon_name}} icon"></i>&nbsp;
+      <i class="large blue {{tv.view.icon_name}} icon"></i>&nbsp;
       {{el.label_long}}
     </div>
   </div>
   <div class="content" style="max-height: 500px;overflow-x: scroll;">
-    {# macro tpl_table#}
-    {# {{template "_crud_table.html" (dict "Session" $session "AppId" $appid "UIView" $uiView)}} #}
-
+    {{ mactable::macro_table(tv=tv) }}
 
 {%- else -%}
 <!-- type autre -->
@@ -89,4 +89,4 @@
 </div>
 {%- endif -%}
 
-{%- endmacro form_elements -%}
+{%- endmacro macro_form_elements -%}

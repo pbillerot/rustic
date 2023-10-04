@@ -60,6 +60,9 @@ mod route_lexic;
 pub use self::route_lexic::lexicall;
 
 // gestion des URL de retour
-mod back;
-pub use back::compute_back;
-pub use back::get_back;
+mod go_back;
+pub use go_back::compute_back;
+pub use go_back::get_back;
+
+// création des Tview
+mod view_table;

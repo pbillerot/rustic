@@ -3,7 +3,7 @@
 
 {%- block title -%}{%- endblock -%}
 
-{%- block menu -%}{% include "incl_menu.html" %}{%- endblock -%}
+{%- block menu -%}{% include "inc_menu.html" %}{%- endblock -%}
 
 {%- block navigation -%}
 <a href="{{back}}" class="item" style="padding: 0.3em;">
@@ -23,7 +23,7 @@
 
 {%- block content -%}
 <div class="ui container">
-  {% include "incl_flash.html" %}
+  {% include "inc_flash.html" %}
   <!-- FORMULAIRE -->
   <div class="ui attached icon message">
     <i class="{%if form.icon_name%}{{form.icon_name}}{%else%}{{view.icon_name}}{%endif%} blue inbox icon"></i>
@@ -39,7 +39,7 @@
         {%- if card_on == 1 -%}</div>{%- endif -%}
         <div class="fields">{%- set_global card_on = 1 -%}
       {%- else -%}
-        {{ macros::edit_elements(el=record[vel.elid]) }}
+        {{ macros::macro_edit_elements(el=record[vel.elid]) }}
       {%- endif -%}
     {%- endfor -%}
     {%- if card_on == 1 -%}</div>{%- endif -%}

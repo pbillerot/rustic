@@ -2,8 +2,11 @@
 //!
 // use crate::sqlic::sql_utils::querlite;
 use crate::{
+    cruder::read::crud_read,
+    lexicer::{lex_table::Element, macelement},
+    middler::{clear_flash, flash::FlashMessage, get_flash},
     // lexic::lex_table::{self, Element},
-    AppState, cruder::read::crud_read, middler::{flash::FlashMessage, clear_flash, get_flash},
+    AppState,
 };
 use actix_session::Session;
 use actix_web::{
@@ -18,11 +21,12 @@ use actix_web::{
 };
 use actix_web_lab::respond::Html;
 use std::{
+    collections::HashMap,
     // collections::HashMap,
-    sync::atomic::Ordering
+    sync::atomic::Ordering,
 };
 
-use super::get_back;
+use super::{get_back, view_table::Tview};
 
 // #[get("/form/{appid}/{tableid}/{viewid}/{formid}/{id}")]
 pub async fn form(
@@ -30,7 +34,6 @@ pub async fn form(
     data: web::Data<AppState>,
     session: Session,
 ) -> Result<impl Responder> {
-
     let (appid, tableid, viewid, formid, id) = path.into_inner();
     let ptr = data.plexic.load(Ordering::Relaxed);
     let apps = unsafe { &(*ptr).applications.clone() };
@@ -42,19 +45,54 @@ pub async fn form(
     let mut context = tera::Context::new();
     let mut messages: Vec<FlashMessage> = Vec::new();
 
-    match crud_read(
+    let record = match crud_read(
         &data.db,
         &data.dblite,
-        application, table, &form.velements, &id,
-    ).await {
-        Ok(mut records) => {
-            context.insert("record", &records.pop());
+        application,
+        table,
+        &form.velements,
+        &id,
+    )
+    .await
+    {
+        Ok(mut records) => match records.pop() {
+            Some(record) => record,
+            None => {
+                let rec: HashMap<String, Element> = HashMap::new();
+                rec
+            }
         },
         Err(e) => {
             messages.push(FlashMessage::error(format!("{e:?}").as_str()));
-            context.insert("record", &vec![{}]);
+            let rec: HashMap<String, Element> = HashMap::new();
+            rec
         }
     };
+
+    // chargement des éléments de type tview dans tvs
+    let mut tvs: HashMap<String, Tview> = HashMap::new();
+    for vel in &form.velements {
+        if vel.type_element == "view" {
+            let filter = macelement(&vel.params.where_sql, &record);
+            match Tview::new(
+              &application,
+              &vel.params.tableid,
+              &vel.params.viewid,
+              &filter,
+              &session,
+              &data.db,
+              &data.dblite,
+          )
+          .await {
+            Ok(tv) => {
+              tvs.insert(vel.params.viewid.clone(), tv);
+            },
+            Err(e) => {
+              messages.push(FlashMessage::error(format!("{e:?}").as_str()));
+            }
+          };
+        }
+    }
 
     if let Some(flash) = get_flash(&session)? {
         messages.push(flash);
@@ -74,9 +112,10 @@ pub async fn form(
     context.insert("id", &id);
     context.insert("key", &table.setting.key);
     context.insert("back", &get_back(&session));
+    context.insert("tvs", &tvs);
+    context.insert("record", &record);
 
     let html = data.template.render("tpl_form.html", &context).unwrap();
 
     Ok(Html(html))
-
 }

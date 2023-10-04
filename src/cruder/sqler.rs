@@ -15,8 +15,8 @@ use std::collections::HashMap;
 
 /// Requête sqlite qui ne renvoie qu'une seule colonne et une seule ligne
 #[allow(dead_code)]
-pub async fn kerlite(poollite: &Pool<Sqlite>, sql: &str ) -> Result<String, String> {
-    let row = match sqlx::query(sql).fetch_one(poollite).await {
+pub async fn kerlite(poolite: &Pool<Sqlite>, sql: &str ) -> Result<String, String> {
+    let row = match sqlx::query(sql).fetch_one(poolite).await {
         Ok(r) => r,
         Err(e) => {
             let msg = format!("{sql} : {e:?}");

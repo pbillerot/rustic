@@ -1,7 +1,7 @@
 {#
 AFFICHAGE D'UNE CELLULE DANS UNE CARD
 #}
-{%- macro card_elements(el, position="", with_label=false) -%}
+{%- macro macro_card_elements(el, position="", with_label=false) -%}
 <span class="{{position}}">
 
   {%- if el.type_element == "button" -%}
@@ -77,4 +77,4 @@ AFFICHAGE D'UNE CELLULE DANS UNE CARD
           </span>
           {%-endif-%}
         </span>
-        {%- endmacro card_elements -%}
+        {%- endmacro macro_card_elements -%}
