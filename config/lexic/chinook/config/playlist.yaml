@@ -1,0 +1,74 @@
+# Table des PlayLists
+setting:
+  alias-db: chinook
+  key: PlaylistId
+  icon-name: "align justify"
+
+elements:
+  PlaylistId:
+    type: number
+    label-long: "Id"
+    label-short: "Id"
+  Name:
+    type: text
+    label-long: "Playliste"
+    label-short: "Playliste"
+  TrackId:
+    type: number
+    label-long: "Morceaux"
+    label-short: "Morceaux"
+
+views:
+  vall:
+    form-add: fedit
+    form-edit: fedit
+    form-view: fview
+    deletable: false
+    type: table
+    group: chinook
+    title: "Playliste"
+    icon-name: "align justify"
+    order-by: Name
+    card:
+      header:
+        - PlaylistId
+      meta:
+      description:
+        - Name
+      extra:
+    elements:
+      PlaylistId:
+        order: 10
+      Name:
+        order: 20
+
+forms:
+  fedit:
+    title: "PlayListe de musique"
+    groupe: chinook
+    elements:
+      PlaylistId:
+        order: 10
+      Name:
+        order: 20
+  fview:
+    title: "PlayListe"
+    groupe: chinook
+    elements:
+      PlaylistId:
+        order: 10
+        hide: false
+      Name:
+        order: 20
+        hide: false
+      _tracks:
+        type: card
+        order : 100
+        label-long: "Titres de la playliste : {Name}"
+        width: max
+        icon-name: "file audio"
+        params:
+          without-frame: false
+          table: Track
+          view: vplaylist
+          where: "TrackId in (select TrackId from PlaylistTrack where PlaylistTrack.PlaylistId = '{PlaylistId}')"

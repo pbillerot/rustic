@@ -11,7 +11,6 @@
 {%- block actions -%}
 {%- if application.tables[tableid].views[viewid].actions or application.tables[tableid].views[viewid].form_add -%}
 
-{% set tv = tvs | first %}
 
 {%- if not view.filters -%}
 <div class="ui icon item crud-search-div">
@@ -21,7 +20,7 @@
     <div class="ui icon input">
       <input class="crud-search-input-1" type="hidden" value="">
       <input type="text" class="crud-search-input" data-url="/search/{{appid}}/{{tableid}}/{{viewid}}"
-        value="{{tv.search}}" placeholder="Recherche...">
+        value="{{search}}" placeholder="Recherche...">
       <i class="circular search link icon crud-search-go" title="Rechercher"></i>
     </div>
     <i class="close link icon crud-search-close" title="Fermer la recherche"></i>
@@ -47,20 +46,8 @@
 
 {%- block content -%}
 
-{% set tv = tvs | first %}
-
 <div class="ui container" {%- if application.in_footer -%} style="margin-bottom: 6em;height: 100%" {%- endif -%}>
   {% include "inc_flash.html" %}
-  <div class="crud-mobile-show ui label">
-    {{view.title}}&nbsp;
-    {%- if tv.trs | length == 0 -%}
-    (aucun élément)
-    {%- elif tv.trs | length == 1 -%}
-    (1 élément)
-    {%- else -%}
-    ({{tv.trs|length}} éléments)
-    {%- endif -%}
-  </div>
   {%- if view.form_add -%}
   <button class="right floated circular ui large plus blue icon button crud-jquery-url"
     data-url="/add/{{appid}}/{{tableid}}/{{viewid}}/{{view.form_add}}" {%- if application.in_footer -%}
@@ -75,7 +62,7 @@
   <form class="ui form" id="formFilter" method="POST" action="/filter/{{appid}}/{{tableid}}/{{viewid}}">
     <input id="resetfilter" name="resetfilter" type="hidden">
     <div class="fields">
-      {%- for vel in tv.filters -%}
+      {%- for vel in filters -%}
       <div class="bee-width-s field">
         {%- if vel.type_element == "tag" or vel.type_element == "list" or vel.type_element == "radio" -%}
         <select name="{{vel.elid}}" id="{{vel.elid}}" class="ui fluid search dropdown">
@@ -104,7 +91,9 @@
   </form>
   {%- endif -%}
   <!-- TABLE -->
+  {%- for tv in tvs -%}
   {{ macros::macro_table(tv=tv) }}
+  {%- endfor -%}
 </div>
 {% include "inc_view_footer.html" %}
 {%- endblock -%}

@@ -1,0 +1,180 @@
+# Table des Clients
+setting:
+  alias-db: chinook
+  key: CustomerId
+  icon-name: "user"
+
+elements:
+  CustomerId:
+    type: number
+    label-long: "Id"
+    label-short: "Id"
+  FirstName:
+    type: text
+    label-long: "Nom"
+    label-short: "Nom"
+  LastName:
+    type: text
+    label-long: "Prénom"
+    label-short: "Prénom"
+  Company:
+    type: text
+    label-long: "Entreprise"
+    label-short: "Entreprise"
+  Address:
+    type: text
+    label-long: "Adresse"
+    label-short: "Adresse"
+  City:
+    type: text
+    label-long: "Ville"
+    label-short: "Ville"
+  PostalCode:
+    type: text
+    label-long: "Code postal"
+    label-short: "Code postal"
+  Phone:
+    type: text
+    label-long: "Téléphone"
+    label-short: "Téléphone"
+  Fax:
+    type: text
+    label-long: "Fax"
+    label-short: "Fax"
+  Email:
+    type: email
+    label-long: "Email"
+    label-short: "Email"
+  SupportRepId:
+    type: list
+    label-long: "Suivi par"
+    label-short: "Suivi par"
+    items-sql: "SELECT EmployeeId as 'key', LastName as 'label' From Employee order by LastName"
+
+views:
+  vall:
+    form-add: fedit
+    form-edit: fedit
+    form-view: fview
+    deletable: false
+    type: card
+    group: chinook
+    title: "Clients"
+    icon-name: "user"
+    order-by: CustomerId
+    card:
+      header:
+        - CustomerId
+        - FirstName
+        - LastName
+      meta:
+        - Company
+      description:
+        - Address
+        - PostalCode
+        - City
+      extra:
+        - Phone
+        - Fax
+        - Email
+      footer:
+        - SupportRepId
+    elements:
+      CustomerId:
+      FirstName:
+      LastName:
+      Company:
+      Address:
+      City:
+      PostalCode:
+      Phone:
+      Fax:
+      Email:
+      SupportRepId:
+
+  vwallet:
+    form-add: fedit
+    form-edit: fedit
+    form-view: fview
+    deletable: false
+    type: card
+    group: chinook
+    title: "Clients"
+    icon-name: "user"
+    order-by: CustomerId
+    elements:
+      CustomerId:
+        order: 10
+      FirstName:
+        order: 20
+      LastName:
+        order: 30
+      Company:
+        order: 40
+
+forms:
+  fedit:
+    title: "Client"
+    groupe: chinook
+    elements:
+      CustomerId:
+        order: 10
+      FirstName:
+        order: 20
+      LastName:
+        order: 30
+      Company:
+        order: 40
+      Address:
+        order: 50
+      City:
+        order: 60
+      PostalCode:
+        order: 70
+      Phone:
+        order: 80
+      Fax:
+        order: 90
+      Email:
+        order: 100
+      SupportRepId:
+        order: 110
+
+  fview:
+    title: "Client"
+    groupe: chinook
+    elements:
+      CustomerId:
+        order: 10
+        hide: true
+      FirstName:
+        order: 20
+      LastName:
+        order: 30
+      Company:
+        order: 40
+      Address:
+        order: 50
+      City:
+        order: 60
+      PostalCode:
+        order: 70
+      Phone:
+        order: 80
+      Fax:
+        order: 90
+      Email:
+        order: 100
+      SupportRepId:
+        order: 110
+      _factures:
+        type: card
+        order: 300
+        label-long: "Factures"
+        icon-name: "file invoice"
+        args:
+          CustomerId: "{CustomerId}"
+        params:
+          table: Invoice
+          view: vclient
+          where: "CustomerId = '{CustomerId}'"

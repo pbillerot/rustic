@@ -24,6 +24,20 @@
   </h4>
 </div>
 
+{%- elif el.type_element == "image" -%}
+<a class="ui link image crud-popup-image"
+data-url="{{el.params.url}}"
+title="{{el.params.title}}">
+  <img src="{{el.params.src}}">
+</a>
+{%- if el.label_long -%}
+<div class="content">
+  <div class="center aligned description">
+    <b>{{el.label_long}}</b>
+  </div>
+</div>
+{%- endif -%}
+
 {%- elif el.type_element == "tag" -%}
 <!-- type tag -->
 <div class="description">

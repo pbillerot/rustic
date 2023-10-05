@@ -57,7 +57,7 @@ pub async fn crud_list(
     let mut where_filter = String::new();
 
     if !filter_element.is_empty() {
-      where_filter.push_str(&filter_element);
+        where_filter.push_str(&filter_element);
     }
 
     for element in &view.velements {
@@ -88,47 +88,38 @@ pub async fn crud_list(
                         if !where_filter.is_empty() {
                             where_filter.push_str(" AND ");
                         }
+                        let mut col_name = String::new();
+                        if element.jointure.column.is_empty() {
+                            col_name.push_str(format!("{tableid}.{key}").as_str())
+                        } else {
+                            col_name.push_str(format!("{}", element.jointure.column).as_str())
+                        }
                         if element.type_element == "list"
                             || element.type_element == "radio"
                             || element.type_element == "tag"
                         {
                             // where_filter.push_str(format!("'{filter_value}' IN {tableid}.{key}").as_str());
                             where_filter.push_str(
-                                format!(
-                                    "{tableid}.{key} ILIKE '%{}%'",
-                                    &filter_value.to_lowercase()
-                                )
-                                .as_str(),
+                                format!("{col_name} ILIKE '%{}%'", &filter_value.to_lowercase())
+                                    .as_str(),
                             );
                         } else {
-                            if element.jointure.column.is_empty() {
-                                if element.type_element == "date"
-                                    || element.type_element == "number"
-                                    || element.type_element == "amount"
-                                    || element.type_element == "checkbox"
-                                {
-                                    where_filter.push_str(
-                                        format!(
-                                            "cast({tableid}.{key} as varchar) ILIKE '%{}%'",
-                                            &filter_value.to_lowercase()
-                                        )
-                                        .as_str(),
-                                    );
-                                } else {
-                                    where_filter.push_str(
-                                        format!(
-                                            "{} ILIKE '%{}%'",
-                                            &element.elid,
-                                            &filter_value.to_lowercase()
-                                        )
-                                        .as_str(),
-                                    );
-                                }
+                            if element.type_element == "date"
+                                || element.type_element == "number"
+                                || element.type_element == "amount"
+                                || element.type_element == "checkbox"
+                            {
+                                where_filter.push_str(
+                                    format!(
+                                        "cast({col_name} as varchar) ILIKE '%{}%'",
+                                        &filter_value.to_lowercase()
+                                    )
+                                    .as_str(),
+                                );
                             } else {
                                 where_filter.push_str(
                                     format!(
-                                        "{} ILIKE '%{}%'",
-                                        &element.jointure.column,
+                                        "{col_name} ILIKE '%{}%'",
                                         &filter_value.to_lowercase()
                                     )
                                     .as_str(),
@@ -140,10 +131,11 @@ pub async fn crud_list(
             }
         }
     }
+    let mut where_search = String::new();
     if !search.is_empty() {
-        if !where_filter.is_empty() {
-            where_filter.push_str(" AND (");
-        }
+        // if !where_filter.is_empty() {
+        //     where_filter.push_str(" AND (");
+        // }
         for element in &view.velements {
             if element.hide {
                 continue;
@@ -151,15 +143,15 @@ pub async fn crud_list(
             if element.elid.starts_with("_") {
                 continue;
             }
-            if !where_filter.is_empty() {
-                where_filter.push_str(" OR ");
+            if !where_search.is_empty() {
+                where_search.push_str(" OR ");
             }
             if element.type_element == "list"
                 || element.type_element == "radio"
                 || element.type_element == "tag"
             {
-                // where_filter.push_str(format!("'{filter_value}' IN {tableid}.{key}").as_str());
-                where_filter.push_str(
+                // where_search.push_str(format!("'{filter_value}' IN {tableid}.{key}").as_str());
+                where_search.push_str(
                     format!(
                         "{tableid}.{} ILIKE '%{}%'",
                         &element.elid,
@@ -170,11 +162,12 @@ pub async fn crud_list(
             } else {
                 if element.jointure.column.is_empty() {
                     if element.type_element == "date"
+                        || element.type_element == "counter"
                         || element.type_element == "number"
                         || element.type_element == "amount"
                         || element.type_element == "checkbox"
                     {
-                        where_filter.push_str(
+                        where_search.push_str(
                             format!(
                                 "cast({tableid}.{} as varchar) ILIKE '%{}%'",
                                 &element.elid,
@@ -183,13 +176,13 @@ pub async fn crud_list(
                             .as_str(),
                         );
                     } else {
-                        where_filter.push_str(
+                        where_search.push_str(
                             format!("{} ILIKE '%{}%'", &element.elid, &search.to_lowercase())
                                 .as_str(),
                         );
                     }
                 } else {
-                    where_filter.push_str(
+                    where_search.push_str(
                         format!(
                             "{} ILIKE '%{}%'",
                             &element.jointure.column,
@@ -222,6 +215,14 @@ pub async fn crud_list(
                 w.push_str(" WHERE ");
             }
             w.push_str(format!("{}", &where_filter).as_str());
+        }
+        if !where_search.is_empty() {
+            if w.is_empty() {
+                w.push_str(" WHERE ");
+                w.push_str(format!("WHERE ({})", &where_search).as_str());
+            } else {
+                w.push_str(format!(" AND ({}) ", where_search).as_str());
+            }
         }
         if !w.is_empty() {
             sql.push_str(&w);

@@ -1,0 +1,71 @@
+# table des artists
+setting:
+  alias_db: chinook
+  key: artistid
+  icon_name: "user secret"
+
+elements:
+  artistid:
+    type_element: number
+    label_long: "id"
+    label_short: "id"
+  name:
+    type_element: text
+    label_long: "artiste"
+    label_short: "artiste"
+
+views:
+  vall:
+    form_add: fedit
+    form_edit: fedit
+    form_view: fview
+    deletable: false
+    type: table
+    group: chinook
+    title: "Artistes"
+    icon_name: "user secret"
+    order_by: name
+    card:
+      header:
+        - artistid
+      meta:
+      description:
+        - name
+      extra:
+    elements:
+      artistid:
+        order: 10
+      name:
+        order: 20
+
+forms:
+  fedit:
+    title: "Artiste: {name}"
+    groupe: chinook
+    elements:
+      artistid:
+        order: 10
+      name:
+        order: 20
+
+  fview:
+    title: "Artiste: {name}"
+    groupe: chinook
+    elements:
+      artistid:
+        order: 10
+      name:
+        order: 20
+      # _image:
+      #   order: 30
+      _card_albums:
+        order: 100
+        type_element: view
+        label_long: "Albums de {name}"
+        width: l
+        # args:
+        #   artistid: "{artistid}"
+        params:
+          tableid: album
+          viewid: vartist
+          where_sql: "album.artistid = '{artistid}'"

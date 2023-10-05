@@ -28,9 +28,10 @@
   <i class="ellipsis vertical icon"></i>
   <div class="menu">
     {%- for action in application.tables[tableid].forms[formid].actions -%}
-      {%- if not action.hide -%}
-    <a class="item crud-jquery-action" data-confirm="{{action.with-confirm}}" href="/actionf/{{appid}}/{{tableid}}/{{viewid}}/{{loop.index0}}">{{ action.label }}</a></li>
-      {%- endif -%}
+    {%- if not action.hide -%}
+    <a class="item crud-jquery-action" data-confirm="{{action.with-confirm}}"
+      href="/actionf/{{appid}}/{{tableid}}/{{viewid}}/{{loop.index0}}">{{ action.label }}</a></li>
+    {%- endif -%}
     {%- endfor -%}
   </div>
 </div>
@@ -41,104 +42,121 @@
 <div class="ui container">
   {% include "inc_flash.html" %}
   <div class="ui cards">
-  {%- for vel in form.velements -%}
+    {%- for vel in form.velements -%}
     {%- if loop.first and record[vel.elid].type_element != "card" -%}
-      {# first card #}
-      {%- if view.form_edit -%}
-    <div class="link card raised crud-card-view {{vel.class}} crud-jquery-url" style="{{vel.style}}" data-url="/edit/{{appid}}/{{tableid}}/{{viewid}}/{{view.form_edit}}/{{id}}">
+    {# first card #}
+    {%- if view.form_edit -%}
+    <div class="link card raised crud-card-view {{vel.class}} crud-jquery-url" style="{{vel.style}}"
+      data-url="/edit/{{appid}}/{{tableid}}/{{viewid}}/{{view.form_edit}}/{{id}}">
       {%- else -%}
-    <div class="card raised crud-card-view {{vel.class}}" style="{{vel.style}}">
-      {%- endif -%}{# end form edit #}
-      <div class="content" style="flex-grow: 0;">
-        {%- if view.form_edit -%}
-        <div class="right floated meta"><a class="crud-jquery-url" data-url="/edit/{{appid}}/{{tableid}}/{{viewid}}/{{view.form_edit}}/{{id}}" title="Modifier..."><i class="edit blue icon"></i></a>
-        </div>
+      <div class="card raised crud-card-view {{vel.class}}" style="{{vel.style}}">
         {%- endif -%}{# end form edit #}
-        <div class="header">
-          <i class="large blue {{view.icon_name}} icon"></i>
-          {{form.title}} <span style="color: maroon">{{record[table.setting.key].value|upper}}</span>
-        </div>
-      </div>
-      <div class="content">
-    {%- endif -%}{# end loop first #}
-    {%- if not vel.hide -%}
-      {%- if record[vel.elid].type_element == "card" -%}
-      {# start new card #}
-      {# cloture de la card en cours #}
-      </div><!-- /content -->
-    </div><!-- /card -->
-    <!-- card -->
-        {%- if vel.params.formid -%}
-    <div class="link card raised crud-card-view {{vel.class}} crud-jquery-url" style="{{vel.style}}" data-url="/edit/{{appid}}/{{tableid}}/{{viewid}}/{{vel.params.formid}}/{{id}}">
-      <div class="content" style="flex-grow: 0;">
-        <div class="right floated meta"><a class="crud-jquery-url" data-url="/edit/{{appid}}/{{tableid}}/{{viewid}}/{{vel.params.formid}}/{{id}}" title="Modifier..."><i class="edit blue icon"></i></a></div>
-        <div class="header">
-          <i class="large blue {{vel.icon_name}} icon"></i>
-          {{vel.label_long}}
-        </div>
-      </div>
-    <div class="content">
-        {%- elif vel.params.url -%}
-    <div class="link card raised crud-card-view {{vel.class}} crud-jquery-url" style="{{vel.style}}" data-url="{{vel.params.url}}">
-      <div class="content" style="flex-grow: 0;">
-        <div class="right floated meta"><a class="crud-jquery-url" data-url="{{vel.params.url}}" title="Ouvrir..."><i class="edit blue icon"></i></a></div>
+        <div class="content" style="flex-grow: 0;">
+          {%- if view.form_edit -%}
+          <div class="right floated meta"><a class="crud-jquery-url"
+              data-url="/edit/{{appid}}/{{tableid}}/{{viewid}}/{{view.form_edit}}/{{id}}" title="Modifier..."><i
+                class="edit blue icon"></i></a>
+          </div>
+          {%- endif -%}{# end form edit #}
           <div class="header">
-            <i class="large blue {{vel.icon_name}} icon"></i>
-                {{vel.label_long}}
+            <i class="large blue {{view.icon_name}} icon"></i>
+            {{form_title}}
           </div>
         </div>
-      <div class="content">
-        {# TODO card view #}
-        {%- endif -%}{# end if type card #}
-      {%- else -%}
-        {# dessin des élements autre que card #}
-        {{ macros::macro_form_elements(el=record[vel.elid]) }}
-      {%- endif -%}{# end if card #}
-    {%- endif -%}{# end if not hide #}
-  {%- endfor -%}{# end loop velements #}
-    {# end card courante #}
-    </div><!-- /content -->
-  </div><!-- /card -->
-</div>{# end container #}
-{%- endblock -%}
+        <div class="content">
+          {%- endif -%}{# end loop first #}
+          {%- if not vel.hide -%}
+          {%- if record[vel.elid].type_element == "card" -%}
+          {# start new card #}
+          {# cloture de la card en cours #}
+        </div><!-- /content -->
+      </div><!-- /card -->
+      <!-- card -->
+      {%- if vel.params.formid -%}
+      <div class="link card raised crud-card-view {{vel.class}} crud-jquery-url" style="{{vel.style}}"
+        data-url="/edit/{{appid}}/{{tableid}}/{{viewid}}/{{vel.params.formid}}/{{id}}">
+        <div class="content" style="flex-grow: 0;">
+          <div class="right floated meta"><a class="crud-jquery-url"
+              data-url="/edit/{{appid}}/{{tableid}}/{{viewid}}/{{vel.params.formid}}/{{id}}" title="Modifier..."><i
+                class="edit blue icon"></i></a></div>
+          <div class="header">
+            <i class="large blue {{vel.icon_name}} icon"></i>
+            {{vel.label_long}}
+          </div>
+        </div>
+        <div class="content">
+          {%- elif vel.params.url -%}
+          <div class="link card raised crud-card-view {{vel.class}} crud-jquery-url" style="{{vel.style}}"
+            data-url="{{vel.params.url}}">
+            <div class="content" style="flex-grow: 0;">
+              <div class="right floated meta"><a class="crud-jquery-url" data-url="{{vel.params.url}}"
+                  title="Ouvrir..."><i class="edit blue icon"></i></a></div>
+              <div class="header">
+                <i class="large blue {{vel.icon_name}} icon"></i>
+                {{vel.label_long}}
+              </div>
+            </div>
+            <div class="content">
+              {%- else -%}
+              <div class="card raised crud-card-view {{vel.class}}" style="{{vel.style}}">
+                <div class="content" style="flex-grow: 0;">
+                  <div class="header">
+                    <i class="large blue {{vel.icon_name}} icon"></i>
+                    {{vel.label_long}}
+                  </div>
+                </div>
+                <div class="content">
+                  {# TODO card view #}
+                  {%- endif -%}{# end if type card #}
+                  {%- else -%}
+                  {# dessin des élements autre que card #}
+                  {{ macros::macro_form_elements(el=record[vel.elid]) }}
+                  {%- endif -%}{# end if card #}
+                  {%- endif -%}{# end if not hide #}
+                  {%- endfor -%}{# end loop velements #}
+                  {# end card courante #}
+                </div><!-- /content -->
+              </div><!-- /card -->
+            </div>{# end container #}
+            {%- endblock -%}
 
-{%- block forms -%}
-  <!-- Demande de confirmation de la suppression -->
-  <div id="crud-modal-confirm" class="ui tiny modal">
-    <div class="header" id="crud-action">texte à venir</div>
-    <div class="content">
-      <p>Veuillez le confirmer</p>
-    </div>
-    <div class="actions">
-      <div class="ui cancel button">Annuler</div>
-      <div class="ui approve button">Je confirme</div>
-    </div>
-  </div>
-  <form id="crud-form-delete-id" action="/delete/{{appid}}/{{tableid}}/{{viewid}}/{{id}}" method="POST">
-  </form>
-  <!-- Affichage d'une image en popup-->
-  <div id="crud-modal-image" class="ui fullscreen modal">
-    <div class="actions">
-      <div class="ui cancel button">Fermer</div>
-    </div>
-    <div class="image content">
-      <img id="crud-image" class="image center aligned" src="">
-    </div>
-  </div> <!-- end modal image -->
-  <!-- Affichage d'un pdf en popup-->
-  <div id="crud-modal-pdf" class="ui fullscreen modal">
-    <div class="actions">
-      <div class="ui cancel button">Fermer</div>
-    </div>
-    <div class="content">
-    </div>
-  </div> <!-- end modal image -->
-  <!-- Affichage d'un chart en popup-->
-  <div id="crud-modal-chart" class="ui fullscreen modal">
-    <div class="actions">
-      <div class="ui cancel button">Fermer</div>
-    </div>
-    <div class="image content" id="crud-chart">
-    </div>
-  </div> <!-- end modal image -->
-{%- endblock -%}
+            {%- block forms -%}
+            <!-- Demande de confirmation de la suppression -->
+            <div id="crud-modal-confirm" class="ui tiny modal">
+              <div class="header" id="crud-action">texte à venir</div>
+              <div class="content">
+                <p>Veuillez le confirmer</p>
+              </div>
+              <div class="actions">
+                <div class="ui cancel button">Annuler</div>
+                <div class="ui approve button">Je confirme</div>
+              </div>
+            </div>
+            <form id="crud-form-delete-id" action="/delete/{{appid}}/{{tableid}}/{{viewid}}/{{id}}" method="POST">
+            </form>
+            <!-- Affichage d'une image en popup-->
+            <div id="crud-modal-image" class="ui fullscreen modal">
+              <div class="actions">
+                <div class="ui cancel button">Fermer</div>
+              </div>
+              <div class="image content">
+                <img id="crud-image" class="image center aligned" src="">
+              </div>
+            </div> <!-- end modal image -->
+            <!-- Affichage d'un pdf en popup-->
+            <div id="crud-modal-pdf" class="ui fullscreen modal">
+              <div class="actions">
+                <div class="ui cancel button">Fermer</div>
+              </div>
+              <div class="content">
+              </div>
+            </div> <!-- end modal image -->
+            <!-- Affichage d'un chart en popup-->
+            <div id="crud-modal-chart" class="ui fullscreen modal">
+              <div class="actions">
+                <div class="ui cancel button">Fermer</div>
+              </div>
+              <div class="image content" id="crud-chart">
+              </div>
+            </div> <!-- end modal image -->
+            {%- endblock -%}

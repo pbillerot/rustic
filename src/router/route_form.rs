@@ -68,6 +68,7 @@ pub async fn form(
             rec
         }
     };
+    context.insert("record", &record);
 
     // chargement des éléments de type tview dans tvs
     let mut tvs: HashMap<String, Tview> = HashMap::new();
@@ -93,6 +94,9 @@ pub async fn form(
           };
         }
     }
+    // macro de form.title
+    let form_title =  macelement(&form.title, &record);
+    context.insert("form_title", &form_title);
 
     if let Some(flash) = get_flash(&session)? {
         messages.push(flash);
@@ -113,7 +117,6 @@ pub async fn form(
     context.insert("key", &table.setting.key);
     context.insert("back", &get_back(&session));
     context.insert("tvs", &tvs);
-    context.insert("record", &record);
 
     let html = data.template.render("tpl_form.html", &context).unwrap();
 

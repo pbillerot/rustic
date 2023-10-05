@@ -1,0 +1,48 @@
+# Table des Types de Média
+setting:
+  alias-db: chinook
+  key: MediaTypeId
+  icon-name: "audio description"
+
+elements:
+  MediaTypeId:
+    type: number
+    label-long: "Id"
+    label-short: "Id"
+  Name:
+    type: text
+    label-long: "Type de média"
+    label-short: "Type de média"
+
+views:
+  vall:
+    form-add: fedit
+    form-edit: fedit
+    deletable: false
+    type: table
+    group: chinook
+    title: "Types de Media"
+    icon-name: "audio description"
+    order-by: MediaTypeId
+    card:
+      header:
+        - MediaTypeId
+      meta:
+      description:
+        - Name
+      extra:
+    elements:
+      MediaTypeId:
+        order: 10
+      Name:
+        order: 20
+
+forms:
+  fedit:
+    title: "Type de Média"
+    groupe: chinook
+    elements:
+      MediaTypeId:
+        order: 10
+      Name:
+        order: 20

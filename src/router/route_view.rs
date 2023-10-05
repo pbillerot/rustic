@@ -52,10 +52,14 @@ pub async fn view(
     {
         Ok(tv) => {
           context.insert("view", &tv.view);
+          context.insert("search", &tv.search);
+          context.insert("filters", &tv.filters);
           tvs.push(tv);
         }
         Err(e) => {
           context.insert("view", &view);
+          context.insert("search", "");
+          context.insert("filters", &vec![{}]);
           messages.push(FlashMessage::error(format!("{e:?}").as_str()));
         }
     };

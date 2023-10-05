@@ -28,11 +28,14 @@ pub fn compute_back(req: &HttpRequest, session: &Session) {
   } else if req.path().contains("/form/") {
       if !b3.is_empty() {
         if b3 == req.path() {
-          session.remove("back3");
           session.insert("back", b2).unwrap();
         } else {
-          session.insert("back3", req.path()).unwrap();
-          session.insert("back", b3).unwrap();
+          if b2 == req.path() {
+            session.remove("back3");
+            session.insert("back", b1).unwrap();
+          } else {
+            session.insert("back", b2).unwrap();
+          }
         }
       } else {
         // b3 empty

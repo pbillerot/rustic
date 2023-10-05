@@ -1,0 +1,213 @@
+# Table des Clients
+setting:
+  alias-db: chinook
+  key: EmployeeId
+  icon-name: "user tie"
+
+elements:
+  EmployeeId:
+    type: number
+    label-long: "Id"
+    label-short: "Id"
+  FirstName:
+    type: text
+    label-long: "Prénom"
+    label-short: "Prénom"
+  LastName:
+    type: text
+    label-long: "Nom"
+    label-short: "Nom"
+  Name:
+    type: text
+    label-long: "Nom"
+    label-short: "Nom"
+    jointure:
+      column: Employee.FirstName || ' ' || Employee.LastName
+  Title:
+    type: text
+    label-long: "Fonction"
+    label-short: "Fonction"
+  ReportsTo:
+    type: list
+    label-long: "Responsable"
+    label-short: "Responsable"
+    items-sql: "SELECT EmployeeId as 'key', FirstName || ' ' || LastName as 'label' From Employee order by FirstName"
+  BirthDate:
+    type: date
+    label-long: "Date de naissance"
+    label-short: "Né(e)"
+  HireDate:
+    type: date
+    label-long: "Date embauche"
+    label-short: "Embauché(e) le"
+  Address:
+    type: text
+    label-long: "Adresse"
+    label-short: "Adresse"
+  City:
+    type: text
+    label-long: "Ville"
+    label-short: "Ville"
+  State:
+    type: text
+    label-long: "État"
+    label-short: "État"
+  Country:
+    type: text
+    label-long: "Région"
+    label-short: "Région"
+  PostalCode:
+    type: text
+    label-long: "Code postal"
+    label-short: "Code postal"
+  Phone:
+    type: text
+    label-long: "Téléphone"
+    label-short: "Téléphone"
+  Fax:
+    type: text
+    label-long: "Fax"
+    label-short: "Fax"
+  Email:
+    type: text
+    label-long: "Email"
+    label-short: "Email"
+
+views:
+  vall:
+    form-add: fedit
+    form-edit: fedit
+    form-view: fview
+    deletable: false
+    type: card
+    group: chinook
+    title: "Employés"
+    icon-name: "user tie"
+    order-by: LastName
+    card:
+      header:
+        - EmployeeId
+        - FirstName
+        - LastName
+      meta:
+        - Title
+        - ReportsTo
+      description:
+      extra:
+        - Phone
+        - Email
+    elements:
+      EmployeeId:
+        order: 10
+      FirstName:
+        order: 20
+      LastName:
+        order: 30
+      Title:
+        order: 40
+      ReportsTo:
+        order: 50
+      BirthDate:
+        order: 60
+      HireDate:
+        order: 70
+      Address:
+        order: 80
+      City:
+        order: 90
+      State:
+        order: 100
+      Country:
+        order: 110
+      PostalCode:
+        order: 120
+      Phone:
+        order: 130
+      Fax:
+        order: 140
+      Email:
+        order: 150
+
+forms:
+  fedit:
+    title: "Employé(e)"
+    groupe: chinook
+    elements:
+      EmployeeId:
+        order: 10
+      FirstName:
+        order: 20
+      LastName:
+        order: 30
+      Title:
+        order: 40
+      ReportsTo:
+        order: 50
+      BirthDate:
+        order: 60
+      HireDate:
+        order: 70
+      Address:
+        order: 80
+      City:
+        order: 90
+      State:
+        order: 100
+      Country:
+        order: 110
+      PostalCode:
+        order: 120
+      Phone:
+        order: 130
+      Fax:
+        order: 140
+      Email:
+        order: 150
+  fview:
+    title: "Employé(e)"
+    groupe: chinook
+    elements:
+      EmployeeId:
+        order: 10
+        hide: true
+      Name:
+        order: 20
+      Title:
+        order: 40
+      ReportsTo:
+        order: 50
+      BirthDate:
+        order: 60
+      HireDate:
+        order: 70
+      _address:
+        type: card
+        order: 100
+        icon-name: "address card"
+      Address:
+        order: 110
+      City:
+        order: 120
+      State:
+        order: 130
+      Country:
+        order: 140
+      PostalCode:
+        order: 150
+      Phone:
+        order: 160
+      Fax:
+        order: 170
+      Email:
+        order: 180
+      _portefeuille:
+        type: card
+        label-long: "Clients en portefeuille"
+        order: 200
+        width: max
+        icon-name: "wallet"
+        params:
+          table: Customer
+          view: vwallet
+          where: "SupportRepId = '{EmployeeId}'"
+

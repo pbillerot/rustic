@@ -1,0 +1,155 @@
+# Table des Factures 23 mai 2023
+setting:
+  alias-db: chinook
+  key: InvoiceId
+  icon-name: "file invoice"
+
+elements:
+  InvoiceId:
+    type: number
+    label-long: "Ref."
+    label-short: "Ref."
+  CustomerId:
+    type: list
+    label-long: "Client"
+    label-short: "Client"
+    items-sql: "SELECT CustomerId as 'key', FirstName || ' ' || LastName as 'label' From Customer order by LastName"
+  InvoiceDate:
+    type: date
+    label-long: "Date"
+    label-short: "Date"
+  BillingAddress:
+    type: text
+    label-long: "Adresse facturation"
+    label-short: "Adresse facturation"
+  BillingCity:
+    type: text
+    label-long: "Ville"
+    label-short: "Ville"
+  BillingState:
+    type: text
+    label-long: "État"
+    label-short: "État"
+  BillingCountry:
+    type: text
+    label-long: "Région"
+    label-short: "Région"
+  BillingPostalCode:
+    type: text
+    label-long: "Code postal"
+    label-short: "Code postal"
+    width: s
+  Total:
+    type: amount
+    label-long: "Montant Total de la facture"
+    label-short: "Total"
+    read-only: true
+
+views:
+  vall:
+    form-add: fedit
+    form-edit: fedit
+    form-view: fview
+    deletable: false
+    type: table
+    group: chinook
+    title: "Factures"
+    icon-name: "file invoice"
+    elements:
+      InvoiceId:
+        order: 10
+      CustomerId:
+        order: 20
+      InvoiceDate:
+        order: 30
+      BillingAddress:
+        order: 40
+      BillingCity:
+        order: 50
+      BillingState:
+        order: 60
+      BillingCountry:
+        order: 70
+      BillingPostalCode:
+        order: 80
+      Total:
+        order: 90
+
+  vclient:
+    form-add: fedit
+    form-edit: fedit
+    form-view: fview
+    deletable: false
+    type: table
+    group: chinook
+    title: "Factures"
+    icon-name: "file invoice"
+    with-line-number: true
+    elements:
+      InvoiceId:
+        order: 10
+      InvoiceDate:
+        order: 30
+      Total:
+        order: 90
+
+forms:
+  fedit:
+    title: "Facture"
+    groupe: chinook
+    elements:
+      InvoiceId:
+        order: 10
+        hide: true
+      CustomerId:
+        order: 20
+      InvoiceDate:
+        order: 30
+      BillingAddress:
+        order: 40
+      BillingCity:
+        order: 50
+      BillingState:
+        order: 60
+      BillingCountry:
+        order: 70
+      BillingPostalCode:
+        order: 80
+      Total:
+        order: 90
+
+  fview:
+    title: "Facture"
+    groupe: chinook
+    elements:
+      InvoiceId:
+        order: 10
+        hide: true
+      CustomerId:
+        order: 20
+      InvoiceDate:
+        order: 30
+      BillingAddress:
+        order: 40
+      BillingCity:
+        order: 50
+      BillingState:
+        order: 60
+      BillingCountry:
+        order: 70
+      BillingPostalCode:
+        order: 80
+      Total:
+        order: 90
+      _vinvoice:
+        type: card
+        label-long: "Titres achetés"
+        order: 200
+        width: max
+        icon-name: "receipt"
+        args:
+          InvoiceId: "{InvoiceId}"
+        params:
+          table: InvoiceLine
+          view: vinvoice
+          where: "InvoiceId = '{InvoiceId}'"

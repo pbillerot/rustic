@@ -1,0 +1,28 @@
+# application chinook
+appid: chinook
+title: "chinook, magasin de multimédias"
+image: "chinook.jpg"
+group: chinook
+menu:
+- tableid: artist
+  viewid: vall
+  in_footer: true
+- tableid: album
+  viewid: vall
+  in_footer: true
+- tableid: track
+  viewid: vall
+  in_footer: true
+# - tableid: playlist
+#   viewid: vall
+# - tableid: customer
+#   viewid: vall
+#   in_footer: true
+# - tableid: employee
+#   viewid: vall
+# - tableid: invoice
+#   viewid: vall
+# - tableid: mediatype
+#   viewid: vall
+# - tableid: genre
+#   viewid: vall

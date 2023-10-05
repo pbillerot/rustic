@@ -18,7 +18,7 @@
     <div class="ui icon input">
       <input class="crud-search-input-1" type="hidden" value="">
       <input type="text" class="crud-search-input" data-url="/search/{{appid}}/{{tableid}}/{{viewid}}"
-        value="{{tv.search}}" placeholder="Recherche...">
+        value="{{search}}" placeholder="Recherche...">
       <i class="circular search link icon crud-search-go" title="Rechercher"></i>
     </div>
     <i class="close link icon crud-search-close" title="Fermer la recherche"></i>
@@ -45,16 +45,6 @@
 {%- block content -%}
 <div class="ui container" {%- if application.in_footer -%} style="margin-bottom: 6em;height: 100%" {%- endif -%}>
   {% include "inc_flash.html" %}
-  <div class="crud-mobile-show ui label">
-    {{view.title}}&nbsp;
-    {%- if tv.trs | length == 0 -%}
-    (aucun élément)
-    {%- elif tv.trs | length == 1 -%}
-    (1 élément)
-    {%- else -%}
-    ({{tv.trs|length}} éléments)
-    {%- endif -%}
-  </div>
   {%- if view.form_add -%}
   <button class="right floated circular ui large plus blue icon button crud-jquery-url"
     data-url="/add/{{appid}}/{{tableid}}/{{viewid}}/{{view.form_add}}" {%- if application.in_footer -%}
@@ -66,6 +56,7 @@
   {%- endif -%}
   <!-- CARD -->
   <div class="ui cards">
+    {%- for tv in tvs -%}
     {%- for tr in tv.trs -%}
     <div
       class="ui {{tr.class}} raised card crud-card-view bee-width-{{view.width}} {%if tr.url_open%}crud-jquery-url{%endif%}"
@@ -160,6 +151,7 @@
       </div><!-- /content -->
       {%- endif -%}
     </div><!-- /card -->
+    {%- endfor -%}
     {%- endfor -%}
   </div><!-- /cards -->
 </div>

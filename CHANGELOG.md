@@ -11,6 +11,10 @@
 
 ### VERSION
 
+0.25.0 - 4 octobre 2023
+- `added` col_no_wrap image macro de params.title.url.src
+- `added` tables chinook
+
 0.24.0 - 4 octobre 2023
 - `added` formulaire avec élément de type view
 
@@ -181,11 +185,14 @@
 
 ## Évolution du distionnaire / Beedule
 - type_element type_view type_form
+- appid tableid viewid formid
 - remplacer les noms de champs xxx-yyy en xxx_yyy
 - table.setting.col_display supprimé
 - view.form_view nécessaire pour visualiser un enregistrement
 - si form_view lien vers form_edit si défini
 - suppression element.compute_sqlite
-- form_view obligatoire pour visualiser un enregistrement
 - view action hide supprimée
 - element.params.formid viewid tableid
+- remplacer element card avec view en élément de type view
+- params.where_sql
+- col_no_wrap

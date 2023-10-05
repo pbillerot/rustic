@@ -1,10 +1,9 @@
+use crate::cruder::sqler::kerlite;
+use crate::lexicer::lex_utils;
 use serde::{Deserialize, Serialize};
 use serde_yaml::{self};
 use sqlx::{Pool, Postgres, Sqlite};
 use std::collections::HashMap;
-// use actix_web::web;
-use crate::cruder::sqler::{kerdata, kerlite};
-use crate::lexicer::lex_utils;
 
 use super::macvalue;
 
@@ -36,9 +35,9 @@ impl Table {
         table.tableid = tableid.to_string().clone();
         // alimentation de velements avec view.elements fusionnés avec table.elements
         for (viewid, view) in table.views.iter_mut() {
-          view.tableid = tableid.to_string().clone();
-          view.viewid = viewid.clone();
-          for (key, element) in &view.elements {
+            view.tableid = tableid.to_string().clone();
+            view.viewid = viewid.clone();
+            for (key, element) in &view.elements {
                 let mut el = element.clone();
                 match table.elements.get(key) {
                     Some(t) => {
@@ -227,7 +226,7 @@ impl Element {
 
     pub async fn compute_prop(
         &mut self,
-        pooldb: &Pool<Postgres>,
+        _pooldb: &Pool<Postgres>,
         poolite: &Pool<Sqlite>,
         hvalue: &HashMap<String, String>,
     ) -> Result<&mut Self, String> {
@@ -285,9 +284,27 @@ impl Element {
             self.style = kerlite(poolite, &sql).await?;
         }
         // items récupérés dans les données de l'application
-        if !self.items_sql.is_empty() {
-            let sql = macvalue(&self.items_sql, hvalue);
-            self.items = kerdata(pooldb, &sql).await?;
+        // TODO à optimiser si une vue avec même requête
+        // if !self.items_sql.is_empty() {
+        //     let sql = macvalue(&self.items_sql, hvalue);
+        //     self.items = kerdata(pooldb, &sql).await?;
+        // }
+        if !self.params.title.is_empty() {
+            self.params.title = macvalue(&self.params.title, hvalue);
+        }
+        if !self.params.src.is_empty() {
+            self.params.src = macvalue(&self.params.src, hvalue);
+        }
+        if !self.params.url.is_empty() {
+            self.params.url = macvalue(&self.params.url, hvalue);
+        }
+
+        if self.col_no_wrap {
+            if self.class.is_empty() {
+                self.class = "crud-cell-nowrap".into();
+            } else {
+                self.class.push_str(" crud-cell-nowrap");
+            }
         }
 
         // Calcul des propriétés en fonction du contexte
@@ -303,14 +320,14 @@ impl Element {
                         self.class = "crud-cell-nowrap".into();
                     }
                 }
-            },
+            }
             "counter" => {
                 self.read_only = true;
                 self.required = false;
                 if self.col_align.is_empty() {
                     self.col_align = "center".into();
                 }
-            },
+            }
             _ => {}
         }
 
@@ -337,6 +354,9 @@ impl Element {
         }
         if self.col_align.is_empty() {
             self.col_align = tel.col_align.clone();
+        }
+        if tel.col_no_wrap == true {
+            self.col_no_wrap = true;
         }
         if self.dataset.is_empty() {
             self.dataset = tel.dataset.clone();

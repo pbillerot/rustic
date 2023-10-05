@@ -1,0 +1,128 @@
+# table des albums
+setting:
+  alias_db: chinook
+  key: albumid
+  icon_name: "circle"
+
+elements:
+  albumid:
+    type_element: counter
+    label_long: "id"
+    label_short: "id"
+  title:
+    type_element: text
+    label_long: "Album"
+    label_short: "Album"
+  artistid:
+    type_element: list
+    label_long: "Artiste"
+    label_short: "Artiste"
+    items_sql: "select artistid as key, name as label from artist order by name"
+  artist_name:
+    type_element: text
+    label_long: "Artiste"
+    label_short: "Artiste"
+    jointure:
+      join: "left outer join artist on artist.artistid = album.artistid"
+      column: artist.name
+  _image:
+    type_element: "image"
+    label_long: "Pochette"
+    label_short: "Pochette"
+    width: s
+    params:
+      src: "/lexic/chinook/files/chinook.jpg"
+      url: "/lexic/chinook/files/chinook.jpg"
+
+views:
+  vall:
+    form_add: fedit
+    form_edit: fedit
+    form_view: fview
+    deletable: false
+    type_view: table
+    group: chinook
+    title: "Albums"
+    icon_name: "circle"
+    order_by: title
+    with_line_number: true
+    filters:
+    - title
+    - artist_name
+    card:
+      header:
+        - albumid
+      meta:
+      description:
+        - title
+      extra:
+    elements:
+      albumid:
+        order: 10
+        hide: true
+      title:
+        order: 20
+      artistid:
+        order: 30
+        hide: true
+      artist_name:
+        order: 40
+
+  vartist:
+    form_add: fedit
+    form_edit: fedit
+    form_view: fview
+    deletable: true
+    type_view: table
+    group: chinook
+    title: "Albums"
+    icon_name: "circle"
+    order_by: title
+    with_line_number: true
+    elements:
+      albumid:
+        order: 10
+      title:
+        order: 20
+
+forms:
+  fedit:
+    title: "Album: {title}"
+    groupe: chinook
+    elements:
+      albumid:
+        order: 10
+      title:
+        order: 20
+      artistid:
+        order: 30
+  fview:
+    title: "Album: {title}"
+    groupe: chinook
+    elements:
+      albumid:
+        order: 10
+        hide: true
+      title:
+        order: 20
+      artistid:
+        order: 30
+      _card_pochette:
+        order: 100
+        type_element: card
+        icon_name: "circle"
+        label_long: "Pochette"
+      _image:
+        order: 110
+      _vtrack:
+        order: 200
+        type_element: view
+        label_long: morceaux
+        width: max
+        icon_name: "file audio"
+        args:
+          albumid: "{albumid}"
+        params:
+          table: track
+          view: valbum
+          where_sql: "track.albumid = '{albumid}'"

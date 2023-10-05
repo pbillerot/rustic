@@ -1,0 +1,265 @@
+# table des morceaux
+setting:
+  alias_db: chinook
+  key: trackid
+  icon_name: "file audio"
+
+elements:
+  trackid:
+    type_element: counter
+    label_long: "id"
+    label_short: "id"
+  name:
+    type_element: text
+    label_long: "Titre du morceau"
+    label_short: "Titre du morceau"
+  artistname:
+    type_element: text
+    label_long: "Artiste"
+    label_short: "Artiste"
+    jointure:
+      join: "left outer join album on album.albumid = track.albumid left outer join artist on artist.artistid = album.artistid"
+      column: artist.name
+  albumid:
+    type_element: list
+    label_long: "Album"
+    label_short: "Album"
+    items_sql: "select albumid as 'key', title as 'label' from album order by title"
+  albumtitle:
+    type_element: text
+    label_long: "Album"
+    label_short: "Album"
+    jointure:
+      # join: "left outer join album on album.albumid = track.albumid"
+      column: album.title
+  mediatypeid:
+    type_element: list
+    label_long: Type Média"
+    label_short: "Type Média"
+    width: m
+    items_sql: "select mediatypeid as 'key', name as 'label' from mediatype order by name"
+  mediatypename:
+    type_element: text
+    label_long: Type Média"
+    label_short: "Type Média"
+    width: m
+    jointure:
+      join: "left outer join mediatype on mediatype.mediatypeid = track.mediatypeid"
+      column: mediatype.name
+  genreid:
+    type_element: list
+    label_long: "Genre de Musique"
+    label_short: "genre"
+    width: m
+    items_sql: "select genreid as 'key', name as 'label' from genre order by name"
+  genrename:
+    type_element: text
+    label_long: "Genre de Musique"
+    label_short: "genre"
+    width: m
+    jointure:
+      join: "left outer join genre on genre.genreid = track.genreid"
+      column: genre.name
+  composer:
+    type_element: text
+    label_long: "Compositeur"
+    label_short: "Compositeur"
+  milliseconds:
+    type_element: number
+    label_long: "Durée en mn"
+    label_short: "Durée"
+    help: "durée en millisecondes"
+    col_align: right
+    format_sqlite: "select cast(cast({milliseconds}/1000/60 as integer) as varchar) || ':' || cast({milliseconds}/1000%60 as varchar)"
+    col_no_wrap: true
+  bytes:
+    type_element: number
+    label_long: "Taille en Mo"
+    label_short: "Taille Mo"
+    help: "taille en octets"
+    format_sqlite: "select printf('%3.2f', {bytes}.00/1000000, 'unixepoch')"
+    col_align: right
+    col_no_wrap: true
+  unitprice:
+    type_element: amount
+    label_long: "P.U."
+    label_short: "P.U."
+    help: "montant en €"
+
+views:
+  vall:
+    form_add: fedit
+    form_edit: fedit
+    form_view: fview
+    deletable: true
+    type_view: table
+    group: chinook
+    title: "Morceaux"
+    icon_name: "file audio"
+    order_by: artist.name, track.albumid
+    limit: 50
+    filters:
+    - artistname
+    - name
+    - composer
+    elements:
+      artistname:
+        order: 10
+      albumid:
+        order: 10
+        hide: true
+      albumtitle:
+        order: 30
+      trackid:
+        order: 40
+        hide: true
+      name:
+        order: 50
+      mediatypeid:
+        order: 50
+        hide: true
+      mediatypename:
+        order: 70
+      genreid:
+        order: 80
+        hide: true
+      genrename:
+        order: 90
+      composer:
+        order: 100
+      composer:
+        order: 110
+      milliseconds:
+        order: 120
+      bytes:
+        order: 130
+      unitprice:
+        order: 140
+
+  vplaylist:
+    type_view: table
+    group: chinook
+    title: "Morceaux"
+    icon_name: "file audio"
+    with_line_number: true
+    elements:
+      artistname:
+        order: 1
+      albumid:
+        order: 3
+      trackid:
+        order: 10
+        hide: true
+      name:
+        order: 20
+      genreid:
+        order: 50
+      milliseconds:
+        order: 70
+
+  valbum:
+    form_add: fedit
+    form_edit: fedit
+    deletable: true
+    type_view: table
+    group: chinook
+    title: "Morceaux"
+    icon_name: "file audio"
+    order_by: name
+    limit: 50
+    with_line_number: true
+    elements:
+      trackid:
+        order: 10
+        hide: true
+      name:
+        order: 20
+      mediatypeid:
+        order: 40
+      genreid:
+        order: 50
+      composer:
+        order: 60
+      composer:
+        order: 60
+      milliseconds:
+        order: 70
+      bytes:
+        order: 80
+      unitprice:
+        order: 90
+
+forms:
+  fedit:
+    title: "Morceau"
+    groupe: chinook
+    elements:
+      trackid:
+        order: 10
+        hide: true
+      albumid:
+        order: 20
+        protected: true
+      _group_title:
+        type_element: card
+        order: 100
+      name:
+        order: 110
+      composer:
+        order: 120
+      _group_media:
+        type_element: card
+        order: 200
+      mediatypeid:
+        order: 210
+      genreid:
+        order: 220
+      _group_data:
+        type_element: card
+        order: 300
+      milliseconds:
+        order: 310
+      bytes:
+        order: 320
+      _group_last:
+        type_element: card
+        order: 400
+      unitprice:
+        order: 410
+
+  fview:
+    title: "Morceau"
+    groupe: chinook
+    elements:
+      trackid:
+        order: 10
+        hide: true
+      name:
+        order: 20
+      mediatypeid:
+        order: 40
+      genreid:
+        order: 50
+      composer:
+        order: 60
+      milliseconds:
+        order: 70
+      bytes:
+        order: 80
+      unitprice:
+        order: 90
+      _card_album:
+        type_element: card
+        order: 100
+        label_long: Album
+        icon_name: circle
+      albumid:
+        order: 110
+      _card_artist:
+        type_element: card
+        order: 200
+        label_long: Artiste
+        icon_name: user secret
+      artistname:
+        order: 210
+

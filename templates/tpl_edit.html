@@ -28,7 +28,7 @@
   <div class="ui attached icon message">
     <i class="{%if form.icon_name%}{{form.icon_name}}{%else%}{{view.icon_name}}{%endif%} blue inbox icon"></i>
     <div class="content">
-      <div class="header">&nbsp;{{form.title}}</div>
+      <div class="header">&nbsp;{{form_title}}</div>
     </div>
   </div>
   <form class= "ui form attached segment" id="myForm" action="/update/{{appid}}/{{tableid}}/{{viewid}}/{{formid}}/{{id}}" method="post">

@@ -1,8 +1,11 @@
 //! Ouverture d'une view
 //!
 use crate::{
+    cruder::read::crud_read,
+    lexicer::{lex_table::Element, macelement},
+    middler::{clear_flash, flash::FlashMessage, get_flash},
     // lexic::lex_table::{self, Element},
-    AppState, cruder::read::crud_read, middler::{flash::FlashMessage, clear_flash, get_flash},
+    AppState,
 };
 use actix_session::Session;
 use actix_web::{
@@ -18,8 +21,9 @@ use actix_web::{
 use actix_web_lab::respond::Html;
 // use actix_web_lab::respond::Html;
 use std::{
+    collections::HashMap,
     // collections::HashMap,
-    sync::atomic::Ordering
+    sync::atomic::Ordering,
 };
 
 use super::get_back;
@@ -30,7 +34,6 @@ pub async fn edit(
     data: web::Data<AppState>,
     session: Session,
 ) -> Result<impl Responder> {
-
     let (appid, tableid, viewid, formid, id) = path.into_inner();
     let ptr = data.plexic.load(Ordering::Relaxed);
     let apps = unsafe { &(*ptr).applications.clone() };
@@ -42,15 +45,34 @@ pub async fn edit(
     let mut context = tera::Context::new();
     let mut messages: Vec<FlashMessage> = Vec::new();
 
-    match crud_read(&data.db, &data.dblite, application, table, &form.velements, &id,).await {
-        Ok(mut records) => {
-            context.insert("record", &records.pop());
+    let record = match crud_read(
+        &data.db,
+        &data.dblite,
+        application,
+        table,
+        &form.velements,
+        &id,
+    )
+    .await
+    {
+        Ok(mut records) => match records.pop() {
+            Some(record) => record,
+            None => {
+                let rec: HashMap<String, Element> = HashMap::new();
+                rec
+            }
         },
         Err(e) => {
             messages.push(FlashMessage::error(format!("{e:?}").as_str()));
-            context.insert("record", &vec![{}]);
+            let rec: HashMap<String, Element> = HashMap::new();
+            rec
         }
     };
+    context.insert("record", &record);
+
+    // macro de form.title
+    let form_title = macelement(&form.title, &record);
+    context.insert("form_title", &form_title);
 
     if let Some(flash) = get_flash(&session)? {
         messages.push(flash);
@@ -74,6 +96,4 @@ pub async fn edit(
     let html = data.template.render("tpl_edit.html", &context).unwrap();
 
     Ok(Html(html))
-
 }
-

@@ -1,0 +1,111 @@
+# Table des Factures
+setting:
+  alias-db: chinook
+  key: InvoiceLineId
+  icon-name: "receipt"
+
+elements:
+  InvoiceLineId:
+    type: counter
+    label-long: "Id"
+    label-short: "Id"
+  InvoiceId:
+    type: number
+    label-long: "Facture"
+    label-short: "Facture"
+  TrackId:
+    type: number
+    label-long: "Morceau"
+    label-short: "Morceau"
+  UnitPrice:
+    type: amount
+    label-long: "P.U."
+    label-short: "P.U."
+  Quantity:
+    type: number
+    label-long: "Quantité"
+    label-short: "Quantité"
+  TrackName:
+    type: text
+    label-short: "Titre"
+    jointure:
+      join: "left outer join Track on Track.TrackId = InvoiceLine.TrackId left outer join Album on Album.AlbumId = Track.AlbumId left outer join Artist on Artist.ArtistId = Album.ArtistId"
+      column: Track.Name
+  AlbumTitle:
+    type: text
+    label-short: "Album"
+    jointure:
+      column: Album.Title
+  ArtistName:
+    type: text
+    label-short: "Artiste"
+    jointure:
+      column: Artist.Name
+
+views:
+  vall:
+    form-add: fedit
+    form-edit: fedit
+    deletable: false
+    type: table
+    group: chinook
+    title: "Produits"
+    icon-name: "receipt"
+    elements:
+      InvoiceLineId:
+        order: 10
+      InvoiceId:
+        order: 10
+      TrackId:
+        order: 20
+      UnitPrice:
+        order: 30
+      Quantity:
+        order: 40
+
+  vinvoice:
+    form-add: fedit
+    form-edit: fedit
+    deletable: false
+    type: table
+    group: chinook
+    title: "Produits"
+    icon-name: "receipt"
+    with-line-number: true
+    elements:
+      InvoiceLineId:
+        order: 10
+        hide: true
+      InvoiceId:
+        order: 20
+        hide: true
+      TrackId:
+        order: 30
+        hide: true
+      ArtistName:
+        order: 40
+      AlbumTitle:
+        order: 50
+      TrackName:
+        order: 60
+      Quantity:
+        order: 70
+      UnitPrice:
+        order: 80
+
+forms:
+  fedit:
+    title: "Produit"
+    groupe: chinook
+    elements:
+      InvoiceLineId:
+        order: 10
+      InvoiceId:
+        order: 20
+        protected: true
+      TrackId:
+        order: 30
+      UnitPrice:
+        order: 40
+      Quantity:
+        order: 50
