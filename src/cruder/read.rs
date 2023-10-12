@@ -20,6 +20,7 @@ pub async fn crud_read(
     table: &Table, // le lexique de l'application
     velements: &Vec<Element>,
     id: &str,
+    args: &HashMap<String, String>,
 ) -> Result<Vec<HashMap<String, Element>>, String> {
     // construction de l'ordre sql
     let mut sql = "SELECT ".to_string();
@@ -59,6 +60,7 @@ pub async fn crud_read(
         &application,
         velements,
         table,
+        args.to_owned(),
     ).await {
         Ok(r) => r,
         Err(e) => {

@@ -19,7 +19,7 @@ use actix_web_lab::respond::Html;
 // use actix_web_lab::respond::Html;
 use std::{
     // collections::HashMap,
-    sync::atomic::Ordering
+    sync::atomic::Ordering, collections::HashMap
 };
 
 use super::get_back;
@@ -27,6 +27,7 @@ use super::get_back;
 // #[get("/add/{appid}/{tableid}/{viewid}/{formid}")]
 pub async fn add(
     path: Path<(String, String, String, String)>,
+    query: web::Query<HashMap<String, String>>,
     data: web::Data<AppState>,
     session: Session,
 ) -> Result<impl Responder> {
@@ -50,6 +51,7 @@ pub async fn add(
         &application,
         &form.velements,
         table,
+        query.into_inner(),
     ).await {
         Ok(mut records) => {
             context.insert("record", &records.pop());

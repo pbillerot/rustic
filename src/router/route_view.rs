@@ -1,5 +1,6 @@
 //! Ouverture d'une view
 //!
+
 use std::sync::atomic::Ordering;
 
 use crate::{
@@ -16,7 +17,7 @@ use actix_web::{
     web,
     web::Path,
     Responder,
-    Result,
+    Result
 };
 use actix_web_lab::respond::Html;
 
@@ -31,18 +32,21 @@ pub async fn view(
     let (appid, tableid, viewid) = path.into_inner();
     let ptr = data.plexic.load(Ordering::Relaxed);
     let apps = unsafe { &(*ptr).applications.clone() };
+
+    let mut messages: Vec<FlashMessage> = Vec::new();
+
     let application = apps.get(&appid).unwrap();
     let table = application.tables.get(&tableid).unwrap();
     let view = table.views.get(&viewid).unwrap();
 
     let mut context = tera::Context::new();
-    let mut messages: Vec<FlashMessage> = Vec::new();
 
     let mut tvs: Vec<Tview> = Vec::new();
     match Tview::new(
         &application,
         &tableid,
         &viewid,
+        "",
         "",
         &session,
         &data.db,

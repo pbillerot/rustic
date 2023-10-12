@@ -83,7 +83,7 @@ pub async fn crud_insert(
                 };
             }
         }
-        element.compute_prop(pooldb, poolite, &hvalue).await?;
+        element.compute_prop(pooldb, poolite, &hvalue, false).await?;
         if element.type_element == "counter" {
             continue;
         }

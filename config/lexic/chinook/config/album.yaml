@@ -31,8 +31,8 @@ elements:
     label_short: "Pochette"
     width: s
     params:
-      src: "/lexic/chinook/files/chinook.jpg"
-      url: "/lexic/chinook/files/chinook.jpg"
+      src: "/lexic/chinook/files/348.jpg"
+      url: "/lexic/chinook/files/348.jpg"
 
 views:
   vall:
@@ -102,7 +102,7 @@ forms:
     elements:
       albumid:
         order: 10
-        hide: true
+        hide: false
       title:
         order: 20
       artistid:
@@ -117,12 +117,12 @@ forms:
       _vtrack:
         order: 200
         type_element: view
-        label_long: morceaux
+        label_long: "Morceaux de l'album : {title}"
         width: max
         icon_name: "file audio"
         args:
           albumid: "{albumid}"
         params:
-          table: track
-          view: valbum
+          tableid: track
+          viewid: valbum
           where_sql: "track.albumid = '{albumid}'"

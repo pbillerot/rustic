@@ -24,7 +24,7 @@ elements:
     type_element: list
     label_long: "Album"
     label_short: "Album"
-    items_sql: "select albumid as 'key', title as 'label' from album order by title"
+    items_sql: "select albumid as key, title as label from album order by title"
   albumtitle:
     type_element: text
     label_long: "Album"
@@ -34,13 +34,13 @@ elements:
       column: album.title
   mediatypeid:
     type_element: list
-    label_long: Type Média"
+    label_long: "Type Média"
     label_short: "Type Média"
     width: m
-    items_sql: "select mediatypeid as 'key', name as 'label' from mediatype order by name"
+    items_sql: "select mediatypeid as key, name as label from mediatype order by name"
   mediatypename:
     type_element: text
-    label_long: Type Média"
+    label_long: "Type Média"
     label_short: "Type Média"
     width: m
     jointure:
@@ -51,7 +51,7 @@ elements:
     label_long: "Genre de Musique"
     label_short: "genre"
     width: m
-    items_sql: "select genreid as 'key', name as 'label' from genre order by name"
+    items_sql: "select genreid as key, name as label from genre order by name"
   genrename:
     type_element: text
     label_long: "Genre de Musique"
@@ -66,17 +66,19 @@ elements:
     label_short: "Compositeur"
   milliseconds:
     type_element: number
-    label_long: "Durée en mn"
+    label_long: "Durée"
     label_short: "Durée"
     help: "durée en millisecondes"
+    default: 0
     col_align: right
     format_sqlite: "select cast(cast({milliseconds}/1000/60 as integer) as varchar) || ':' || cast({milliseconds}/1000%60 as varchar)"
     col_no_wrap: true
   bytes:
     type_element: number
-    label_long: "Taille en Mo"
+    label_long: "Taille"
     label_short: "Taille Mo"
-    help: "taille en octets"
+    default: 0
+    help: "taille en **octets**"
     format_sqlite: "select printf('%3.2f', {bytes}.00/1000000, 'unixepoch')"
     col_align: right
     col_no_wrap: true
@@ -84,6 +86,7 @@ elements:
     type_element: amount
     label_long: "P.U."
     label_short: "P.U."
+    default: 0
     help: "montant en €"
 
 views:
@@ -117,14 +120,8 @@ views:
         order: 50
       mediatypeid:
         order: 50
-        hide: true
-      mediatypename:
-        order: 70
       genreid:
         order: 80
-        hide: true
-      genrename:
-        order: 90
       composer:
         order: 100
       composer:
@@ -172,6 +169,9 @@ views:
       trackid:
         order: 10
         hide: true
+      albumid:
+        order: 15
+        hide: true
       name:
         order: 20
       mediatypeid:
@@ -199,7 +199,6 @@ forms:
         hide: true
       albumid:
         order: 20
-        protected: true
       _group_title:
         type_element: card
         order: 100
@@ -253,8 +252,17 @@ forms:
         order: 100
         label_long: Album
         icon_name: circle
-      albumid:
+      albumtitle:
         order: 110
+      _image:
+        order: 120
+        type_element: "image"
+        label_long: "Pochette"
+        label_short: "Pochette"
+        # width: s
+        params:
+          src: "/lexic/chinook/files/chinook.jpg"
+          url: "/lexic/chinook/files/chinook.jpg"
       _card_artist:
         type_element: card
         order: 200

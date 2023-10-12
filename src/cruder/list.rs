@@ -203,29 +203,25 @@ pub async fn crud_list(
     }
     // Cas id valorisé ou non
     if id.is_empty() {
-        let mut w = String::new();
+        let mut where_noid = String::new();
         if !view.where_sql.is_empty() {
-            w.push_str(format!(" WHERE ( {} )", &view.where_sql).as_str());
-        }
-        if !view.where_sql.is_empty() {
-            w.push_str(format!(" WHERE ( {} )", &view.where_sql).as_str());
+            where_noid.push_str(format!(" WHERE ( {} )", &view.where_sql).as_str());
         }
         if !where_filter.is_empty() {
-            if w.is_empty() {
-                w.push_str(" WHERE ");
+            if where_noid.is_empty() {
+                where_noid.push_str(" WHERE ");
             }
-            w.push_str(format!("{}", &where_filter).as_str());
+            where_noid.push_str(format!("{}", &where_filter).as_str());
         }
         if !where_search.is_empty() {
-            if w.is_empty() {
-                w.push_str(" WHERE ");
-                w.push_str(format!("WHERE ({})", &where_search).as_str());
+            if where_noid.is_empty() {
+                where_noid.push_str(format!(" WHERE ({})", &where_search).as_str());
             } else {
-                w.push_str(format!(" AND ({}) ", where_search).as_str());
+                where_noid.push_str(format!(" AND ({}) ", &where_search).as_str());
             }
         }
-        if !w.is_empty() {
-            sql.push_str(&w);
+        if !where_noid.is_empty() {
+            sql.push_str(&where_noid);
         }
 
         if sortid.is_empty() {
@@ -249,7 +245,7 @@ pub async fn crud_list(
     }
 
     let records =
-        match records_elements(pooldb, poolite, &sql, &application, &view.velements, table).await {
+        match records_elements(pooldb, poolite, &sql, &application, &view.velements, table, HashMap::new()).await {
             Ok(r) => r,
             Err(e) => {
                 let msg = format!("{sql:?} : {e:?}");

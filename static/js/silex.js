@@ -534,6 +534,11 @@ $(document).ready(function () {
     })
     ;
 
+  // EDDY
+  var $eddy_refresh = $('#eddy_refresh').val();
+  var $eddy_rubriques = $('#eddy_rubriques').val();
+  var $eddy_mode = $('#eddy_mode').val(); // yaml, sql
+
   // Actualisation de la fenetre parent
   if ($eddy_refresh && $eddy_refresh.length > 0) {
     var val = Cookies.get($eddy_refresh)

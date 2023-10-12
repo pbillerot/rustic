@@ -3,6 +3,7 @@ use std::collections::HashMap;
 use tera::try_get_value;
 use tera::Result;
 use tera::Value;
+use markdown::to_html;
 
 // tera.register_filter("format_amount", format_amount);
 pub fn format_amount(value: &Value, _: &HashMap<String, Value>) -> Result<Value> {
@@ -18,13 +19,10 @@ pub fn format_amount(value: &Value, _: &HashMap<String, Value>) -> Result<Value>
     }
 }
 
-// use markdown::to_html;
-// use std::collections::HashMap;
-// use tera::{try_get_value, Result, Value};
-// pub fn markdown_to_html(value: &Value, _: &HashMap<String, Value>) -> Result<Value> {
-//     let markdown_string = try_get_value!("markdown", "value", String, value);
-//     Ok(to_html(markdown_string.as_str()).into())
-// }
+pub fn markdown_to_html(value: &Value, _: &HashMap<String, Value>) -> Result<Value> {
+  let markdown_string = try_get_value!("markdown", "value", String, value);
+  Ok(to_html(markdown_string.as_str()).into())
+}
 // tera.register_filter("markdown", markdown_to_html);
 // {{ content | markdown | safe }}
 

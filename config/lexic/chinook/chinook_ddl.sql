@@ -15,7 +15,7 @@ SET SESSION CHARACTERISTICS AS TRANSACTION ISOLATION LEVEL SERIALIZABLE;
 ********************************************************************************/
 CREATE TABLE Album
 (
-    AlbumId INT NOT NULL,
+    AlbumId INT DEFAULT nextval('public.album_id_seq'::regclass) NOT NULL,
     Title VARCHAR(160) NOT NULL,
     ArtistId INT NOT NULL,
     CONSTRAINT PK_Album PRIMARY KEY  (AlbumId)
@@ -23,14 +23,14 @@ CREATE TABLE Album
 
 CREATE TABLE Artist
 (
-    ArtistId INT NOT NULL,
+    ArtistId INT DEFAULT nextval('public.artist_id_seq'::regclass) NOT NULL,
     Name VARCHAR(120),
     CONSTRAINT PK_Artist PRIMARY KEY  (ArtistId)
 );
 
 CREATE TABLE Customer
 (
-    CustomerId INT NOT NULL,
+    CustomerId INT DEFAULT nextval('public.customer_id_seq'::regclass) NOT NULL,
     FirstName VARCHAR(40) NOT NULL,
     LastName VARCHAR(20) NOT NULL,
     Company VARCHAR(80),
@@ -48,7 +48,7 @@ CREATE TABLE Customer
 
 CREATE TABLE Employee
 (
-    EmployeeId INT NOT NULL,
+    EmployeeId INT DEFAULT nextval('public.employee_id_seq'::regclass) NOT NULL,
     LastName VARCHAR(20) NOT NULL,
     FirstName VARCHAR(20) NOT NULL,
     Title VARCHAR(30),
@@ -68,14 +68,14 @@ CREATE TABLE Employee
 
 CREATE TABLE Genre
 (
-    GenreId INT NOT NULL,
+    GenreId INT DEFAULT nextval('public.genre_id_seq'::regclass) NOT NULL,
     Name VARCHAR(120),
     CONSTRAINT PK_Genre PRIMARY KEY  (GenreId)
 );
 
 CREATE TABLE Invoice
 (
-    InvoiceId INT NOT NULL,
+    InvoiceId INT DEFAULT nextval('public.invoice_id_seq'::regclass) NOT NULL,
     CustomerId INT NOT NULL,
     InvoiceDate TIMESTAMP NOT NULL,
     BillingAddress VARCHAR(70),
@@ -89,7 +89,7 @@ CREATE TABLE Invoice
 
 CREATE TABLE InvoiceLine
 (
-    InvoiceLineId INT NOT NULL,
+    InvoiceLineId INT DEFAULT nextval('public.invoiceline_id_seq'::regclass) NOT NULL,
     InvoiceId INT NOT NULL,
     TrackId INT NOT NULL,
     UnitPrice NUMERIC(10,2) NOT NULL,
@@ -99,14 +99,14 @@ CREATE TABLE InvoiceLine
 
 CREATE TABLE MediaType
 (
-    MediaTypeId INT NOT NULL,
+    MediaTypeId INT DEFAULT nextval('public.mediatype_id_seq'::regclass) NOT NULL,
     Name VARCHAR(120),
     CONSTRAINT PK_MediaType PRIMARY KEY  (MediaTypeId)
 );
 
 CREATE TABLE Playlist
 (
-    PlaylistId INT NOT NULL,
+    PlaylistId INT DEFAULT nextval('public.playlist_id_seq'::regclass) NOT NULL,
     Name VARCHAR(120),
     CONSTRAINT PK_Playlist PRIMARY KEY  (PlaylistId)
 );
@@ -120,7 +120,7 @@ CREATE TABLE PlaylistTrack
 
 CREATE TABLE Track
 (
-    TrackId INT NOT NULL,
+    TrackId INT DEFAULT nextval('public.pluvio_id_seq'::regclass) NOT NULL,
     Name VARCHAR(200) NOT NULL,
     AlbumId INT,
     MediaTypeId INT NOT NULL,
@@ -137,6 +137,75 @@ CREATE TABLE Track
 /*******************************************************************************
    Create Primary Key Unique Indexes
 ********************************************************************************/
+CREATE SEQUENCE public.album_id_seq
+    START WITH 348
+    INCREMENT BY 1
+    NO MINVALUE
+    MAXVALUE 2147483647
+    CACHE 1;
+
+CREATE SEQUENCE public.artist_id_seq
+    START WITH 276
+    INCREMENT BY 1
+    NO MINVALUE
+    MAXVALUE 2147483647
+    CACHE 1;
+
+CREATE SEQUENCE public.customer_id_seq
+    START WITH 60
+    INCREMENT BY 1
+    NO MINVALUE
+    MAXVALUE 2147483647
+    CACHE 1;
+
+CREATE SEQUENCE public.employee_id_seq
+    START WITH 9
+    INCREMENT BY 1
+    NO MINVALUE
+    MAXVALUE 2147483647
+    CACHE 1;
+
+CREATE SEQUENCE public.genre_id_seq
+    START WITH 26
+    INCREMENT BY 1
+    NO MINVALUE
+    MAXVALUE 2147483647
+    CACHE 1;
+
+CREATE SEQUENCE public.invoice_id_seq
+    START WITH 413
+    INCREMENT BY 1
+    NO MINVALUE
+    MAXVALUE 2147483647
+    CACHE 1;
+
+CREATE SEQUENCE public.invoiceline_id_seq
+    START WITH 2241
+    INCREMENT BY 1
+    NO MINVALUE
+    MAXVALUE 2147483647
+    CACHE 1;
+
+CREATE SEQUENCE public.mediatype_id_seq
+    START WITH 6
+    INCREMENT BY 1
+    NO MINVALUE
+    MAXVALUE 2147483647
+    CACHE 1;
+
+CREATE SEQUENCE public.playlist_id_seq
+    START WITH 19
+    INCREMENT BY 1
+    NO MINVALUE
+    MAXVALUE 2147483647
+    CACHE 1;
+
+CREATE SEQUENCE public.track_id_seq
+    START WITH 3504
+    INCREMENT BY 1
+    NO MINVALUE
+    MAXVALUE 2147483647
+    CACHE 1;
 
 /*******************************************************************************
    Create Foreign Keys

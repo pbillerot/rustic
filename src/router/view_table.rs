@@ -29,6 +29,7 @@ pub struct Tview {
     pub search: String,
     pub sortid: String,
     pub sortdirection: String,
+    pub args: String,
     pub view: View,
     pub trs: Vec<Tr>,
     pub filters: Vec<Element>,
@@ -40,6 +41,7 @@ impl Tview {
         tableid: &str,
         viewid: &str,
         filter: &str,
+        args: &str,
         session: &Session,
         pooldb: &Pool<Postgres>,
         poolite: &Pool<Sqlite>,
@@ -66,9 +68,7 @@ impl Tview {
         .await
         {
             Ok(recs) => recs,
-            Err(e) => {
-              return Err(e)
-            }
+            Err(e) => return Err(e),
         };
 
         let mut tv = Tview {
@@ -93,6 +93,7 @@ impl Tview {
                     Err(_) => String::new(),
                 }
             },
+            args: args.to_string(),
             view: view.clone(),
             trs: Vec::new(),
             filters: Vec::new(),
@@ -104,9 +105,7 @@ impl Tview {
                     if !view.style_sqlite.is_empty() {
                         match kerlite(&poolite, &macelement(&view.style_sqlite, &record)).await {
                             Ok(r) => r,
-                            Err(e) => {
-                                return Err(e)
-                            }
+                            Err(e) => return Err(e),
                         }
                     } else {
                         String::new()
@@ -116,9 +115,7 @@ impl Tview {
                     if !view.class_sqlite.is_empty() {
                         match kerlite(&poolite, &macelement(&view.class_sqlite, &record)).await {
                             Ok(r) => r,
-                            Err(e) => {
-                              return Err(e)
-                            }
+                            Err(e) => return Err(e),
                         }
                     } else {
                         String::new()

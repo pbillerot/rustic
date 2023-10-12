@@ -13,7 +13,7 @@ use tera::Tera;
 
 use dotenv;
 
-use crate::middler::format_amount;
+use crate::middler::{format_amount, tera_filters::markdown_to_html};
 
 // Déclarations des modules
 // mod constants;
@@ -106,6 +106,7 @@ async fn main() -> std::io::Result<()> {
         }
     };
     tera.register_filter("format_amount", format_amount);
+    tera.register_filter("markdown", markdown_to_html);
 
     // AppState doit être crée devant le HyypServer, sinon le ptr sera privé au thread
     let data = AppState {

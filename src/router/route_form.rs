@@ -17,7 +17,7 @@ use actix_web::{
     web,
     web::Path,
     Responder,
-    Result,
+    Result
 };
 use actix_web_lab::respond::Html;
 use std::{
@@ -31,19 +31,22 @@ use super::{get_back, view_table::Tview};
 // #[get("/form/{appid}/{tableid}/{viewid}/{formid}/{id}")]
 pub async fn form(
     path: Path<(String, String, String, String, String)>,
+    query: web::Query<HashMap<String, String>>,
     data: web::Data<AppState>,
     session: Session,
 ) -> Result<impl Responder> {
     let (appid, tableid, viewid, formid, id) = path.into_inner();
     let ptr = data.plexic.load(Ordering::Relaxed);
     let apps = unsafe { &(*ptr).applications.clone() };
+
+    let mut messages: Vec<FlashMessage> = Vec::new();
+
     let application = apps.get(&appid).unwrap();
     let table = application.tables.get(&tableid).unwrap();
     let view = table.views.get(&viewid).unwrap();
     let form = table.forms.get(&formid).unwrap();
 
     let mut context = tera::Context::new();
-    let mut messages: Vec<FlashMessage> = Vec::new();
 
     let record = match crud_read(
         &data.db,
@@ -52,6 +55,7 @@ pub async fn form(
         table,
         &form.velements,
         &id,
+        &query.into_inner()
     )
     .await
     {
@@ -75,11 +79,19 @@ pub async fn form(
     for vel in &form.velements {
         if vel.type_element == "view" {
             let filter = macelement(&vel.params.where_sql, &record);
+            let mut args = "?".to_string();
+            for (key, val) in &vel.args {
+              if args != "?" {
+                args.push_str("&");
+              }
+              args.push_str(format!("{}={}", key, macelement(val, &record)).as_str());
+            }
             match Tview::new(
               &application,
               &vel.params.tableid,
               &vel.params.viewid,
               &filter,
+              &args,
               &session,
               &data.db,
               &data.dblite,
@@ -117,6 +129,7 @@ pub async fn form(
     context.insert("key", &table.setting.key);
     context.insert("back", &get_back(&session));
     context.insert("tvs", &tvs);
+    context.insert("args", &"");
 
     let html = data.template.render("tpl_form.html", &context).unwrap();
 

@@ -20,7 +20,7 @@ Macro d'affichage d'une table html d'une vue
   </thead>
   <tbody>
     {%- for tr in tv.trs -%}
-    <tr class="{%if tr.url_open%}crud-jquery-url{%endif%} {{tr.class}}" style="{{tr.style}}" data-url="{{tr.url_open}}"
+    <tr class="{%if tr.url_open%}crud-jquery-url{%endif%} {{tr.class}}" style="{{tr.style}}" data-url="{{tr.url_open}}{{tv.args}}"
       data-press="{{tr.url_press}}">
       {%- if tv.view.with_line_number -%}<td class="right aligned">{{loop.index}}</td>{%- endif -%}
       {%- for vel in tv.view.velements -%}
@@ -32,7 +32,7 @@ Macro d'affichage d'une table html d'une vue
       <td class="ui {{el.col_align}} aligned {{el.class}}" style="{{el.style}}" >{{el.format}}</td>
 
       {%- elif el.type_element == "number" -%}
-      <td class="ui {{el.col_align}} aligned {{el.class}}" style="{{el.style}}" {%- if el.col_no_wrap -%}nowrap{%-endif-%}>
+      <td class="ui {{el.col_align}} aligned {{el.class}}" style="{{el.style}}">
         {%- if el.format -%}{{el.format}}{%-else-%}{{el.value}}{%-endif-%}
       </td>
 
@@ -41,8 +41,18 @@ Macro d'affichage d'une table html d'une vue
         <input type="checkbox" {% if el.value=="1" %}checked{% endif %} disabled></input>
       </td>
 
+      {%- elif el.type_element == "list" -%}
+      <td class="ui {{el.col_align}} aligned {{el.class}}" style="{{el.style}}">
+        {# les items calculés ne sont que sur le 1er record #}
+        {%- for item in tv.trs[0].record[vel.elid].items -%}
+        {%- if item.key == el.value -%}
+        <div class="ui small label" style="margin-bottom: 0.5em;margin-right: 0.3em;">{{item.label}}</div>
+        {%- endif -%}
+        {%- endfor -%}
+      </td>
+
       {%- elif el.type_element == "tag" -%}
-      <td class="ui {{el.col_align}} aligned {{el.class}}" style="{{el.style}}" {%- if el.col_no_wrap -%}nowrap{%-endif-%}>
+      <td class="ui {{el.col_align}} aligned {{el.class}}" style="{{el.style}}">
         {%- for item in el.value | split(pat=",") -%}
         {%- if item -%}
         <div class="ui tag tiny label" style="margin-bottom: 0.5em;margin-right: 0.3em;">{{item}}</div>
@@ -51,7 +61,7 @@ Macro d'affichage d'une table html d'une vue
       </td>
 
       {%- else -%}
-      <td class="ui {{el.col_align}} aligned {{el.class}}" style="{{el.style}}" {%- if el.col_no_wrap -%}nowrap{%-endif-%}>
+      <td class="ui {{el.col_align}} aligned {{el.class}}" style="{{el.style}}">
         {%- if el.format -%}{{el.format}}{%-else-%}{{el.value}}{%-endif-%}
       </td>
       {%- endif -%} {# /end el.type #}

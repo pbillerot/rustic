@@ -38,6 +38,36 @@ title="{{el.params.title}}">
 </div>
 {%- endif -%}
 
+{%- elif el.type_element == "list" -%}
+<!-- type tag -->
+<div class="description">
+  <div class="meta">
+    <span>{{el.label_long}}</span>
+  </div>
+</div>
+<div class="header" style="min-height:1.5em;">
+{%- for item in el.items -%}
+{%- if item.key == el.value  -%}
+<div class="ui large label" style="margin-bottom: 0.5em">{{item.label}}</div>
+{%- endif -%}
+{%- endfor -%}
+</div>
+
+{%- elif el.type_element == "radio" -%}
+<!-- type tag -->
+<div class="description">
+  <div class="meta">
+    <span>{{el.label_long}}</span>
+  </div>
+</div>
+<div class="header" style="min-height:1.5em;">
+{%- for item in el.items -%}
+{%- if item.key == el.value  -%}
+<div class="ui large label" style="margin-bottom: 0.5em">{{item.label}}</div>
+{%- endif -%}
+{%- endfor -%}
+</div>
+
 {%- elif el.type_element == "tag" -%}
 <!-- type tag -->
 <div class="description">
@@ -48,7 +78,7 @@ title="{{el.params.title}}">
 <div class="header" style="min-height:1.5em;">
 {%- for item in el.value | split(pat=",") -%}
 {%- if item -%}
-<div class="ui tag tiny label" style="margin-bottom: 0.5em">{{item}}</div>
+<div class="ui tag small label" style="margin-bottom: 0.5em">{{item}}</div>
 {%- endif -%}
 {%- endfor -%}
 </div>
@@ -73,9 +103,9 @@ title="{{el.params.title}}">
       <i class="close link icon crud-search-close" title="Fermer recherche"></i>
     </div>
     <!-- /recheche -->
-    {%- if tv.form_add -%}}
+    {%- if tv.view.form_add -%}
     <button class="right floated circular ui plus blue icon button crud-jquery-url"
-    data-url="/add/{{appid}}/{{ el.params.tableid}}/{{el.params.view}}/{{tv.form_add}}{{args}}"
+    data-url="/add/{{appid}}/{{el.params.tableid}}/{{el.params.viewid}}/{{tv.view.form_add}}{{tv.args}}"
     style="z-index: 1000; position: absolute; top: 2.5em; right: 2em; padding: 1em;"
     title="Ajouter un élément...">
       <i class="icon plus"></i>

@@ -4,7 +4,6 @@ use crate::{
     cruder::read::crud_read,
     lexicer::{lex_table::Element, macelement},
     middler::{clear_flash, flash::FlashMessage, get_flash},
-    // lexic::lex_table::{self, Element},
     AppState,
 };
 use actix_session::Session;
@@ -31,6 +30,7 @@ use super::get_back;
 // #[get("/edit/{appid}/{tableid}/{viewid}/{formid}/{id}")]
 pub async fn edit(
     path: Path<(String, String, String, String, String)>,
+    query: web::Query<HashMap<String, String>>,
     data: web::Data<AppState>,
     session: Session,
 ) -> Result<impl Responder> {
@@ -45,6 +45,7 @@ pub async fn edit(
     let mut context = tera::Context::new();
     let mut messages: Vec<FlashMessage> = Vec::new();
 
+
     let record = match crud_read(
         &data.db,
         &data.dblite,
@@ -52,6 +53,7 @@ pub async fn edit(
         table,
         &form.velements,
         &id,
+        &query.into_inner()
     )
     .await
     {

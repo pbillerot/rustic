@@ -11,6 +11,15 @@
 
 ### VERSION
 
+0.27.0 - 12 octobre 2023
+- `added` gestion de args lors de l'appel d'un formulaire pour affecter une valeur non modifiable
+- `changed` item_sql calculé seulement sur le 1er enregistrement
+- `changed` markdown sur l'aide
+
+0.26.0 - 9 octobre 2023
+- `added` help en markdown
+- `added` items_sql calculé sur 1er enregistrement seulement
+
 0.25.0 - 4 octobre 2023
 - `added` col_no_wrap image macro de params.title.url.src
 - `added` tables chinook

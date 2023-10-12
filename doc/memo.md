@@ -44,6 +44,7 @@
 ## Middleware
 - https://github.com/actix/examples/tree/master/middleware
 - authentification https://github.com/TianLangStudio/rust_cms/blob/master/web/src/web_util.rs
+- identity https://docs.rs/actix-identity/latest/actix_identity/index.html
 
 ## Templates
 - https://keats.github.io/tera/

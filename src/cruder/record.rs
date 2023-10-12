@@ -16,6 +16,7 @@ pub async fn records_elements(
     application: &Application,
     velements: &Vec<Element>,
     table: &Table,
+    args: HashMap<String, String>,
 ) -> Result<Vec<HashMap<String, Element>>, String> {
 
     let mut records = Vec::new();
@@ -46,6 +47,7 @@ pub async fn records_elements(
     }
 
     let mut irow = 0;
+    let mut compute_list = true;
     for hvalue in vrows {
         irow = irow + 1;
         // récup de la valeur de la clé de l'enregistrement
@@ -62,6 +64,12 @@ pub async fn records_elements(
             let mut element = vel.clone();
             element.compute_value(poolite, &hvalue).await?;
             element.key_value = key_value.clone();
+            for (karg, varg) in &args {
+              if karg == &vel.elid {
+                element.value = varg.to_owned();
+                element.read_only = true;
+              }
+            }
             hel.insert(vel.elid.clone(), element);
         }
         // 2ème tour pour calculer les propriétés
@@ -77,7 +85,7 @@ pub async fn records_elements(
         // calcul des autres propriétés
         for vel in velements {
             let mut element = hel.get(&vel.elid).unwrap().clone();
-            element.compute_prop(pooldb, poolite, &hvalue_computed).await?;
+            element.compute_prop(pooldb, poolite, &hvalue_computed, compute_list).await?;
             if vel.elid == table.setting.key && !sql.is_empty() {
                 element.read_only = true;
                 element.required = false;
@@ -100,6 +108,7 @@ pub async fn records_elements(
 
         }
         records.push(hel);
+        compute_list = false; // calcul de items_sql seulement sur le 1er enregistrement
     }
     Ok(records)
 }

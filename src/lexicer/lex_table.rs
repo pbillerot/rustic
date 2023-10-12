@@ -1,4 +1,4 @@
-use crate::cruder::sqler::kerlite;
+use crate::cruder::sqler::{kerdata, kerlite};
 use crate::lexicer::lex_utils;
 use serde::{Deserialize, Serialize};
 use serde_yaml::{self};
@@ -226,9 +226,10 @@ impl Element {
 
     pub async fn compute_prop(
         &mut self,
-        _pooldb: &Pool<Postgres>,
+        pooldb: &Pool<Postgres>,
         poolite: &Pool<Sqlite>,
         hvalue: &HashMap<String, String>,
+        compute_list: bool,
     ) -> Result<&mut Self, String> {
         // valeur par défaut
         if !self.default.is_empty() {
@@ -284,11 +285,12 @@ impl Element {
             self.style = kerlite(poolite, &sql).await?;
         }
         // items récupérés dans les données de l'application
-        // TODO à optimiser si une vue avec même requête
-        // if !self.items_sql.is_empty() {
-        //     let sql = macvalue(&self.items_sql, hvalue);
-        //     self.items = kerdata(pooldb, &sql).await?;
-        // }
+        if compute_list {
+            if !self.items_sql.is_empty() {
+                let sql = macvalue(&self.items_sql, hvalue);
+                self.items = kerdata(pooldb, &sql).await?;
+            }
+        }
         if !self.params.title.is_empty() {
             self.params.title = macvalue(&self.params.title, hvalue);
         }
@@ -360,6 +362,9 @@ impl Element {
         }
         if self.dataset.is_empty() {
             self.dataset = tel.dataset.clone();
+        }
+        if self.default.is_empty() {
+            self.default = tel.default.clone();
         }
         if self.default_sqlite.is_empty() {
             self.default_sqlite = tel.default_sqlite.clone();
